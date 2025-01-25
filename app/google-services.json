@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "778292038574",
+    "project_id": "insighthealthapp-b72bc",
+    "storage_bucket": "insighthealthapp-b72bc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778292038574:android:00aece3852a83f3d71163f",
+        "android_client_info": {
+          "package_name": "com.example.insight"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNK5k1Ff_G2oZzb3syJ0xRuMJjlhrFaLI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
