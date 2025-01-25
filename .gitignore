@@ -13,3 +13,96 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Gradle files
+.gradle/
+build/
+!gradle-wrapper.jar
+
+# Local configuration file (sdk path, etc.)
+local.properties
+
+# Log files
+*.log
+
+# Android Studio
+.idea/
+*.iml
+
+# Keystore files (do not commit your signing keystore files)
+*.jks
+*.keystore
+
+# External native build files
+.cxx/
+
+# IntelliJ IDEA workspace
+*.iws
+
+# Dependency directories
+**/build/
+**/out/
+captures/
+
+# Generated files
+.gen/
+generated/
+
+# Lint
+lint/reports/
+lint/intermediates/
+
+# File-based indexing
+.index/
+
+# Crashlytics and Firebase
+crashlytics.properties
+fabric.properties
+*.symbols
+
+# NDK
+obj/
+.externalNativeBuild/
+
+# ProGuard
+proguard/
+proguard-rules.pro~
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Gradle Wrapper
+gradle-wrapper.properties~
+
+# Temporary files
+tmp/
+
+# Jetpack Compose
+.idea/kotlin-metadata/
+
+# Signing config files (ensure sensitive keys are not committed)
+signing.properties
+*.key
+
+# Sensitive Environment Variables
+.env
+.env.*
+
+# Node.js/React Native files (if using RN as part of the project)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore generated documentation
+doc/
+
+# Mac OS files
+**/__MACOSX/
