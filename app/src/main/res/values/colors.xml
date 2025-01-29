@@ -4,4 +4,21 @@
     <color name="white">#FFFFFFFF</color>
     <color name="buttonsColor">#C8963B</color>
     <color name="liteGray">#898787</color>
+
+
+    <color name="primary">#104561</color>
+    <color name="primary_dark">#0B3142</color>
+    <color name="primary_light">#165E85</color>
+    <color name="accent">#D17B0F</color>
+    <color name="primary_text">#212121</color>
+    <color name="secondary_text">#757575</color>
+    <color name="icon">#E6E3CF</color>
+    <color name="divider">#BDBDBD</color>
+
+    <color name="primary2">#2C5641</color>
+    <color name="primary2_dark">#213F30</color>
+    <color name="primary2_light">#458464</color> 2C5641
+
+
+
 </resources>
