@@ -34,7 +34,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/imagesuccess"
-            android:text="Registeration Success!"
+            android:text="Registration Success!"
             android:textColor="@color/white"
             android:textSize="20sp" />
         <TextView
@@ -64,7 +64,7 @@
         android:textColor="@color/buttonsColor"
         android:textSize="30sp"
         android:textAlignment="center"
-        android:text="LOGIN"/>
+        android:text="@string/login"/>
 
 
     <EditText
@@ -80,7 +80,7 @@
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
         android:textColor="@color/white"
-        android:hint="Enter your email"
+        android:hint="@string/enter_email_hint"
         android:textColorHint="@color/liteGray"
         android:paddingHorizontal="10dp"
         android:focusedByDefault="true"/>
@@ -98,7 +98,7 @@
         android:inputType="textPassword"
         android:minHeight="48dp"
         android:textColor="@color/white"
-        android:hint="Password"
+        android:hint="@string/password"
         android:textColorHint="@color/liteGray"
         android:paddingHorizontal="10dp"/>
 
@@ -127,7 +127,7 @@
         app:layout_constraintTop_toBottomOf="@id/editTxtPW"
         app:layout_constraintVertical_bias="0.2"
         android:layout_marginHorizontal="30dp"
-        android:text="Login"
+        android:text="@string/login"
         android:textStyle="bold"
         android:textSize="15sp"
         android:background="@drawable/button_background"/>

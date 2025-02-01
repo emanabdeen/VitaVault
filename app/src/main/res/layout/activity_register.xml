@@ -32,7 +32,7 @@
         android:textColor="@color/buttonsColor"
         android:textSize="35sp"
         android:textAlignment="center"
-        android:text="Ctreate Account"/>
+        android:text="Create Account"/>
     <TextView
         android:id="@+id/pageHint"
         android:layout_width="310dp"
@@ -46,7 +46,7 @@
         android:textColor="@color/white"
         android:textSize="15sp"
         android:textAlignment="center"
-        android:text="Create an account to explore an endless library of movies"/>
+        android:text="Create an account to get started with VitaVault!"/>
 
     <TextView
         android:id="@+id/txtErrorMessage"
@@ -76,7 +76,7 @@
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
         android:textColor="@color/white"
-        android:hint="Enter your email"
+        android:hint="@string/enter_email_hint"
         android:textColorHint="@color/liteGray"
         android:paddingHorizontal="10dp"
         android:focusedByDefault="true"/>
@@ -94,7 +94,7 @@
         android:inputType="textPassword"
         android:minHeight="48dp"
         android:textColor="@color/white"
-        android:hint="Password"
+        android:hint="@string/password"
         android:textColorHint="@color/liteGray"
         android:paddingHorizontal="10dp"/>
 
@@ -108,7 +108,7 @@
         app:layout_constraintTop_toBottomOf="@id/editTxtPW"
         app:layout_constraintVertical_bias="0.2"
         android:layout_marginHorizontal="30dp"
-        android:text="Register"
+        android:text="@string/register"
         android:textStyle="bold"
         android:textSize="15sp"
         android:background="@drawable/button_background"/>
