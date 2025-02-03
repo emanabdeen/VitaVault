@@ -5,15 +5,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.insight.R;
 import com.example.insight.databinding.ActivityRegisterBinding;
+import com.example.insight.utility.LoginRegisterHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -51,7 +47,7 @@ public class Register extends AppCompatActivity {
                     //show error message
                     //password was null
                     binding.txtErrorMessage.setText("Please insert a valid email and a valid password.");
-                } else if (!validPassword(userPW)) {
+                } else if (!LoginRegisterHelper.validPassword(userPW)) {
                     //show error message
                     //password was not complex enough
                     binding.txtErrorMessage.setText("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
@@ -63,14 +59,7 @@ public class Register extends AppCompatActivity {
         });
     }
 
-    //Password validation
-    private boolean validPassword(String userPW) {
-        //password must have 8 chars, including one uppercase, one lowercase, one number,
-        // and one special character
-        //for example: Firebase1$
-        String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
-        return userPW.matches(passwordPattern);
-    }
+
 
     private void registerUser(String email, String password) {
 
