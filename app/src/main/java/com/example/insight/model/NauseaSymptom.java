@@ -5,24 +5,28 @@ import java.time.LocalTime;
 import java.util.Date;
 
 public class NauseaSymptom extends Symptom {
-    private String nauseaLevel; // mild, moderate, severe
+    //private String nauseaLevel; // mild, moderate, severe
 
-    public NauseaSymptom(String nauseaLevel) {
+    public NauseaSymptom(String symptomLevel) {
         super();
-        this.nauseaLevel = nauseaLevel;
+        this.setSymptomName("Nausea");
+        this.setSymptomLevel(symptomLevel);
     }
 
-    public NauseaSymptom(LocalDate recordDate, LocalTime startTime, LocalTime endTime, String nauseaLevel) {
-        super(recordDate, startTime, endTime);
-        this.nauseaLevel = nauseaLevel;
+    public NauseaSymptom(String symptomLevel, String symptomDescription) {
+        super();
+        this.setSymptomName("Nausea");
+        this.setSymptomLevel(symptomLevel);
+        this.setSymptomDescription(symptomDescription);
     }
 
-    public String getNauseaLevel() {
-        return nauseaLevel;
+    public NauseaSymptom(LocalDate recordDate, LocalTime startTime,LocalTime endTime,String symptomLevel) {
+        super(recordDate, startTime, endTime, "Nausea", symptomLevel);
     }
 
-    public void setNauseaLevel(String nauseaLevel) {
-        this.nauseaLevel = nauseaLevel;
+    public NauseaSymptom(LocalDate recordDate, LocalTime startTime,LocalTime endTime,String symptomLevel, String symptomDescription) {
+        super(recordDate, startTime, endTime, "Nausea", symptomLevel, symptomDescription);
     }
+
 }
 

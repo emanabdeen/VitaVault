@@ -5,25 +5,30 @@ import java.time.LocalTime;
 import java.util.Date;
 
 public class CoughingSymptom extends Symptom {
-    private String coughLevel; // mild, moderate, severe
 
-    public CoughingSymptom(String coughLevel) {
+
+    public CoughingSymptom(String symptomLevel) {
         super(); // Uses default date and time
-        this.coughLevel = coughLevel;
+        this.setSymptomName("Coughing");
+        this.setSymptomLevel(symptomLevel);
     }
 
-    public CoughingSymptom(LocalDate recordDate, LocalTime startTime, LocalTime endTime, String coughLevel) {
-        super(recordDate, startTime, endTime);
-        this.coughLevel = coughLevel;
+    public CoughingSymptom(String symptomLevel, String symptomDescription) {
+        super();
+        this.setSymptomName("Coughing");
+        this.setSymptomLevel(symptomLevel);
+        this.setSymptomDescription(symptomDescription);
     }
 
-    public String getCoughLevel() {
-        return coughLevel;
+    public CoughingSymptom(LocalDate recordDate, LocalTime startTime,LocalTime endTime,String symptomLevel) {
+        super(recordDate, startTime, endTime, "Coughing", symptomLevel);
     }
 
-    public void setCoughLevel(String coughLevel) {
-        this.coughLevel = coughLevel;
+    public CoughingSymptom(LocalDate recordDate, LocalTime startTime,LocalTime endTime,String symptomLevel, String symptomDescription) {
+        super(recordDate, startTime, endTime, "Coughing", symptomLevel, symptomDescription);
     }
+
+
 }
 
 

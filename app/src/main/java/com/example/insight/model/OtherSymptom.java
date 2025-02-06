@@ -7,22 +7,24 @@ import java.util.Date;
 public class OtherSymptom extends Symptom {
     private String description;
 
-    public OtherSymptom(String description) {
+    public OtherSymptom(String symptomLevel) {
         super();
-        this.description = description;
+        this.setSymptomName("Other");
+        this.setSymptomLevel(symptomLevel);
     }
 
-    public OtherSymptom(LocalDate recordDate, LocalTime startTime, LocalTime endTime, String description) {
-        super(recordDate, startTime, endTime);
-        this.description = description;
+    public OtherSymptom(String symptomLevel, String symptomDescription) {
+        super();
+        this.setSymptomName("Other");
+        this.setSymptomLevel(symptomLevel);
+        this.setSymptomDescription(symptomDescription);
+    }
+    public OtherSymptom(LocalDate recordDate, LocalTime startTime,LocalTime endTime,String symptomLevel) {
+        super(recordDate, startTime, endTime, "Other", symptomLevel);
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public OtherSymptom(LocalDate recordDate, LocalTime startTime,LocalTime endTime,String symptomLevel, String symptomDescription) {
+        super(recordDate, startTime, endTime, "Other", symptomLevel, symptomDescription);
     }
 }
 
