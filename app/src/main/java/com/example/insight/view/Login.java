@@ -49,17 +49,17 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
 
                 //Validate Email & PW are not empty
-                //String userEmail= binding.editTxtEmail.getText().toString();
-                //String userPW= binding.editTxtPW.getText().toString();
-                String userEmail= "test@test.com";
-                String userPW= "Test@123";
+                String userEmail= binding.editTxtEmail.getText().toString();
+                String userPW= binding.editTxtPW.getText().toString();
+                //String userEmail= "test@test.com";
+                //String userPW= "Test@123";
 
                 if(userEmail.matches("")||userPW.matches("")){
                     //show error message
                     binding.txtErrorMessage.setText("Please insert a valid email and a valid password.");
                 }else{
-                    //signIn(binding.editTxtEmail.getText().toString(), binding.editTxtPW.getText().toString());
-                    signIn("test@test.com", "Test@123");
+                    signIn(binding.editTxtEmail.getText().toString(), binding.editTxtPW.getText().toString());
+                    //signIn("test@test.com", "Test@123");
                 }
             }
         });
