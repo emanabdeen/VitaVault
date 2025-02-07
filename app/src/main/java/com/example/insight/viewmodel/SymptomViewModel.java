@@ -6,10 +6,14 @@ import com.example.insight.model.CoughingSymptom;
 import com.example.insight.model.NauseaSymptom;
 import com.example.insight.model.OtherSymptom;
 import com.example.insight.model.Symptom;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -37,7 +41,7 @@ public class SymptomViewModel {
     public SymptomViewModel() { }
 
     //Add symptom
-    public void AddSymptom( String uid, Symptom symptom){
+    public void AddSymptomOld( String uid, Symptom symptom){
 
         // Extract details from LocalDate
         LocalDate recordDate = symptom.getRecordDate();
@@ -99,67 +103,119 @@ public class SymptomViewModel {
 
     }
 
+    public void AddSymptom( String uid, Symptom symptom){
+
+        // Extract details from LocalDate
+        LocalDate recordDate = symptom.getRecordDate();
+
+        int dayOfMonth = recordDate.getDayOfMonth();
+        String monthName = recordDate.getMonth().name(); // e.g., "JANUARY"
+        int monthNumber = recordDate.getMonthValue(); // e.g., 1 for January
+        int year = recordDate.getYear();
+
+        String recordDateStr = symptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        String startTimeStr = symptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+        String endTimeStr = symptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+        String symptomName = symptom.getSymptomName();
+        String symptomLevel = symptom.getSymptomLevel();
+        String symptomDescription = symptom.getSymptomDescription();
+
+
+        // Create a map to hold the details of the document under the symptoms collection
+        Map<String, Object> symptomDetails = new HashMap<>();
+        symptomDetails.put("dayOfMonth", dayOfMonth);
+        symptomDetails.put("monthName", monthName);
+        symptomDetails.put("monthValue", monthNumber);
+        symptomDetails.put("year", year);
+        symptomDetails.put("recordDate", recordDateStr);
+        symptomDetails.put("startTime", startTimeStr);
+        symptomDetails.put("endTime", endTimeStr);
+        symptomDetails.put("symptomName", symptomName);
+        symptomDetails.put("symptomLevel", symptomLevel);
+        symptomDetails.put("symptomDescription", symptomDescription);
+
+        try {
+            DocumentReference addedDocRef = db.collection("users")
+                    .document(uid)
+                    .collection("symptoms")
+                    .add(symptomDetails).getResult();
+
+            String generatedId = addedDocRef.getId(); //get the iD of the created document
+            Log.d("debug", "Document added with ID: " + generatedId);
+
+        } catch (Exception e) {
+            Log.e("Firestore", "Error adding document: " + e.getMessage());
+        }
+
+    }
 
     public void searchSymptomsByDate(String uid, LocalDate searchDate, OnSymptomsRetrievedListener listener) {
+
         // Extract search date details
         int dayOfMonth = searchDate.getDayOfMonth();
         int monthValue = searchDate.getMonthValue();
         int year = searchDate.getYear();
 
-        // Reference to the symptoms collection
-        db.collection("users")
+        // Reference to the user's symptoms collection
+        CollectionReference symptomsRef = FirebaseFirestore.getInstance()
+                .collection("users")
                 .document(uid)
-                .collection("symptomsDate")
+                .collection("symptoms");
+
+        // Create a query to find documents that match the specified criteria
+        Query query = symptomsRef
                 .whereEqualTo("dayOfMonth", dayOfMonth)
                 .whereEqualTo("monthValue", monthValue)
-                .whereEqualTo("year", year)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        for (DocumentSnapshot document : task.getResult()) {
-                            fetchSymptoms(document.getReference(), searchDate, listener);
-                            return; // Assuming one symptom document per date, exit loop after finding one
-                        }
-                    } else {
-                        Log.e("Firestore", "No matching document found or error: " + (task.getException() != null ? task.getException().getMessage() : "No document found"));
-                        listener.onSymptomsRetrieved(null);
-                    }
-                });
-    }
+                .whereEqualTo("year", year);
 
-    public void fetchSymptoms(DocumentReference dateRef, LocalDate searchDate, OnSymptomsRetrievedListener listener) {
+        // Execute the query using Firebase Task API
+        Task<QuerySnapshot> task = query.get();
 
-        dateRef.collection("symptoms")
-                .get()
-                .addOnCompleteListener(taskS -> {
-                    if (taskS.isSuccessful()) {
-                        List<Symptom> symptoms = new ArrayList<>();
-                        for (DocumentSnapshot document : taskS.getResult()) {
-                            String symptomName = document.getString("symptomName");
-                            String symptomLevel = document.getString("symptomLevel");
-                            String symptomDescription = document.getString("symptomDescription");
-                            String startTimeStr = document.getString("startTime");
-                            String endTimeStr = document.getString("endTime");
+        // Add an OnCompleteListener to handle the task result
+        task.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    List<Symptom> symptoms = new ArrayList<>();
+                    if (querySnapshot != null) {
+                        // Retrieve the documents from the query result
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            Log.d("debug", "Document ID: " + document.getId());
+                            Log.d("debug", "Symptom Name: " + document.getString("symptomName"));
+                            Log.d("debug", "Symptom Level: " + document.getString("symptomLevel"));
+                            Log.d("debug", "Record Date: " + document.getString("recordDate"));
+                            Log.d("debug", "Start Time: " + document.getString("startTime"));
+                            Log.d("debug", "End Time: " + document.getString("endTime"));
+                            Log.d("debug", "Description: " + document.getString("symptomDescription"));
+                            Log.d("debug", "--------------------------------------------");
 
                             try {
+                                String symptomName = document.getString("symptomName");
+                                String symptomLevel = document.getString("symptomLevel");
+                                String symptomDescription = document.getString("symptomDescription");
+                                String startTimeStr = document.getString("startTime");
+                                String endTimeStr = document.getString("endTime");
                                 LocalTime startTime = LocalTime.parse(startTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
                                 LocalTime endTime = LocalTime.parse(endTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+
                                 Symptom symptom = new Symptom(searchDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
                                 symptoms.add(symptom);
+
                             } catch (DateTimeParseException e) {
-                                Log.e("Firestore", "Error parsing time: " + e.getMessage());
+                                Log.e("Error", "Error parsing time: " + e.getMessage());
                             }
                         }
-
-                        // Notify listener with the retrieved symptoms
                         listener.onSymptomsRetrieved(symptoms);
-                    } else {
-                        Log.e("Firestore", "Error fetching subcollection: " + taskS.getException().getMessage());
+                    }else {
                         listener.onSymptomsRetrieved(null); // Or an empty list if you prefer
                     }
-                });
+                } else {
+                    System.err.println("Error retrieving documents: " + task.getException().getMessage());
+                }
+            }
+        });
     }
-
 
     // Interface for callback when symptoms are retrieved
     public interface OnSymptomsRetrievedListener {
