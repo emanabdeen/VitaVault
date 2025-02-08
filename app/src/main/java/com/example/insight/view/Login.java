@@ -4,16 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.insight.R;
 import com.example.insight.databinding.ActivityLoginBinding;
+import com.example.insight.utility.LoginRegisterHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -26,6 +24,7 @@ public class Login extends AppCompatActivity {
 
     ActivityLoginBinding binding;
     FirebaseAuth mAuth;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,16 +51,23 @@ public class Login extends AppCompatActivity {
                 //Validate Email & PW are not empty
                 String userEmail= binding.editTxtEmail.getText().toString();
                 String userPW= binding.editTxtPW.getText().toString();
+                //String userEmail= "test@test.com";
+                //String userPW= "Test@123";
+
                 if(userEmail.matches("")||userPW.matches("")){
                     //show error message
                     binding.txtErrorMessage.setText("Please insert a valid email and a valid password.");
                 }else{
                     signIn(binding.editTxtEmail.getText().toString(), binding.editTxtPW.getText().toString());
+                    //signIn("test@test.com", "Test@123");
                 }
             }
         });
 
-        checkRegistrationMessage();
+        Intent intentObj = getIntent();
+        TextView title = binding.pageTitle;
+        ConstraintLayout successMessage = binding.successMessage;
+        LoginRegisterHelper.checkRegistrationMessage(intentObj, title, successMessage);
     }
 
     private void signIn(String email, String password) {
@@ -110,20 +116,5 @@ public class Login extends AppCompatActivity {
                         }
                     }
                 });
-    }
-
-    private  void checkRegistrationMessage(){
-        //Read Intent value. if registration process succeeded, will show success message
-        Intent intentObj = getIntent();
-        boolean registerSuccess = intentObj.getBooleanExtra("registerSuccess",false);
-
-        // Set visibility based on registerSuccess
-        if (registerSuccess) {
-            binding.pageTitle.setVisibility(View.GONE);
-            binding.successMessage.setVisibility(View.VISIBLE);
-        } else {
-            binding.successMessage.setVisibility(View.GONE);
-            binding.pageTitle.setVisibility(View.VISIBLE);
-        }
     }
 }
