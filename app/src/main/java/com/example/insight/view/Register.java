@@ -47,6 +47,7 @@ public class Register extends AppCompatActivity {
                     //show error message
                     //password was null
                     binding.txtErrorMessage.setText("Please insert a valid email and a valid password.");
+                } else if (!LoginRegisterHelper.validPassword(userPW)) {
                     //show error message
                     //password was not complex enough
                     binding.txtErrorMessage.setText("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
