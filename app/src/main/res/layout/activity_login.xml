@@ -83,7 +83,8 @@
         android:hint="@string/enter_email_hint"
         android:textColorHint="@color/liteGray"
         android:paddingHorizontal="10dp"
-        android:focusedByDefault="true"/>
+        android:focusedByDefault="true"
+        android:text="test@test.com"/>
 
     <EditText
         android:id="@+id/editTxtPW"
@@ -100,7 +101,8 @@
         android:textColor="@color/white"
         android:hint="@string/password"
         android:textColorHint="@color/liteGray"
-        android:paddingHorizontal="10dp"/>
+        android:paddingHorizontal="10dp"
+        android:text="Test@123"/>
 
     <TextView
         android:id="@+id/txtErrorMessage"
