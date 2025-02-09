@@ -5,8 +5,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import com.example.insight.utility.LoginRegisterHelper;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 
 public class LoginRegisterHelperTests {
@@ -61,19 +61,6 @@ public class LoginRegisterHelperTests {
         Boolean actual = lrh.validateNewPasswordMatchesConfirmPassword(testPassword, testConfirmPassword);
         // Assert
         assertEquals(expected, actual);
-    }
-
-    @Test
-    public void validateOldPasswordCorrect_CorrectPassword_ExpectTrue() {
-        // Arrange
-        String testPassword = "AAbbcc123!";
-        Boolean expected = true;
-        LoginRegisterHelper lrh = new LoginRegisterHelper();
-
-        // Need to set up a way to get user or mauth mocked for this test
-        // Act
-        //Boolean actual = lrh.validateOldPasswordCorrect(testPassword, user);
-        // Assert
     }
 
 }

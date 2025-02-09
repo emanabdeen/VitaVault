@@ -7,6 +7,10 @@ android {
     namespace = "com.example.insight"
     compileSdk = 34
 
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+
     defaultConfig {
         applicationId = "com.example.insight"
         minSdk = 31
