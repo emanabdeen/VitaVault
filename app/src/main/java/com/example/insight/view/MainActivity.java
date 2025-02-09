@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser user;
     Button btn;
     private SymptomViewModel symptomViewModel;
+    List<Symptom> symptomsList = new ArrayList<>();
+    Symptom symptom = new Symptom();
+
 
 
 
@@ -141,8 +145,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String symptomId = "hCsmk7jnYBnvG8qKInp4";
-                GetSymptomsByIdResult(symptomId);
+
             }
         });
 
@@ -166,87 +169,41 @@ public class MainActivity extends AppCompatActivity {
     private void GetSymptomByDateResults(LocalDate searchDate){
         symptomViewModel=new SymptomViewModel();
 
-        String uid = user.getUid(); // Get the logged-in user's unique ID
+        symptomViewModel.GetSymptomsByDate(searchDate);
 
-        // Call the search method
-        //symptomViewModel.searchSymptomsByDate(uid, searchDate);
+        // Observe favorite movies data
+        symptomViewModel.getSymptomsData().observe(this, symptomsData -> {
+            if (symptomsData != null || !symptomsData.isEmpty()) {
+                symptomsList.clear();//to reset the current list
+                symptomsList.addAll(symptomsData);
+                //symptomsListAdapter.notifyDataSetChanged();
 
-        symptomViewModel.GetSymptomsByDate(uid, searchDate, new SymptomViewModel.OnSymptomsListRetrievedListener() {
-
-            @Override
-            public void onSymptomsRetrieved(List<Symptom> symptoms) {
-
-                Log.d("MainActivity", "----------------------GetSymptomsByDate--------------------------------" );
-                Log.d("MainActivity", "symptomList count>> " + symptoms.size()); // number of symptoms in the list
-
-                if (symptoms != null && !symptoms.isEmpty()) {
-                    for (Symptom symptom : symptoms) {
-                        // the properties for each symptom in the list
-                        String symptomName = symptom.getSymptomName();
-                        String symptomLevel = symptom.getSymptomLevel();
-                        String symptomDescription = symptom.getSymptomDescription();
-                        String symptomStartTime = symptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-                        String symptomEndTime = symptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-                        String symptomDate = symptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-                        Log.d("MainActivity", "Retrieved Symptom: " + symptom.toString());
-                        Log.d("MainActivity", "Symptom name: " + symptomName);
-                        Log.d("MainActivity", "Symptom level: " + symptomLevel);
-                        Log.d("MainActivity", "Symptom Description: " + symptomDescription);
-                        Log.d("MainActivity", "Symptom start time: " + symptomStartTime);
-                        Log.d("MainActivity", "Symptom end time: " + symptomEndTime);
-                        Log.d("MainActivity", "Symptom date: " + symptomDate);
-                        Log.d("MainActivity", "Symptom ID: " + symptom.getSymptomId());
-                        Log.d("MainActivity", "------------------------------------------------------" );
-                    }
-                } else {
-                    Log.d("MainActivity", "No symptoms found for the selected date.");
-                }
+                Log.d("MainActivity", "symptomList count>> " + symptomsList.size());
+            }
+            else {
+                Log.d("MainActivity", "symptomList is null or empty.");
             }
         });
-
     }
 
     /** method to get a list of symptoms at a selected date range date1 & date2 included*/
     private void GetSymptomByDateRangeResults(LocalDate date1 ,LocalDate date2){
         symptomViewModel=new SymptomViewModel();
 
-        String uid = user.getUid(); // Get the logged-in user's unique ID
-
         // Call the search method
-        //symptomViewModel.searchSymptomsByDate(uid, searchDate);
+        symptomViewModel.GetSymptomsByDateRange(date1,date2);
 
-        symptomViewModel.GetSymptomsByDateRange(uid, date1,date2, new SymptomViewModel.OnSymptomsListRetrievedListener() {
+        // Observe favorite movies data
+        symptomViewModel.getSymptomsData().observe(this, symptomsData -> {
+            if (symptomsData != null || !symptomsData.isEmpty()) {
+                symptomsList.clear();//to reset the current list
+                symptomsList.addAll(symptomsData);
+                //symptomsListAdapter.notifyDataSetChanged();
 
-            @Override
-            public void onSymptomsRetrieved(List<Symptom> symptoms) {
-
-                Log.d("MainActivity", "----------------------GetSymptomsByDateRange--------------------------------" );
-                Log.d("MainActivity", "symptomList count>> " + symptoms.size()); // number of symptoms in the list
-
-                if (symptoms != null && !symptoms.isEmpty()) {
-                    for (Symptom symptom : symptoms) {
-                        // the properties for each symptom in the list
-                        String symptomName = symptom.getSymptomName();
-                        String symptomLevel = symptom.getSymptomLevel();
-                        String symptomDescription = symptom.getSymptomDescription();
-                        String symptomStartTime = symptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-                        String symptomEndTime = symptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-                        String symptomDate = symptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-                        Log.d("MainActivity", "Retrieved Symptom: " + symptom.toString());
-                        Log.d("MainActivity", "Symptom name: " + symptomName);
-                        Log.d("MainActivity", "Symptom level: " + symptomLevel);
-                        Log.d("MainActivity", "Symptom Description: " + symptomDescription);
-                        Log.d("MainActivity", "Symptom start time: " + symptomStartTime);
-                        Log.d("MainActivity", "Symptom end time: " + symptomEndTime);
-                        Log.d("MainActivity", "Symptom date: " + symptomDate);
-                        Log.d("MainActivity", "Symptom ID: " + symptom.getSymptomId());
-                        Log.d("MainActivity", "------------------------------------------------------" );
-                    }
-                } else {
-                    Log.d("MainActivity", "No symptoms found in the selected date range.");
-                }
+                Log.d("MainActivity", "symptomList count>> " + symptomsList.size());
+            }
+            else {
+                Log.d("MainActivity", "symptomList is null or empty.");
             }
         });
 
@@ -256,40 +213,19 @@ public class MainActivity extends AppCompatActivity {
     private void GetSymptomsByTypeResults(String symptomType){
         symptomViewModel=new SymptomViewModel();
 
-        String uid = user.getUid(); // Get the logged-in user's unique ID
+        symptomViewModel.GetSymptomsByType(symptomType);
 
+        // Observe favorite movies data
+        symptomViewModel.getSymptomsData().observe(this, symptomsData -> {
+            if (symptomsData != null || !symptomsData.isEmpty()) {
+                symptomsList.clear();//to reset the current list
+                symptomsList.addAll(symptomsData);
+                //symptomsListAdapter.notifyDataSetChanged();
 
-        symptomViewModel.GetSymptomsByType(uid, symptomType, new SymptomViewModel.OnSymptomsListRetrievedListener() {
-
-            @Override
-            public void onSymptomsRetrieved(List<Symptom> symptoms) {
-
-                Log.d("MainActivity", "----------------------GetSymptomsByType--------------------------------" );
-                Log.d("MainActivity", "symptomList count>> " + symptoms.size()); // number of symptoms in the list
-
-                if (symptoms != null && !symptoms.isEmpty()) {
-                    for (Symptom symptom : symptoms) {
-                        // the properties for each symptom in the list
-                        String symptomName = symptom.getSymptomName();
-                        String symptomLevel = symptom.getSymptomLevel();
-                        String symptomDescription = symptom.getSymptomDescription();
-                        String symptomStartTime = symptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-                        String symptomEndTime = symptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-                        String symptomDate = symptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-                        Log.d("MainActivity", "Retrieved Symptom: " + symptom.toString());
-                        Log.d("MainActivity", "Symptom name: " + symptomName);
-                        Log.d("MainActivity", "Symptom level: " + symptomLevel);
-                        Log.d("MainActivity", "Symptom Description: " + symptomDescription);
-                        Log.d("MainActivity", "Symptom start time: " + symptomStartTime);
-                        Log.d("MainActivity", "Symptom end time: " + symptomEndTime);
-                        Log.d("MainActivity", "Symptom date: " + symptomDate);
-                        Log.d("MainActivity", "Symptom ID: " + symptom.getSymptomId());
-                        Log.d("MainActivity", "------------------------------------------------------" );
-                    }
-                } else {
-                    Log.d("MainActivity", "No symptoms found for the selected date.");
-                }
+                Log.d("MainActivity", "symptomList count>> " + symptomsList.size());
+            }
+            else {
+                Log.d("MainActivity", "symptomList is null or empty.");
             }
         });
 
@@ -299,39 +235,22 @@ public class MainActivity extends AppCompatActivity {
     private void GetSymptomsByIdResult(String symptomId){
         symptomViewModel=new SymptomViewModel();
 
-        String uid = user.getUid(); // Get the logged-in user's unique ID
+        symptomViewModel.GetSymptomById(symptomId);
 
-        //symptomViewModel.UpdateSymptom(uid, symptomId,  updatedSymptom);
-        symptomViewModel.GetSymptomById(uid, symptomId, new SymptomViewModel.OnSymptomObjectRetrievedListener() {
+        // Observe favorite movies data
+        symptomViewModel.getSelectedSymptomData().observe(this, selectedSymptomData -> {
+            if (selectedSymptomData != null) {
+                symptom = new Symptom();//to reset the current list
+                symptom =selectedSymptomData;
 
-            @Override
-            public void onSymptomRetrieved(Symptom symptom) {
-
-                if (symptom != null) {
-                        // the properties for each symptom in the list
-                        String symptomName = symptom.getSymptomName();
-                        String symptomLevel = symptom.getSymptomLevel();
-                        String symptomDescription = symptom.getSymptomDescription();
-                        String symptomStartTime = symptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-                        String symptomEndTime = symptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-                        String symptomDate = symptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-                        Log.d("MainActivity", "----------------------GetSymptomById--------------------------------" );
-                        Log.d("MainActivity", "Retrieved Symptom: " + symptom.toString());
-                        Log.d("MainActivity", "Symptom name: " + symptomName);
-                        Log.d("MainActivity", "Symptom level: " + symptomLevel);
-                        Log.d("MainActivity", "Symptom Description: " + symptomDescription);
-                        Log.d("MainActivity", "Symptom start time: " + symptomStartTime);
-                        Log.d("MainActivity", "Symptom end time: " + symptomEndTime);
-                        Log.d("MainActivity", "Symptom date: " + symptomDate);
-                        Log.d("MainActivity", "Symptom ID: " + symptom.getSymptomId());
-                        Log.d("MainActivity", "------------------------------------------------------" );
-
-                } else {
-                    Log.d("MainActivity", "No symptoms found for the selected ID.");
-                }
+                Log.d("MainActivity", "symptomId: " + symptom.getSymptomId()+" Name: "+ symptom.getSymptomName());
+            }
+            else {
+                Log.d("MainActivity", "symptom is null");
             }
         });
+
+
     }
 
 }
