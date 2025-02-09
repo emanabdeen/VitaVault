@@ -67,7 +67,17 @@ public class Login extends AppCompatActivity {
         Intent intentObj = getIntent();
         TextView title = binding.pageTitle;
         ConstraintLayout successMessage = binding.successMessage;
-        LoginRegisterHelper.checkRegistrationMessage(intentObj, title, successMessage);
+
+        //Read Intent value. if registration process succeeded, will show success message
+        boolean registerSuccess = intentObj.getBooleanExtra("registerSuccess",false);
+        // Set visibility based on registerSuccess
+        if (registerSuccess) {
+            title.setVisibility(View.GONE);
+            successMessage.setVisibility(View.VISIBLE);
+        } else {
+            successMessage.setVisibility(View.GONE);
+            title.setVisibility(View.VISIBLE);
+        }
     }
 
     private void signIn(String email, String password) {
