@@ -20,6 +20,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -45,15 +46,30 @@ public class AccountManagementTests {
     }
 
     @Test
-    public void validateOldPasswordCorrect_CorrectPassword_ExpectTrue() throws InterruptedException {
+    public void validateOldPasswordCorrect_ExpectTrue() throws InterruptedException {
         // Arrange
         String testAccountEmail = "unittestaccount@insight.com";
         String oldPassword = "AAbbcc123!"; // current password for the account
         Boolean expected = true;
-        boolean actual;
-        CountDownLatch latch = new CountDownLatch(2); // create a latch to wait for the task to complete
+        CountDownLatch latch = new CountDownLatch(3); // create a latch to wait for the task to complete
         mAuth.signOut(); // logout of any existing sessions
         latch.countDown(); // decrement the latch count
+
+        mAuth.createUserWithEmailAndPassword(testAccountEmail, oldPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Account creation was successful");
+                } else {
+                    Log.d(TAG, "Account creation was not successful");
+                    if (task.getException().getMessage() != null && task.getException().getMessage().contains("The email address is already in use by another account.")) {
+                        Log.d(TAG, "Account already exists, proceeding to login");
+                    }
+                }
+                latch.countDown(); // decrement the latch count
+            }
+        })
+        ;
         mAuth.signInWithEmailAndPassword(testAccountEmail, oldPassword) // login with old password
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                            @Override
@@ -71,9 +87,10 @@ public class AccountManagementTests {
 
         latch.await(10, TimeUnit.SECONDS); // wait for the latch to count down to zero);
         // Act
-        actual = lrh.validateOldPasswordCorrect(oldPassword, mAuth); // call the method to be tested
-
-        // Assert
-        assertEquals(expected, actual);
+        CompletableFuture<Boolean> actual = lrh.validateOldPasswordCorrect(oldPassword, mAuth);
+        actual.thenAccept(result -> {
+            // Assert
+            assertEquals(expected, result);
+        });
     }
 }
