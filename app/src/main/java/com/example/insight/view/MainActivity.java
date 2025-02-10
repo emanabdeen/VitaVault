@@ -10,12 +10,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.insight.databinding.ActivityLoginBinding;
 import com.example.insight.databinding.ActivityMainBinding;
-import com.example.insight.model.CoughingSymptom;
-import com.example.insight.model.NauseaSymptom;
-import com.example.insight.model.OtherSymptom;
+
 import com.example.insight.model.Symptom;
+import com.example.insight.utility.SymptomsCategories;
 import com.example.insight.viewmodel.SymptomViewModel;
 import com.example.insight.utility.LoginRegisterHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseUser user;
     private SymptomViewModel symptomViewModel;
+    List<Symptom> symptomsList = new ArrayList<>();
+    Symptom symptom = new Symptom();
+
     Button btn, changePassButton;
     EditText oldPw, newPw, confirmPw, email;
 
@@ -93,83 +95,192 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // -------------------------------Search Button Logic --------------------------------------------
+        // -------------------------------Add Symptom Button --------------------------------------------
         binding.btnSymptom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddSymptom();
+
+                String symptomsCategory = SymptomsCategories.HEADACHE.toString();
+
+                Symptom newSymptom1 = new Symptom(symptomsCategory, "moderate"); // initialize symptom object with current date and time
+                //AddSymptom(newSymptom1);// add newSymptom1 to Firestore
+
+                Symptom newSymptom2 = new Symptom(symptomsCategory, "moderate","Headache with dizziness"); // initialize symptom object with current date and time
+                //AddSymptom(newSymptom2);// add newSymptom2 to Firestore
+
+                // Create a cough symptom with a custom date and time
+                LocalDate customDate = LocalDate.of(2024, 1, 15);
+                LocalTime customStart = LocalTime.of(12, 30);
+                LocalTime customEnd = LocalTime.of(13, 15);
+
+                Symptom newSymptom3 = new Symptom(customDate, customStart, customEnd,symptomsCategory, "moderate","Headache with dizziness");
+                //AddSymptom(newSymptom3); // add newSymptom3 to Firestore
+
+                symptomsCategory = SymptomsCategories.COUGHING.toString();
+                newSymptom3 = new Symptom(customDate, customStart, customEnd,symptomsCategory, "mild","some notes here");
+                AddSymptom(newSymptom3); // add newSymptom3 to Firestore
+
+
             }
         });
 
-        // -------------------------------Search Button Logic --------------------------------------------
-        binding.btnGetData.setOnClickListener(new View.OnClickListener() {
+        // -------------------------------Get Symptoms By Date --------------------------------------------
+        binding.btnGetSymptomsByDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GetSymptomResults();
+
+                //LocalDate searchDate = LocalDate.now(); // Example: today's date
+                LocalDate searchDate = LocalDate.of(2024, 1, 15);
+
+                GetSymptomByDateResults(searchDate);
+            }
+        });
+
+
+        // -------------------------------Get Symptoms In dates range --------------------------------------------
+        binding.btnGetSymptomsInRange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //LocalDate searchDate = LocalDate.now(); // Example: today's date
+                LocalDate date1 = LocalDate.of(2025, 2, 1);
+                LocalDate date2 = LocalDate .now();
+
+                GetSymptomByDateRangeResults(date1,date2);
+            }
+        });
+
+        // -------------------------------Get Symptoms By Type --------------------------------------------
+        binding.btnGetSymptomsByType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String symptomType = SymptomsCategories.COUGHING.toString();
+                GetSymptomsByTypeResults(symptomType);
+            }
+        });
+
+        // -------------------------------Get Symptoms By Id --------------------------------------------
+        binding.btnGetSymptomById.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String symptomId = "hCsmk7jnYBnvG8qKInp4";
+                GetSymptomsByIdResult(symptomId);
+            }
+        });
+
+        // -------------------------------Update Symptom's notes' --------------------------------------------
+        binding.btnUpdateNotes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
             }
         });
 
     }
 
-    private void AddSymptom(){
+    /** method to add a new symptom to the system. required parameters that will be collected from the page as follow:
+     * - LocalDate date: the input filed will have current date as default "dd-MM-yyyy"(can be updated by user)
+     * - LocalTime start time: input filed will have current time HH:mm as default (can be updated by user)
+     * - LocalTime end time: input filed will have current time HH:mm as default (can be updated by user)
+     * - String level: (REQUIRED) user will select one of these choices (Not present, Severe, Moderate, ...etc)
+     * - string description: (optional) user can add more notes about this symptom
+     * - string symptomName: this will be automatically assigned by the class that will be used to create the symptom object*/
+    private void AddSymptom(Symptom symptom){
         symptomViewModel=new SymptomViewModel();
         String uid = user.getUid(); // Get the logged-in user's unique ID
 
-        // Create symptoms using default recordDate and current time
-        CoughingSymptom cough = new CoughingSymptom("moderate");
-        NauseaSymptom nausea = new NauseaSymptom("severe");
-        OtherSymptom other = new OtherSymptom("moderate","Headache with dizziness");
-
-        // Create a cough symptom with a custom date and time
-        LocalDate customDate = LocalDate.of(2024, 1, 15);
-        LocalTime customStart = LocalTime.of(8, 30); // 08:30 AM
-        LocalTime customEnd = LocalTime.of(9, 15); // 09:15 AM
-        CoughingSymptom oldCough = new CoughingSymptom(customDate, customStart, customEnd, "mild");
-        OtherSymptom oldOther = new OtherSymptom(customDate, customStart, customEnd,"moderate","Headache with dizziness");
-
-        //add new symptoms-----------------------------
-        symptomViewModel.AddSymptom(uid, oldCough);
-        symptomViewModel.AddSymptom(uid, nausea);
-        symptomViewModel.AddSymptom(uid, other);
-        symptomViewModel.AddSymptom(uid, oldOther);
-
-        // End of onClick button
+        symptomViewModel.AddSymptom(uid, symptom);
     }
 
-    private void GetSymptomResults(){
+    /** method to get a list of symptoms at a selected date*/
+    private void GetSymptomByDateResults(LocalDate searchDate){
         symptomViewModel=new SymptomViewModel();
 
-        String uid = user.getUid(); // Get the logged-in user's unique ID
+        symptomViewModel.GetSymptomsByDate(searchDate);
 
-        //retrieve symptom by date
-        LocalDate searchDate = LocalDate.now(); // Example: today's date
-        LocalDate searchDate2 = LocalDate.of(2024, 1, 16);
+        // Observe favorite movies data
+        symptomViewModel.getSymptomsData().observe(this, symptomsData -> {
+            if (symptomsData != null || !symptomsData.isEmpty()) {
+                symptomsList.clear();//to reset the current list
+                symptomsList.addAll(symptomsData);
+                //symptomsListAdapter.notifyDataSetChanged();
+
+                Log.d("MainActivity", "symptomList count>> " + symptomsList.size());
+            }
+            else {
+                Log.d("MainActivity", "symptomList is null or empty.");
+            }
+        });
+    }
+
+    /** method to get a list of symptoms at a selected date range date1 & date2 included*/
+    private void GetSymptomByDateRangeResults(LocalDate date1 ,LocalDate date2){
+        symptomViewModel=new SymptomViewModel();
 
         // Call the search method
-        //symptomViewModel.searchSymptomsByDate(uid, searchDate);
+        symptomViewModel.GetSymptomsByDateRange(date1,date2);
 
-        symptomViewModel.searchSymptomsByDate(uid, searchDate, new SymptomViewModel.OnSymptomsRetrievedListener() {
+        // Observe favorite movies data
+        symptomViewModel.getSymptomsData().observe(this, symptomsData -> {
+            if (symptomsData != null || !symptomsData.isEmpty()) {
+                symptomsList.clear();//to reset the current list
+                symptomsList.addAll(symptomsData);
+                //symptomsListAdapter.notifyDataSetChanged();
 
-            @Override
-            public void onSymptomsRetrieved(List<Symptom> symptoms) {
-
-                Log.d("MainActivity", "symptomList count>> " + symptoms.size());
-
-                if (symptoms != null && !symptoms.isEmpty()) {
-                    for (Symptom symptom : symptoms) {
-                        Log.d("MainActivity", "Retrieved Symptom: " + symptom.toString());
-                        Log.d("MainActivity", "Symptom name: " + symptom.getSymptomName());
-                        Log.d("MainActivity", "Symptom level: " + symptom.getSymptomLevel());
-                        Log.d("MainActivity", "Symptom Description: " + symptom.getSymptomDescription());
-                        Log.d("MainActivity", "Symptom start time: " + symptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-                        Log.d("MainActivity", "Symptom end time: " + symptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-                        Log.d("MainActivity", "Symptom date: " + symptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-                        Log.d("MainActivity", "------------------------------------------------------" );
-                    }
-                } else {
-                    Log.d("MainActivity", "No symptoms found for the selected date.");
-                }
+                Log.d("MainActivity", "symptomList count>> " + symptomsList.size());
+            }
+            else {
+                Log.d("MainActivity", "symptomList is null or empty.");
             }
         });
+
     }
+
+    /** method to get a list of symptoms for the selected type*/
+    private void GetSymptomsByTypeResults(String symptomType){
+        symptomViewModel=new SymptomViewModel();
+
+        symptomViewModel.GetSymptomsByType(symptomType);
+
+        // Observe favorite movies data
+        symptomViewModel.getSymptomsData().observe(this, symptomsData -> {
+            if (symptomsData != null || !symptomsData.isEmpty()) {
+                symptomsList.clear();//to reset the current list
+                symptomsList.addAll(symptomsData);
+                //symptomsListAdapter.notifyDataSetChanged();
+
+                Log.d("MainActivity", "symptomList count>> " + symptomsList.size());
+            }
+            else {
+                Log.d("MainActivity", "symptomList is null or empty.");
+            }
+        });
+
+    }
+
+    /** method to get a symptom by ID*/
+    private void GetSymptomsByIdResult(String symptomId){
+        symptomViewModel=new SymptomViewModel();
+
+        symptomViewModel.GetSymptomById(symptomId);
+
+        // Observe favorite movies data
+        symptomViewModel.getSelectedSymptomData().observe(this, selectedSymptomData -> {
+            if (selectedSymptomData != null) {
+                symptom = new Symptom();//to reset the current list
+                symptom =selectedSymptomData;
+
+                Log.d("MainActivity", "symptomId: " + symptom.getSymptomId()+" Name: "+ symptom.getSymptomName());
+            }
+            else {
+                Log.d("MainActivity", "symptom is null");
+            }
+        });
+
+
+    }
+
 }

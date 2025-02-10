@@ -5,12 +5,14 @@ import java.time.LocalTime;
 import java.util.Date;
 
 public class Symptom {
+    private String symptomId;
     private LocalDate recordDate;
     private LocalTime startTime; // Stores time in HH:mm format
     private LocalTime endTime;   // Stores time in HH:mm format
     private String symptomName;
     private String symptomLevel;
     private String symptomDescription;
+
 
     // Default constructor: sets recordDate to today, startTime & endTime to now
     public Symptom() {
@@ -20,6 +22,25 @@ public class Symptom {
         this.symptomName = ""; //will be updated by subclass
         this.symptomLevel = "";
         this.symptomDescription = "";
+    }
+
+    // Default constructor: sets recordDate to today, startTime & endTime to now
+    public Symptom(String symptomName, String symptomLevel) {
+        this.recordDate = LocalDate .now(); // Sets to current date
+        this.startTime = LocalTime.now(); // Sets to current time
+        this.endTime = LocalTime.now(); // Default to now
+        this.symptomName = symptomName;
+        this.symptomLevel = symptomLevel;
+        this.symptomDescription = "";
+    }
+
+    public Symptom(String symptomName, String symptomLevel, String symptomDescription) {
+        this.recordDate = LocalDate .now(); // Sets to current date
+        this.startTime = LocalTime.now(); // Sets to current time
+        this.endTime = LocalTime.now(); // Default to now
+        this.symptomName = symptomName;
+        this.symptomLevel = symptomLevel;
+        this.symptomDescription = symptomDescription;
     }
 
     // Constructor with custom values no description is required
@@ -90,5 +111,13 @@ public class Symptom {
         public void setSymptomDescription(String symptomDescription) {
             this.symptomDescription = symptomDescription;
         }
+
+    public String getSymptomId() {
+        return symptomId;
+    }
+
+    public void setSymptomId(String symptomId) {
+        this.symptomId = symptomId;
+    }
 }
 
