@@ -11,6 +11,14 @@
         <item name="colorSecondaryVariant">@color/accent</item>
         <item name="colorOnSecondary">@color/white</item>
         <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
+
+
+        <!-- Set custom splash screen icon (replace with your image) -->
+        <!--  <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>-->
+        <item name="android:windowSplashScreenBrandingImage">@drawable/vitavault_splash_250</item>
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+        <item name="android:windowSplashScreenAnimationDuration">2000</item>
+
     </style>
 
     <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
@@ -18,4 +26,6 @@
     </style>
 
     <style name="Theme.Insight" parent="Base.Theme.Insight" />
+
+
 </resources>

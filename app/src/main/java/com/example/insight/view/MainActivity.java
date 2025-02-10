@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
     Symptom symptom = new Symptom();
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
