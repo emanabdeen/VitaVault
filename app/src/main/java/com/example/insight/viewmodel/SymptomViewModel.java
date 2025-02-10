@@ -84,10 +84,10 @@ public class SymptomViewModel {
 
         // Create a map to hold the details of the document under the symptoms collection
         Map<String, Object> symptomDetails = new HashMap<>();
-        symptomDetails.put("dayOfMonth", dayOfMonth);
-        symptomDetails.put("monthName", monthName);
-        symptomDetails.put("monthValue", monthNumber);
-        symptomDetails.put("year", year);
+//        symptomDetails.put("dayOfMonth", dayOfMonth);
+//        symptomDetails.put("monthName", monthName);
+//        symptomDetails.put("monthValue", monthNumber);
+//        symptomDetails.put("year", year);
         symptomDetails.put("recordDate", recordDateStr);
         symptomDetails.put("startTime", startTimeStr);
         symptomDetails.put("endTime", endTimeStr);
@@ -447,7 +447,7 @@ public class SymptomViewModel {
                 });
     }
 
-    public void UpdateSymptom(String uid, String symptomId, Symptom symptom) {
+    public void UpdateSymptom(Symptom updatedSymptom) {
 
         // Reference to the user's symptoms collection
         CollectionReference symptomsRef = FirebaseFirestore.getInstance()
@@ -456,38 +456,52 @@ public class SymptomViewModel {
                 .collection("symptoms");
 
         // Document reference for the specific symptom to be updated
-        DocumentReference docRef = symptomsRef.document(symptomId);
-
+        DocumentReference docRef = symptomsRef.document(updatedSymptom.getSymptomId());
 
         Map<String, Object> updatedData = new HashMap<>();
-        updatedData.put("symptomName", symptom.getSymptomName());
-        updatedData.put("symptomLevel", symptom.getSymptomLevel());
-        updatedData.put("symptomDescription", symptom.getSymptomDescription());
-        updatedData.put("startTime", symptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-        updatedData.put("endTime", symptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-        updatedData.put("recordDate", symptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        updatedData.put("symptomName", updatedSymptom.getSymptomName());
+        updatedData.put("symptomLevel", updatedSymptom.getSymptomLevel());
+        updatedData.put("symptomDescription", updatedSymptom.getSymptomDescription());
+        updatedData.put("startTime", updatedSymptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        updatedData.put("endTime", updatedSymptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        updatedData.put("recordDate", updatedSymptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
         // Update the document in Firestore
         docRef.update(updatedData)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("debug", "Symptom updated successfully.");
+                    searchResultMessageData.postValue("Symptom updated successfully.");
+                    selectedSymptom =updatedSymptom;
+                    selectedSymptomData.postValue(updatedSymptom);
+
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Error", "Error updating symptom: " + e.getMessage());
+                    searchResultMessageData.postValue("Error updating symptom");
+                });
+    }
+
+    public void deleteSymptom(String symptomId) {
+        // Reference to the specific symptom document
+        DocumentReference docRef = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .collection("symptoms")
+                .document(symptomId);
+
+        // Delete the document
+        docRef.delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("debug", "Symptom deleted successfully.");
+                    searchResultMessageData.postValue("Symptom deleted successfully.");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Error", "Error deleting symptom: " + e.getMessage());
+                    searchResultMessageData.postValue("Error deleting symptom.");
                 });
     }
 
 
-
-    // Interface for callback when symptoms list are retrieved
-    public interface OnSymptomsListRetrievedListener {
-        void onSymptomsRetrieved(List<Symptom> symptoms);
-    }
-
-    // Interface for callback when symptoms list are retrieved
-    public interface OnSymptomObjectRetrievedListener {
-        void onSymptomRetrieved(Symptom symptom);
-    }
 
 
 }

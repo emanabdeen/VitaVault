@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, Login.class));
         }
 
-        btn = binding.button;
-        btn.setOnClickListener(new View.OnClickListener() {
+        //-------------------------------------logout button ----------------------------
+        binding.btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mAuth = FirebaseAuth.getInstance();
@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity {
                 String symptomsCategory = SymptomsCategories.HEADACHE.toString();
 
                 Symptom newSymptom1 = new Symptom(symptomsCategory, "moderate"); // initialize symptom object with current date and time
-                //AddSymptom(newSymptom1);// add newSymptom1 to Firestore
+                AddSymptom(newSymptom1);// add newSymptom1 to Firestore
 
                 Symptom newSymptom2 = new Symptom(symptomsCategory, "moderate","Headache with dizziness"); // initialize symptom object with current date and time
-                //AddSymptom(newSymptom2);// add newSymptom2 to Firestore
+                AddSymptom(newSymptom2);// add newSymptom2 to Firestore
 
                 // Create a cough symptom with a custom date and time
                 LocalDate customDate = LocalDate.of(2024, 1, 15);
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
                 symptomsCategory = SymptomsCategories.COUGHING.toString();
                 newSymptom3 = new Symptom(customDate, customStart, customEnd,symptomsCategory, "mild","some notes here");
-                AddSymptom(newSymptom3); // add newSymptom3 to Firestore
+                //AddSymptom(newSymptom3); // add newSymptom3 to Firestore
 
 
             }
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 String symptomId = "hCsmk7jnYBnvG8qKInp4";
-                GetSymptomsByIdResult(symptomId);
+                GetSymptomsByIdResult("v2JIOFpdrgPswXCVgScW");
             }
         });
 
@@ -143,7 +143,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                String timeStr = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+                symptom.setSymptomDescription("updated notes at:"+timeStr);
 
+                EditSymptomResult(symptom);
+            }
+        });
+
+        // -------------------------------Get Symptoms By Id --------------------------------------------
+        binding.btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String symptomId = "6es7qyBgw6UshG9hIOwn";
+                GetSymptomsByIdResult(symptomId);
+                symptomViewModel=new SymptomViewModel();
+                symptomViewModel.deleteSymptom(symptomId);
             }
         });
 
@@ -237,18 +252,40 @@ public class MainActivity extends AppCompatActivity {
 
         // Observe favorite movies data
         symptomViewModel.getSelectedSymptomData().observe(this, selectedSymptomData -> {
+            symptom = new Symptom();//to reset the current list
             if (selectedSymptomData != null) {
-                symptom = new Symptom();//to reset the current list
                 symptom =selectedSymptomData;
-
                 Log.d("MainActivity", "symptomId: " + symptom.getSymptomId()+" Name: "+ symptom.getSymptomName());
+                Log.d("MainActivity", "Description: " + symptom.getSymptomDescription());
+            }
+            else {
+                Log.d("MainActivity", "symptom is null");
+
+            }
+        });
+
+    }
+
+    private void EditSymptomResult(Symptom updatedSymptom){
+        //symptomViewModel=new SymptomViewModel();
+
+        symptomViewModel.UpdateSymptom(updatedSymptom);
+
+        // Observe favorite movies data
+        symptomViewModel.getSelectedSymptomData().observe(this, selectedSymptomData -> {
+
+            if (selectedSymptomData != null) {
+                symptom =selectedSymptomData;
+                Log.d("MainActivity", "symptomId: " + symptom.getSymptomId()+" Name: "+ symptom.getSymptomName());
+                Log.d("MainActivity", "updated Description: " + symptom.getSymptomDescription());
             }
             else {
                 Log.d("MainActivity", "symptom is null");
             }
         });
 
-
     }
+
+
 
 }
