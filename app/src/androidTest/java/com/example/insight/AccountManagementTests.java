@@ -32,17 +32,40 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AndroidJUnit4.class)
 public class AccountManagementTests {
     private static final String TAG = "AccountManagementTests";
+    private static final String TEST_ACCOUNT_EMAIL = "unittestaccount@insight.com";
+    private static final String TEST_ACCOUNT_PASSWORD = "AAbbcc123!";
     private FirebaseAuth mAuth;
     private Context appContext;
     private LoginRegisterHelper lrh;
 
     @Before
-    public void setup() {
+    public void setup() throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(3); // create a latch to wait for the task to complete
         appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         FirebaseApp.initializeApp(appContext); // Initialize Firebase App
         mAuth = FirebaseAuth.getInstance();
         mAuth.useEmulator("10.0.2.2", 9099);
         lrh = new LoginRegisterHelper();
+        mAuth.signOut(); //logout of any existing session
+        latch.countDown(); // decrement the latch count
+        mAuth.createUserWithEmailAndPassword(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Account creation was successful");
+                } else {
+                    Log.d(TAG, "Account creation was not successful");
+                    if (task.getException().getMessage() != null && task.getException().getMessage().contains("The email address is already in use by another account.")) {
+                        Log.d(TAG, "Account already exists");
+                    }
+                }
+                latch.countDown(); // decrement the latch count
+            }
+        });
+        mAuth.signOut();
+        latch.countDown(); // decrement the latch count
+        latch.await(10, TimeUnit.SECONDS); // wait for the latch to count down to zero);
     }
 
     @Test
@@ -51,25 +74,7 @@ public class AccountManagementTests {
         String testAccountEmail = "unittestaccount@insight.com";
         String oldPassword = "AAbbcc123!"; // current password for the account
         Boolean expected = true;
-        CountDownLatch latch = new CountDownLatch(3); // create a latch to wait for the task to complete
-        mAuth.signOut(); // logout of any existing sessions
-        latch.countDown(); // decrement the latch count
-
-        mAuth.createUserWithEmailAndPassword(testAccountEmail, oldPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "Account creation was successful");
-                } else {
-                    Log.d(TAG, "Account creation was not successful");
-                    if (task.getException().getMessage() != null && task.getException().getMessage().contains("The email address is already in use by another account.")) {
-                        Log.d(TAG, "Account already exists, proceeding to login");
-                    }
-                }
-                latch.countDown(); // decrement the latch count
-            }
-        })
-        ;
+        CountDownLatch latch = new CountDownLatch(1); // create a latch to wait for the task to complete
         mAuth.signInWithEmailAndPassword(testAccountEmail, oldPassword) // login with old password
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                            @Override
@@ -84,7 +89,6 @@ public class AccountManagementTests {
                                            }
                                        }
                 );
-
         latch.await(10, TimeUnit.SECONDS); // wait for the latch to count down to zero);
         // Act
         CompletableFuture<Boolean> actual = lrh.validateOldPasswordCorrect(oldPassword, mAuth);
