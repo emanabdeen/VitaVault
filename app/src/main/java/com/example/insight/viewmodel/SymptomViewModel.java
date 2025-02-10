@@ -166,7 +166,7 @@ public class SymptomViewModel {
                         symptomsData.postValue(symptomsList);
                     } else {
 
-                        searchResultMessageData.postValue("No movies found matching your search.");
+                        searchResultMessageData.postValue("No symptoms found matching your search.");
                         symptomsData.postValue(symptomsList);
                     }
                 })
@@ -233,7 +233,7 @@ public class SymptomViewModel {
                         searchResultMessageData.postValue("");
                         symptomsData.postValue(symptomsList);
                     } else {
-                        searchResultMessageData.postValue("No movies found matching your search.");
+                        searchResultMessageData.postValue("No symptoms found matching your search.");
                         symptomsData.postValue(symptomsList);
                     }
                 })
@@ -305,7 +305,7 @@ public class SymptomViewModel {
                         searchResultMessageData.postValue("");
                         symptomsData.postValue(symptomsList);
                     } else {
-                        searchResultMessageData.postValue("No movies found matching your search.");
+                        searchResultMessageData.postValue("No symptoms found matching your search.");
                         symptomsData.postValue(symptomsList);
                     }
                 })
@@ -371,7 +371,7 @@ public class SymptomViewModel {
                         searchResultMessageData.postValue("");
                         symptomsData.postValue(symptomsList);
                     } else {
-                        searchResultMessageData.postValue("No movies found matching your search.");
+                        searchResultMessageData.postValue("No symptoms found matching your search.");
                         symptomsData.postValue(symptomsList);
                     }
                 })

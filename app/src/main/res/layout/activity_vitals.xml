@@ -5,50 +5,14 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.MainActivity">
+    tools:context=".view.VitalsActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.068"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.036" />
 
     <Button
-        android:id="@+id/btnLogout"
+        android:id="@+id/btnVital"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Logout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.817"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.385"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-
-    <Button
-        android:id="@+id/btnSymptom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Symptom"
+        android:text="Add Vital"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.058"
@@ -57,10 +21,10 @@
         app:layout_constraintVertical_bias="0.556" />
 
     <Button
-        android:id="@+id/btnGetSymptomsByDate"
+        android:id="@+id/btnGetVitalssByDate"
         android:layout_width="215dp"
         android:layout_height="49dp"
-        android:text="Get All Syptoms by Date"
+        android:text="Get All Vitals by Date"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.117"
@@ -69,10 +33,10 @@
         app:layout_constraintVertical_bias="0.642" />
 
     <Button
-        android:id="@+id/btnGetSymptomsByType"
+        android:id="@+id/btnGetVitalsByType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Get All Symptoms By Type"
+        android:text="Get All vitals By Type"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.082"
@@ -81,10 +45,10 @@
         app:layout_constraintVertical_bias="0.739" />
 
     <Button
-        android:id="@+id/btnGetSymptomById"
+        android:id="@+id/btnGetVitalById"
         android:layout_width="153dp"
         android:layout_height="71dp"
-        android:text="Get Symptom By Id"
+        android:text="Get vital By Id"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.062"
@@ -93,10 +57,10 @@
         app:layout_constraintVertical_bias="0.856" />
 
     <Button
-        android:id="@+id/btnGetSymptomsInRange"
+        android:id="@+id/btnGetvitalsInRange"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Get Symptoms in Range dates"
+        android:text="Get vitals in Range dates"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.093"
@@ -105,10 +69,10 @@
         app:layout_constraintVertical_bias="0.976" />
 
     <Button
-        android:id="@+id/btnUpdateNotes"
+        android:id="@+id/btnUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Update symptom's notes"
+        android:text="Update"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.922"
@@ -127,18 +91,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976" />
-
-    <Button
-        android:id="@+id/btnGoToVitals"
-        android:layout_width="168dp"
-        android:layout_height="36dp"
-        android:text="To Vitals"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.834"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.156" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

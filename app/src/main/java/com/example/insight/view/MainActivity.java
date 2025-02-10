@@ -63,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        binding.btnGoToVitals.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, VitalsActivity.class));
+            }
+        });
+
         // -------------------------------Add Symptom Button --------------------------------------------
         binding.btnSymptom.setOnClickListener(new View.OnClickListener() {
             @Override
