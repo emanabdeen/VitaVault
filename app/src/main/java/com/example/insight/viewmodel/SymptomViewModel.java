@@ -29,7 +29,7 @@ public class SymptomViewModel {
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     //get the current user
-    FirebaseAuth auth =FirebaseAuth.getInstance();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
     public FirebaseUser currentUser = auth.getCurrentUser();
     public String uid= currentUser.getUid();
 
@@ -47,9 +47,9 @@ public class SymptomViewModel {
 
     //constructor
     public SymptomViewModel() {
-        symptomsData.setValue(symptomsList);
-        selectedSymptomData.setValue(selectedSymptom);
-        searchResultMessageData.setValue(searchResultMessage);
+        symptomsData.postValue(symptomsList);
+        selectedSymptomData.postValue(selectedSymptom);
+        searchResultMessageData.postValue(searchResultMessage);
     }
 
     //Getter methods
