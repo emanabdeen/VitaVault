@@ -29,6 +29,8 @@ import org.junit.runner.RunWith;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,6 +43,7 @@ public class SymptomViewModelTests {
     private static final String TAG = "SymptomViewModelTests";
     private static final String TEST_ACCOUNT_EMAIL = "unittestaccount@insight.com";
     private static final String TEST_ACCOUNT_PASSWORD = "AAbbcc123!";
+    //private static final Executor executor = Executors.newSingleThreadExecutor();
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Context appContext;
@@ -96,27 +99,44 @@ public class SymptomViewModelTests {
     @Test
     public void addSymptom_NewAccount_ExpectSymptomAdded() throws InterruptedException {
         // Arrange
+        //Task<Void> reauthenticateTask = user.reauthenticate(credential);
         SymptomViewModel symptomViewModel = new SymptomViewModel();
         Symptom symptom = new Symptom("testSymptom", "testLevel");
         FirebaseUser user = mAuth.getCurrentUser();
         String uid = user.getUid(); // Get the logged-in user's unique ID
-        CountDownLatch latch = new CountDownLatch(1);
+        CountDownLatch latch = new CountDownLatch(3);
         LiveData<List<Symptom>> symptomsData = symptomViewModel.getSymptomsData();
-        symptomsData.observeForever(new Observer<List<Symptom>>() {
-                                        @Override
-                                        public void onChanged(List<Symptom> symptoms) {
-                                            if (symptoms != null && !symptoms.isEmpty()) {
-                                                Log.d(TAG, "Symptoms list updated: " + symptoms.size() + "symptoms found.");
-                                                for (Symptom s : symptoms) {
-                                                    Log.d(TAG, "Symptom Name: " + s.getSymptomName() + ", Symptom Level: " + s.getSymptomLevel());
-                                                }
-                                            }
-                                            latch.countDown(); // decrement the latch count
-                                        }
-                                    });
-                symptomViewModel.AddSymptom(uid, symptom);
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                symptomsData.observeForever(new Observer<List<Symptom>>() {
+                    @Override
+                    public void onChanged(List<Symptom> symptoms) {
+                        if (symptoms != null && !symptoms.isEmpty()) {
+                            Log.d(TAG, "Symptoms list updated: " + symptoms.size() + "symptoms found.");
+                            for (Symptom s : symptoms) {
+                                Log.d(TAG, "Symptom Name: " + s.getSymptomName() + ", Symptom Level: " + s.getSymptomLevel());
+                            }
+                        }
+                        latch.countDown(); // decrement the latch count
+                    }
+                });
+            }
+        });
+                symptomViewModel.AddSymptom(uid, symptom).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Symptom added successfully");
+                            latch.countDown();
+                        } else {
+                            Log.d(TAG, "Symptom add failed: " + task.getException().getMessage());
+                        }
+                    }
+                });
                 latch.await(10, TimeUnit.SECONDS);
                 List<Symptom> symptomsList = symptomsData.getValue();
+                Log.d(TAG, "Symptoms list size: " + symptomsList.size());
                 if (symptomsList != null && !symptomsList.isEmpty()) {
                     assertEquals(true, symptomsList.size() > 0);
                 } else {

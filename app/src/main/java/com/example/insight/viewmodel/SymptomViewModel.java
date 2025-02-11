@@ -2,10 +2,13 @@ package com.example.insight.viewmodel;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.insight.model.Symptom;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -22,9 +25,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 
 public class SymptomViewModel {
+    private final static String TAG = "SymptomViewModel";
     //inst the FirebaseFirestore (DB)
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -64,8 +69,7 @@ public class SymptomViewModel {
     }
 
 
-    public void AddSymptom( String uid, Symptom symptom){
-
+    public Task<Void> AddSymptom(String uid, Symptom symptom){
         // Extract details from LocalDate
         LocalDate recordDate = symptom.getRecordDate();
 
@@ -96,18 +100,25 @@ public class SymptomViewModel {
         symptomDetails.put("symptomDescription", symptomDescription);
 
         try {
-            DocumentReference addedDocRef = db.collection("users")
+            final String[] generatedId = new String[1];// = addedDocRef.getId(); //get the iD of the created document
+            db.collection("users")
                     .document(uid)
                     .collection("symptoms")
-                    .add(symptomDetails).getResult();
-
-            String generatedId = addedDocRef.getId(); //get the iD of the created document
-            Log.d("debug", "Document added with ID: " + generatedId);
-
+                    .add(symptomDetails).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if (task.isSuccessful()) {
+                                generatedId[0] = task.getResult().getId();
+                                Log.d(TAG, "Document added with ID: " + generatedId[0]);
+                            } else {
+                                Log.d(TAG, "Error adding document: " + task.getException().getMessage());
+                            }
+                        }
+                    });
         } catch (Exception e) {
-            Log.e("Firestore", "Error adding document: " + e.getMessage());
+            Log.e(TAG, "Firestore: Error adding document: " + e.getMessage());
         }
-
+        return null; //update the symptomslist livedata?
     }
 
     public void GetSymptomsByDate(LocalDate searchDate) {
@@ -128,18 +139,18 @@ public class SymptomViewModel {
                 .addOnSuccessListener(querySnapshot -> {
                     symptomsList = new ArrayList<>();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        Log.d("debug", "----------------------GetSymptomsByDate--------------------------------" );
+                        Log.d(TAG, "----------------------GetSymptomsByDate--------------------------------" );
 
                         // Retrieve the documents from the query result
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            Log.d("debug", "Document ID: " + document.getId());
-                            Log.d("debug", "Symptom Name: " + document.getString("symptomName"));
-                            Log.d("debug", "Symptom Level: " + document.getString("symptomLevel"));
-                            Log.d("debug", "Record Date: " + document.getString("recordDate"));
-                            Log.d("debug", "Start Time: " + document.getString("startTime"));
-                            Log.d("debug", "End Time: " + document.getString("endTime"));
-                            Log.d("debug", "Description: " + document.getString("symptomDescription"));
-                            Log.d("debug", "--------------------------------------------");
+                            Log.d(TAG, "Document ID: " + document.getId());
+                            Log.d(TAG, "Symptom Name: " + document.getString("symptomName"));
+                            Log.d(TAG, "Symptom Level: " + document.getString("symptomLevel"));
+                            Log.d(TAG, "Record Date: " + document.getString("recordDate"));
+                            Log.d(TAG, "Start Time: " + document.getString("startTime"));
+                            Log.d(TAG, "End Time: " + document.getString("endTime"));
+                            Log.d(TAG, "Description: " + document.getString("symptomDescription"));
+                            Log.d(TAG, "--------------------------------------------");
 
                             try {
                                 String symptomName = document.getString("symptomName");
@@ -171,7 +182,7 @@ public class SymptomViewModel {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error retrieving documents: " + e.getMessage());
+                    Log.e(TAG, "Firestore: Error retrieving documents: " + e.getMessage());
                     symptomsData.postValue(null);// Handle failure
                 });
 
