@@ -50,6 +50,15 @@ public class SymptomViewModel {
     private final MutableLiveData<String> searchResultMessageData = new MutableLiveData<>();
     String searchResultMessage = "";
 
+    //constructor to allow tests to use emulator db
+    public SymptomViewModel(FirebaseFirestore db, FirebaseAuth mAuth) {
+        this.db = db;
+        this.auth = mAuth;
+        symptomsData.postValue(symptomsList);
+        selectedSymptomData.postValue(selectedSymptom);
+        searchResultMessageData.postValue(searchResultMessage);
+    }
+
     //constructor
     public SymptomViewModel() {
         symptomsData.postValue(symptomsList);
@@ -69,7 +78,8 @@ public class SymptomViewModel {
     }
 
 
-    public Task<Void> AddSymptom(String uid, Symptom symptom){
+    public CompletableFuture<Boolean> AddSymptom(String uid, Symptom symptom){
+        CompletableFuture<Boolean> symptomAdded = new CompletableFuture<>();
         // Extract details from LocalDate
         LocalDate recordDate = symptom.getRecordDate();
 
@@ -110,15 +120,17 @@ public class SymptomViewModel {
                             if (task.isSuccessful()) {
                                 generatedId[0] = task.getResult().getId();
                                 Log.d(TAG, "Document added with ID: " + generatedId[0]);
+                                symptomAdded.complete(true);
                             } else {
                                 Log.d(TAG, "Error adding document: " + task.getException().getMessage());
+                                symptomAdded.complete(false);
                             }
                         }
                     });
         } catch (Exception e) {
             Log.e(TAG, "Firestore: Error adding document: " + e.getMessage());
         }
-        return null; //update the symptomslist livedata?
+        return symptomAdded; //update the symptomslist livedata?
     }
 
     public void GetSymptomsByDate(LocalDate searchDate) {
@@ -126,7 +138,7 @@ public class SymptomViewModel {
         String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
         // Reference to the user's symptoms collection
-        CollectionReference symptomsRef = FirebaseFirestore.getInstance()
+        CollectionReference symptomsRef = db
                 .collection("users")
                 .document(uid)
                 .collection("symptoms");
@@ -177,7 +189,7 @@ public class SymptomViewModel {
                         symptomsData.postValue(symptomsList);
                     } else {
 
-                        searchResultMessageData.postValue("No movies found matching your search.");
+                        searchResultMessageData.postValue("No symptoms found matching this date.");
                         symptomsData.postValue(symptomsList);
                     }
                 })
