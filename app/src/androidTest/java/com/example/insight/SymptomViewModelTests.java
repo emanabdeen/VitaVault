@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -96,7 +97,7 @@ public class SymptomViewModelTests {
         latch.await(10, TimeUnit.SECONDS); // wait for the latch to count down to zero);
     }
 
-    @Test
+    @Test // could add more to this test so that it retrieves and validates the symptom matches.
     public void addSymptom_ExpectReturnTrue() throws InterruptedException {
         // Arrange
         SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
@@ -110,6 +111,107 @@ public class SymptomViewModelTests {
             }
             assertTrue(result);
         });
+    }
+
+    @Test
+    public void addSymptomToPreviousDay_GetSymptomByDatePreviousDay_ExpectSymptomListIncrease() throws InterruptedException {
+        // Arrange
+        SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
+        FirebaseUser user = mAuth.getCurrentUser();
+        String uid = user.getUid(); // Get the logged-in user's unique ID
+        CountDownLatch latch = new CountDownLatch(3);
+        LiveData<List<Symptom>> symptomsData = symptomViewModel.getSymptomsData();
+        Symptom symptomToAdd = new Symptom("testSymptom", "testLevel");
+        symptomToAdd.setRecordDate(LocalDate.now().minusDays(1));
+        symptomViewModel.GetSymptomsByDate(LocalDate.now().minusDays(1));
+        List<Symptom> symptomsList = symptomsData.getValue();
+        int initialSize = symptomsList.size();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                symptomsData.observeForever(new Observer<List<Symptom>>() {
+                    @Override
+                    public void onChanged(List<Symptom> symptoms) {
+                        if (symptoms != null && !symptoms.isEmpty()) {
+                            Log.d(TAG, "Symptoms list updated: " + symptoms.size() + " symptoms found.");
+                            for (Symptom s : symptoms) {
+                                Log.d(TAG, "Symptom Name: " + s.getSymptomName() + ", Symptom Level: " + s.getSymptomLevel());
+                            }
+                        }
+                        latch.countDown(); // decrement the latch count
+                    }
+                });
+            }
+        });
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptomToAdd);
+        symptomAdded.whenComplete((result, error) -> {
+            if (result) {
+                Log.d(TAG, "Symptom added successfully");
+                symptomViewModel.GetSymptomsByDate(LocalDate.now().minusDays(1));
+                latch.countDown();
+            } else {
+                Log.d(TAG, "Symptom add failed: " + error.getMessage());
+            }
+        });
+        latch.await(10, TimeUnit.SECONDS);
+        symptomsList = symptomsData.getValue();
+        if (symptomsList != null && !symptomsList.isEmpty()) {
+            Log.d(TAG, "Symptoms list size: " + symptomsList.size());
+            assertEquals(true, symptomsList.size() > initialSize);
+        } else {
+            fail("Symptoms list is null or empty");
+        }
+    }
+
+    @Test
+    public void addSymptomToPreviousDayWithCustomType_GetSymptomByDateAndTypePreviousDayAndCustomType_ExpectSymptomListIncrease() throws InterruptedException {
+        // Arrange
+        SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
+        FirebaseUser user = mAuth.getCurrentUser();
+        String uid = user.getUid(); // Get the logged-in user's unique ID
+        CountDownLatch latch = new CountDownLatch(3);
+        LiveData<List<Symptom>> symptomsData = symptomViewModel.getSymptomsData();
+        String expectedSymptomType = "Custom Symptom Type";
+        Symptom symptomToAdd = new Symptom(expectedSymptomType, "testLevel");
+        symptomToAdd.setRecordDate(LocalDate.now().minusDays(1));
+        symptomViewModel.GetSymptomsByDateAndType(LocalDate.now().minusDays(1), expectedSymptomType);
+        List<Symptom> symptomsList = symptomsData.getValue();
+        int initialSize = symptomsList.size();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                symptomsData.observeForever(new Observer<List<Symptom>>() {
+                    @Override
+                    public void onChanged(List<Symptom> symptoms) {
+                        if (symptoms != null && !symptoms.isEmpty()) {
+                            Log.d(TAG, "Symptoms list updated: " + symptoms.size() + " symptoms found.");
+                            for (Symptom s : symptoms) {
+                                Log.d(TAG, "Symptom Name: " + s.getSymptomName() + ", Symptom Level: " + s.getSymptomLevel());
+                            }
+                        }
+                        latch.countDown(); // decrement the latch count
+                    }
+                });
+            }
+        });
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptomToAdd);
+        symptomAdded.whenComplete((result, error) -> {
+            if (result) {
+                Log.d(TAG, "Symptom added successfully");
+                symptomViewModel.GetSymptomsByDateAndType(LocalDate.now().minusDays(1), expectedSymptomType);
+                latch.countDown();
+            } else {
+                Log.d(TAG, "Symptom add failed: " + error.getMessage());
+            }
+        });
+        latch.await(10, TimeUnit.SECONDS);
+        symptomsList = symptomsData.getValue();
+        if (symptomsList != null && !symptomsList.isEmpty()) {
+            Log.d(TAG, "Symptoms list size: " + symptomsList.size());
+            assertEquals(true, symptomsList.size() > initialSize);
+        } else {
+            fail("Symptoms list is null or empty");
+        }
     }
 
     @Test
@@ -160,36 +262,98 @@ public class SymptomViewModelTests {
         } else {
             fail("Symptoms list is null or empty");
         }
-
-    }
-
-    @Test // THIS ONE ISN'T WORKING YET
-    public void getSymptomsByDate_Tomorrow_ExpectEmptyList() throws InterruptedException {
-        // Arrange
-        String expectedMessage = "No symptoms found matching this date";
-        SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
-        // Act
-        LiveData<String> searchResultString = symptomViewModel.getSearchResultMessageData();
-        symptomViewModel.GetSymptomsByDate(LocalDate.now());
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                searchResultString.observeForever(new Observer<String>() {
-                    @Override
-                    public void onChanged(String resultMessage) {
-                        if (resultMessage != null && !resultMessage.isEmpty()) {
-                            Log.d(TAG, "Search result message: " + resultMessage);
-                            // Assert
-                            assertTrue(resultMessage.contains(expectedMessage));
-                        }
-                    }
-                });
-            }
-        });
     }
 
     @Test
-    public void addNewSymptom_GetSymptomsForToday_ExpectAdditionalSymptomInList() throws InterruptedException {
+    public void addNewSymptom_GetSymptomById_ExpectSymptomFound() throws InterruptedException { //Need to add symptom to make sure there is a symptom to retrieve first
+        // Arrange
+        SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        String uid = user.getUid(); // Get the logged-in user's unique ID
+        String expectedSymptomType = "GetSymptomById-Type";
+        String expectedSymptomLevel = "GetSymptomById-Level";
+        String expectedSymptomDescription = "GetSymptomById-Description";
+        Symptom symptomToAdd = new Symptom(expectedSymptomType, expectedSymptomLevel);
+        symptomToAdd.setSymptomDescription(expectedSymptomDescription);
+
+        LiveData<List<Symptom>> symptomsData = symptomViewModel.getSymptomsData();
+        LiveData<Symptom> selectedSymptomData = symptomViewModel.getSelectedSymptomData();
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptomToAdd);
+        // Add symptom
+        CountDownLatch addLatch = new CountDownLatch(1);
+        symptomAdded.whenComplete((result, error) -> {
+            if (result) {
+                Log.d(TAG, "Symptom added successfully");
+                Log.d("debug", "Symptom Name: " + symptomToAdd.getSymptomName());
+                Log.d("debug", "Symptom Level: " + symptomToAdd.getSymptomLevel());
+                Log.d("debug", "Record Date: " + symptomToAdd.getRecordDate()); //format different between local and stored
+                Log.d("debug", "Start Time: " + symptomToAdd.getStartTime()); //format different between local and stored
+                Log.d("debug", "End Time: " + symptomToAdd.getEndTime()); //format different between local and stored
+                Log.d("debug", "Description: " + symptomToAdd.getSymptomDescription());
+                Log.d("debug", "--------------------------------------------");
+                symptomViewModel.GetSymptomsByType(expectedSymptomType);
+                addLatch.countDown();
+            } else {
+                Log.d(TAG, "Symptom add failed: " + error.getMessage());
+            }
+        });
+        addLatch.await(10, TimeUnit.SECONDS);
+        // Get symptoms of expectedSymptomType
+        CountDownLatch getSymptomsByTypeLatch = new CountDownLatch(1);
+        CompletableFuture<Boolean> symptomListRetrieved = symptomViewModel.GetSymptomsByType(expectedSymptomType);
+        symptomListRetrieved.whenComplete((result, error) -> {
+                    if (result) {
+                        Log.d(TAG, "Symptom list retrieved by type successfully");
+                        getSymptomsByTypeLatch.countDown();
+                    } else {
+                        Log.d(TAG, "Symptom list retrieval by type failed: " + error.getMessage());
+                        fail("Symptom list retrieval by type failed");
+                    }
+        });
+        getSymptomsByTypeLatch.await(10, TimeUnit.SECONDS);
+        String lastAddedSymptomId = "";
+        if (symptomsData.getValue() == null && symptomsData.getValue().isEmpty()) {
+            fail("Symptoms List was empty, symptom add failed but returned true?");
+        }
+        for (Symptom s : symptomsData.getValue()) { //Find last added symptom
+            Log.d(TAG, "Symptom Name: " + s.getSymptomName() + " | Symptom Level: " + s.getSymptomLevel() + " | Symptom ID: " + s.getSymptomId());
+            if (s.getRecordDate().equals(symptomToAdd.getRecordDate())
+                    && s.getStartTime().equals(symptomToAdd.getStartTime())
+                    && s.getEndTime().equals(symptomToAdd.getEndTime())) {
+                Log.d(TAG, "Found last added symptom: " + s.getSymptomName());
+                lastAddedSymptomId = s.getSymptomId();
+            }
+        }
+        if (lastAddedSymptomId.isEmpty()) {
+            fail("Last added symptom not found");
+        }
+        CountDownLatch getSymptomByIdLatch = new CountDownLatch(1);
+        CompletableFuture<Boolean> symptomRetrievedSuccessfully = symptomViewModel.GetSymptomById(lastAddedSymptomId);
+        symptomRetrievedSuccessfully.whenComplete((result, error) -> {
+                    if (result) {
+                        Log.d(TAG, "Symptom retrieved successfully by ID");
+                        getSymptomByIdLatch.countDown();
+                    } else {
+                        Log.d(TAG, "Symptom retrieval by ID failed: " + error.getMessage());
+                        fail("Symptom retrieval by ID failed");
+                    }
+        });
+        getSymptomByIdLatch.await(10, TimeUnit.SECONDS);
+        Symptom retrievedSymptom = selectedSymptomData.getValue();
+        if (retrievedSymptom == null) {
+            fail("Retrieved symptom was null");
+        }
+        assertEquals(expectedSymptomType, retrievedSymptom.getSymptomName());
+        assertEquals(expectedSymptomLevel, retrievedSymptom.getSymptomLevel());
+        assertEquals(symptomToAdd.getRecordDate(), retrievedSymptom.getRecordDate());
+        assertEquals(symptomToAdd.getStartTime(), retrievedSymptom.getStartTime());
+        assertEquals(symptomToAdd.getEndTime(), retrievedSymptom.getEndTime());
+        assertEquals(symptomToAdd.getSymptomDescription(), retrievedSymptom.getSymptomDescription());
+    }
+
+    @Test
+    public void addNewSymptomOnCurrentDate_GetSymptomsByDateCurrentDate_ExpectListIncrease() throws InterruptedException {
         // Arrange
         SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
         Symptom symptom = new Symptom("testSymptom", "testLevel");
@@ -236,4 +400,50 @@ public class SymptomViewModelTests {
             fail("Symptoms list is null or empty");
         }
     }
+
+    // NOT WORKING, MAYBE RELATED TO EMULATOR, SAME SITUATION AS OTHER NOT WORKING ONE
+    @Test
+    public void addSymptom_UserNotSignedIn_ExpectReturnFalse() throws InterruptedException {
+        // Arrange
+        boolean expected = false;
+        SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
+        Symptom symptom = new Symptom("testSymptom", "testLevel");
+        FirebaseUser user = mAuth.getCurrentUser();
+        String uid = user.getUid(); // Get the logged-in user's unique ID
+        mAuth.signOut();
+        Log.d(TAG, "Signed out of unittestaccount");
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptom);
+        symptomAdded.whenComplete((result, error) -> {
+            if (error != null) {
+                fail("Symptom add failed: " + error.getMessage());
+            }
+            assertEquals(expected, result);
+        });
+    }
+
+    @Test // THIS ONE ISN'T WORKING YET
+    public void getSymptomsByDate_Tomorrow_ExpectEmptyList() throws InterruptedException {
+        // Arrange
+        String expectedMessage = "No symptoms found matching this date";
+        SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
+        // Act
+        LiveData<String> searchResultString = symptomViewModel.getSearchResultMessageData();
+        symptomViewModel.GetSymptomsByDate(LocalDate.now());
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                searchResultString.observeForever(new Observer<String>() {
+                    @Override
+                    public void onChanged(String resultMessage) {
+                        if (resultMessage != null && !resultMessage.isEmpty()) {
+                            Log.d(TAG, "Search result message: " + resultMessage);
+                            // Assert
+                            assertTrue(resultMessage.contains(expectedMessage));
+                        }
+                    }
+                });
+            }
+        });
+    }
+
 }

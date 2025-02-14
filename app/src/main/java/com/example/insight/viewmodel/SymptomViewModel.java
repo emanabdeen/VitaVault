@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.insight.model.Symptom;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -81,7 +82,7 @@ public class SymptomViewModel {
     public CompletableFuture<Boolean> AddSymptom(String uid, Symptom symptom){
         CompletableFuture<Boolean> symptomAdded = new CompletableFuture<>();
         // Extract details from LocalDate
-        LocalDate recordDate = symptom.getRecordDate();
+        LocalDate recordDate = (symptom.getRecordDate() != null) ? symptom.getRecordDate() : LocalDate.now();
 
         int dayOfMonth = recordDate.getDayOfMonth();
         String monthName = recordDate.getMonth().name(); // e.g., "JANUARY"
@@ -125,6 +126,12 @@ public class SymptomViewModel {
                                 Log.d(TAG, "Error adding document: " + task.getException().getMessage());
                                 symptomAdded.complete(false);
                             }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "Error adding document: " + e.getMessage());
+                            symptomAdded.complete(false);
                         }
                     });
         } catch (Exception e) {
@@ -188,7 +195,6 @@ public class SymptomViewModel {
                         searchResultMessageData.postValue("");
                         symptomsData.postValue(symptomsList);
                     } else {
-
                         searchResultMessageData.postValue("No symptoms found matching this date.");
                         symptomsData.postValue(symptomsList);
                     }
@@ -205,7 +211,7 @@ public class SymptomViewModel {
         String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
         // Reference to the user's symptoms collection
-        CollectionReference symptomsRef = FirebaseFirestore.getInstance()
+        CollectionReference symptomsRef = db
                 .collection("users")
                 .document(uid)
                 .collection("symptoms");
@@ -273,7 +279,7 @@ public class SymptomViewModel {
         String endDateStr = date2.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
         // Reference to the user's symptoms collection
-        CollectionReference symptomsRef = FirebaseFirestore.getInstance()
+        CollectionReference symptomsRef = db
                 .collection("users")
                 .document(uid)
                 .collection("symptoms");
@@ -338,10 +344,10 @@ public class SymptomViewModel {
                 });
     }
 
-    public void GetSymptomsByType(String symptomType) {
-
+    public CompletableFuture<Boolean> GetSymptomsByType(String symptomType) {
+        CompletableFuture<Boolean> symptomsRetrieved = new CompletableFuture<>();
         // Reference to the user's symptoms collection
-        CollectionReference symptomsRef = FirebaseFirestore.getInstance()
+        CollectionReference symptomsRef = db
                 .collection("users")
                 .document(uid)
                 .collection("symptoms");
@@ -386,28 +392,32 @@ public class SymptomViewModel {
                                 symptomsList.add(symptom);
 
                             } catch (DateTimeParseException e) {
-                                Log.e("Error", "Error parsing time: " + e.getMessage());
+                                Log.e(TAG, "Error parsing time: " + e.getMessage());
                             }
                         }
-                        Log.d("debug", "----------------------symptomList count>> " + symptomsList.size()); // number of symptoms in the list
+                        Log.d(TAG, "----------------------symptomList count>> " + symptomsList.size()); // number of symptoms in the list
 
                         searchResultMessageData.postValue("");
                         symptomsData.postValue(symptomsList);
+                        symptomsRetrieved.complete(true);
                     } else {
-                        searchResultMessageData.postValue("No movies found matching your search.");
+                        searchResultMessageData.postValue("No symptoms found matching your search.");
                         symptomsData.postValue(symptomsList);
+                        symptomsRetrieved.complete(false);
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error retrieving documents: " + e.getMessage());
+                    Log.e(TAG, "Error retrieving documents: " + e.getMessage());
                     symptomsData.postValue(null);// Handle failure
+                    symptomsRetrieved.complete(false);
                 });
+        return symptomsRetrieved;
     }
 
-    public void GetSymptomById(String symptomId) {
-
+    public CompletableFuture<Boolean> GetSymptomById(String symptomId) {
+        CompletableFuture<Boolean> symptomRetrieved = new CompletableFuture<>();
         // Reference to the user's symptoms collection
-        CollectionReference symptomsRef = FirebaseFirestore.getInstance()
+        CollectionReference symptomsRef = db
                 .collection("users")
                 .document(uid)
                 .collection("symptoms");
@@ -448,26 +458,29 @@ public class SymptomViewModel {
                             //create symptom object with the retrieved data
                             selectedSymptom = new Symptom(recordDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
                             selectedSymptom.setSymptomId(symptomId);
-
                         } catch (DateTimeParseException e) {
                             Log.e("Error", "Error parsing time: " + e.getMessage());
+                            symptomRetrieved.complete(false);
                         }
 
                         searchResultMessageData.postValue("");
                         selectedSymptomData.postValue(selectedSymptom);
-
+                        symptomRetrieved.complete(true);
                     } else {
                         // Document does not exist
                         searchResultMessageData.postValue("symptom is not found");
                         selectedSymptomData.postValue(null);
                         Log.e("Error", "No such document");
+                        symptomRetrieved.complete(false);
                     }
                 })
                 .addOnFailureListener(e -> {
                     // Handle errors
                     Log.e("Error", "Error getting document: " + e.getMessage());
                     selectedSymptomData.postValue(null);
+                    symptomRetrieved.complete(false);
                 });
+        return symptomRetrieved;
     }
 
     public void UpdateSymptom(String uid, String symptomId, Symptom symptom) {

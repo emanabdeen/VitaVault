@@ -11,11 +11,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginRegisterHelperTests {
     @Test
-    public void addition_isCorrect() {
-        assertEquals(4, 2 + 2);
-    }
-
-    @Test
     public void validatePassword_ValidPassword_ExpectTrue(){
         // Arrange
         String testPassword = "AAbbcc123!";
@@ -41,7 +36,7 @@ public class LoginRegisterHelperTests {
     public void validateNewAndConfirmPassword_MatchingInputs_ExpectTrue(){
         // Arrange
         String testPassword = "AAbbcc123!";
-        String testConfirmPassword = "AAbbcc12!";
+        String testConfirmPassword = "AAbbcc123!";
         Boolean expected = true;
         LoginRegisterHelper lrh = new LoginRegisterHelper();
         // Act
