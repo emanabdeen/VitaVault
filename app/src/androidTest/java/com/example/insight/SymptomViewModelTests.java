@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -273,36 +274,64 @@ public class SymptomViewModelTests {
         String uid = user.getUid(); // Get the logged-in user's unique ID
         String expectedSymptomType = "GetSymptomById-Type";
         String expectedSymptomLevel = "GetSymptomById-Level";
-        String expectedSymptomDescription = "GetSymptomById-Description";
-        Symptom symptomToAdd = new Symptom(expectedSymptomType, expectedSymptomLevel);
-        symptomToAdd.setSymptomDescription(expectedSymptomDescription);
+        String expectedSymptomDescription = UUID.randomUUID().toString();
+        Symptom symptomToAdd = new Symptom(expectedSymptomType, expectedSymptomLevel, expectedSymptomDescription);
 
         LiveData<List<Symptom>> symptomsData = symptomViewModel.getSymptomsData();
         LiveData<Symptom> selectedSymptomData = symptomViewModel.getSelectedSymptomData();
-        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptomToAdd);
+        //
         // Add symptom
-        CountDownLatch addLatch = new CountDownLatch(1);
-        symptomAdded.whenComplete((result, error) -> {
-            if (result) {
-                Log.d(TAG, "Symptom added successfully");
-                Log.d("debug", "Symptom Name: " + symptomToAdd.getSymptomName());
-                Log.d("debug", "Symptom Level: " + symptomToAdd.getSymptomLevel());
-                Log.d("debug", "Record Date: " + symptomToAdd.getRecordDate()); //format different between local and stored
-                Log.d("debug", "Start Time: " + symptomToAdd.getStartTime()); //format different between local and stored
-                Log.d("debug", "End Time: " + symptomToAdd.getEndTime()); //format different between local and stored
-                Log.d("debug", "Description: " + symptomToAdd.getSymptomDescription());
-                Log.d("debug", "--------------------------------------------");
-                symptomViewModel.GetSymptomsByType(expectedSymptomType);
-                addLatch.countDown();
-            } else {
-                Log.d(TAG, "Symptom add failed: " + error.getMessage());
+        //CountDownLatch addLatch = new CountDownLatch(1);
+        //symptomAdded.whenComplete((result, error) -> {
+//            if (result) {
+//                Log.d(TAG, "Symptom added successfully");
+//                Log.d("debug", "Symptom Name: " + symptomToAdd.getSymptomName());
+//                Log.d("debug", "Symptom Level: " + symptomToAdd.getSymptomLevel());
+//                Log.d("debug", "Record Date: " + symptomToAdd.getRecordDate()); //format different between local and stored
+//                Log.d("debug", "Start Time: " + symptomToAdd.getStartTime()); //format different between local and stored
+//                Log.d("debug", "End Time: " + symptomToAdd.getEndTime()); //format different between local and stored
+//                Log.d("debug", "Description: " + symptomToAdd.getSymptomDescription());
+//                Log.d("debug", "--------------------------------------------");
+//                symptomViewModel.GetSymptomsByType(expectedSymptomType);
+//                addLatch.countDown();
+//            } else {
+//                Log.d(TAG, "Symptom add failed: " + error.getMessage());
+//            }
+//        });
+        //addLatch.await(10, TimeUnit.SECONDS);
+        // Get symptoms of expectedSymptomType
+        CountDownLatch getSymptomsByTypeLatch = new CountDownLatch(3);
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptomToAdd)
+                .whenComplete((result, error) -> {
+                    if (error != null) {
+                        fail("Symptom add failed: " + error.getMessage());
+                    }
+                    if (result) {
+                        Log.d(TAG, "Symptom added successfully");
+                    }
+                    getSymptomsByTypeLatch.countDown();
+        });
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                symptomsData.observeForever(new Observer<List<Symptom>>() {
+                    @Override
+                    public void onChanged(List<Symptom> symptoms) {
+                        if (symptoms != null) {
+                            Log.d(TAG, "Selected symptom updated: " + symptoms.size() + " symptoms found.");
+                            for (Symptom s : symptoms) {
+                                Log.d(TAG, "Symptom Name: " + s.getSymptomName() + ", Symptom description: " + s.getSymptomDescription());
+                            }
+                        } else {
+                          Log.d(TAG, "No symptoms found");
+                        }
+                        getSymptomsByTypeLatch.countDown(); // decrement the latch count
+                    }
+                });
             }
         });
-        addLatch.await(10, TimeUnit.SECONDS);
-        // Get symptoms of expectedSymptomType
-        CountDownLatch getSymptomsByTypeLatch = new CountDownLatch(1);
-        CompletableFuture<Boolean> symptomListRetrieved = symptomViewModel.GetSymptomsByType(expectedSymptomType);
-        symptomListRetrieved.whenComplete((result, error) -> {
+        CompletableFuture<Boolean> symptomListRetrieved = symptomViewModel.GetSymptomsByType(expectedSymptomType)
+                .whenComplete((result, error) -> {
                     if (result) {
                         Log.d(TAG, "Symptom list retrieved by type successfully");
                         getSymptomsByTypeLatch.countDown();
@@ -312,15 +341,15 @@ public class SymptomViewModelTests {
                     }
         });
         getSymptomsByTypeLatch.await(10, TimeUnit.SECONDS);
+        assertTrue(symptomAdded.isDone());
+        assertTrue(symptomListRetrieved.isDone());
         String lastAddedSymptomId = "";
         if (symptomsData.getValue() == null && symptomsData.getValue().isEmpty()) {
             fail("Symptoms List was empty, symptom add failed but returned true?");
         }
         for (Symptom s : symptomsData.getValue()) { //Find last added symptom
             Log.d(TAG, "Symptom Name: " + s.getSymptomName() + " | Symptom Level: " + s.getSymptomLevel() + " | Symptom ID: " + s.getSymptomId());
-            if (s.getRecordDate().equals(symptomToAdd.getRecordDate())
-                    && s.getStartTime().equals(symptomToAdd.getStartTime())
-                    && s.getEndTime().equals(symptomToAdd.getEndTime())) {
+            if (s.getSymptomDescription().equals(symptomToAdd.getSymptomDescription())) {
                 Log.d(TAG, "Found last added symptom: " + s.getSymptomName());
                 lastAddedSymptomId = s.getSymptomId();
             }
@@ -328,9 +357,26 @@ public class SymptomViewModelTests {
         if (lastAddedSymptomId.isEmpty()) {
             fail("Last added symptom not found");
         }
-        CountDownLatch getSymptomByIdLatch = new CountDownLatch(1);
-        CompletableFuture<Boolean> symptomRetrievedSuccessfully = symptomViewModel.GetSymptomById(lastAddedSymptomId);
-        symptomRetrievedSuccessfully.whenComplete((result, error) -> {
+        CountDownLatch getSymptomByIdLatch = new CountDownLatch(2);
+        // Get last added symptom
+        Log.d(TAG, "Getting symptom by ID: " + lastAddedSymptomId);
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+            @Override
+            public void run() {
+                selectedSymptomData.observeForever(new Observer<Symptom>() {
+                    @Override
+                    public void onChanged(Symptom symptom) {
+                        if (symptom != null) {
+                            Log.d(TAG, "Selected symptom updated: " + symptom.getSymptomId());
+                            Log.d(TAG, "Symptom Name: " + symptom.getSymptomName() + ", Symptom Level: " + symptom.getSymptomLevel());
+                        }
+                        getSymptomByIdLatch.countDown(); // decrement the latch count
+                    }
+                });
+            }
+        });
+        CompletableFuture<Boolean> symptomRetrievedSuccessfully = symptomViewModel.GetSymptomById(lastAddedSymptomId).
+                whenComplete((result, error) -> {
                     if (result) {
                         Log.d(TAG, "Symptom retrieved successfully by ID");
                         getSymptomByIdLatch.countDown();
@@ -340,6 +386,7 @@ public class SymptomViewModelTests {
                     }
         });
         getSymptomByIdLatch.await(10, TimeUnit.SECONDS);
+        assertTrue(symptomRetrievedSuccessfully.isDone());
         Symptom retrievedSymptom = selectedSymptomData.getValue();
         if (retrievedSymptom == null) {
             fail("Retrieved symptom was null");

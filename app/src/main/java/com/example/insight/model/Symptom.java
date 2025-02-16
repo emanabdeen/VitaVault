@@ -2,6 +2,7 @@ package com.example.insight.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class Symptom {
@@ -16,7 +17,7 @@ public class Symptom {
 
     // Default constructor: sets recordDate to today, startTime & endTime to now
     public Symptom() {
-        this.recordDate = LocalDate .now(); // Sets to current date
+        this.recordDate = LocalDate.now(); // Sets to current date
         this.startTime = LocalTime.now(); // Sets to current time
         this.endTime = LocalTime.now(); // Default to now
         this.symptomName = ""; //will be updated by subclass
@@ -26,7 +27,7 @@ public class Symptom {
 
     // Default constructor: sets recordDate to today, startTime & endTime to now
     public Symptom(String symptomName, String symptomLevel) {
-        this.recordDate = LocalDate .now(); // Sets to current date
+        this.recordDate = LocalDate.now(); // Sets to current date
         this.startTime = LocalTime.now(); // Sets to current time
         this.endTime = LocalTime.now(); // Default to now
         this.symptomName = symptomName;
@@ -35,7 +36,7 @@ public class Symptom {
     }
 
     public Symptom(String symptomName, String symptomLevel, String symptomDescription) {
-        this.recordDate = LocalDate .now(); // Sets to current date
+        this.recordDate = LocalDate.now(); // Sets to current date
         this.startTime = LocalTime.now(); // Sets to current time
         this.endTime = LocalTime.now(); // Default to now
         this.symptomName = symptomName;
@@ -46,8 +47,8 @@ public class Symptom {
     // Constructor with custom values no description is required
     public Symptom(LocalDate recordDate, LocalTime startTime, LocalTime endTime, String symptomName, String symptomLevel) {
         this.recordDate = recordDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startTime = startTime.truncatedTo(ChronoUnit.MINUTES);
+        this.endTime = endTime.truncatedTo(ChronoUnit.MINUTES);
         this.symptomName = symptomName;
         this.symptomLevel = symptomLevel;
         this.symptomDescription = "";
@@ -56,8 +57,8 @@ public class Symptom {
     // Constructor with custom values
     public Symptom(LocalDate recordDate, LocalTime startTime, LocalTime endTime, String symptomName, String symptomLevel, String symptomDescription) {
         this.recordDate = recordDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startTime = startTime.truncatedTo(ChronoUnit.MINUTES);
+        this.endTime = endTime.truncatedTo(ChronoUnit.MINUTES);
         this.symptomName = symptomName;
         this.symptomLevel = symptomLevel;
         this.symptomDescription = symptomDescription;
@@ -73,7 +74,7 @@ public class Symptom {
     }
 
     public LocalTime getStartTime() {
-        return startTime;
+        return startTime.truncatedTo(ChronoUnit.MINUTES);
     }
 
     public void setStartTime(LocalTime startTime) {
@@ -81,7 +82,7 @@ public class Symptom {
     }
 
     public LocalTime getEndTime() {
-        return endTime;
+        return endTime.truncatedTo(ChronoUnit.MINUTES);
     }
 
     public void setEndTime(LocalTime endTime) {

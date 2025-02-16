@@ -136,6 +136,11 @@ public class SymptomViewModel {
                     });
         } catch (Exception e) {
             Log.e(TAG, "Firestore: Error adding document: " + e.getMessage());
+            symptomAdded.complete(false);
+        }
+        if (!symptomAdded.isDone()) {
+            Log.e(TAG, "Error: The task never completed.");
+            symptomAdded.complete(false);
         }
         return symptomAdded; //update the symptomslist livedata?
     }
