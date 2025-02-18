@@ -3,12 +3,16 @@ package com.example.insight.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -54,6 +58,9 @@ public class VitalsActivity extends AppCompatActivity {
             finish();
             startActivity(new Intent(VitalsActivity.this, Login.class));
         }
+
+        Toolbar toolbar=binding.toolbar;
+        setSupportActionBar(toolbar);
 
 
         // -------------------------------Add Symptom Button --------------------------------------------
@@ -107,6 +114,27 @@ public class VitalsActivity extends AppCompatActivity {
         });
 
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.sittings){
+            Toast.makeText(this,"Setting is clicked",Toast.LENGTH_SHORT).show();
+        }
+        if (id == R.id.prefrences){
+            Toast.makeText(this,"prefrences is clicked",Toast.LENGTH_SHORT).show();
+        }
+        return true;
+    }
+
 
     private void AddVital(Vital vital){
         vitalViewModel=new VitalViewModel();

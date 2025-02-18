@@ -3,12 +3,17 @@ package com.example.insight.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
+import com.example.insight.R;
 import com.example.insight.databinding.ActivityMainBinding;
 
 import com.example.insight.model.Symptom;
@@ -47,6 +52,12 @@ public class MainActivity extends AppCompatActivity {
             finish();
             startActivity(new Intent(MainActivity.this, Login.class));
         }
+        //-------------------Toolbar-----------
+
+        Toolbar toolbar=binding.toolbar;
+        setSupportActionBar(toolbar);
+
+
 
         //-------------------------------------logout button ----------------------------
         binding.btnLogout.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         binding.btnGoToVitals.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, VitalsActivity.class));
+                startActivity(new Intent(MainActivity.this, VitalsMainActivity.class));
             }
         });
 
@@ -169,6 +180,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.sittings){
+            Toast.makeText(this,"Setting is clicked",Toast.LENGTH_SHORT).show();
+        }
+        if (id == R.id.prefrences){
+            Toast.makeText(this,"prefrences is clicked",Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 
     /** method to add a new symptom to the system. required parameters that will be collected from the page as follow:

@@ -15,6 +15,12 @@
         android:theme="@style/Theme.Insight"
         tools:targetApi="31">
         <activity
+            android:name=".view.VitalsMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.IntroActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.VitalsActivity"
             android:exported="false" />
         <activity

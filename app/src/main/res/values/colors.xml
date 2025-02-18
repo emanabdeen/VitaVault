@@ -19,6 +19,8 @@
     <color name="primary2_dark">#213F30</color>
     <color name="primary2_light">#458464</color> 2C5641
 
+    <color name="shadow_color_light">#80C12121</color>
+
 
 
 </resources>
