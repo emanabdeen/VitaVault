@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     FirebaseAuth mAuth;
     FirebaseUser user;
-    Button btn;
+    Button btn, ocrTestButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         btn = binding.button;
+        ocrTestButton = binding.ocrTest;
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -48,6 +49,13 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     Toast.makeText(getApplicationContext(), "You aren't logged in yet!", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+        ocrTestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentObj = new Intent(getApplicationContext(), IngredientsScan.class);
+                startActivity(intentObj);
             }
         });
     }
