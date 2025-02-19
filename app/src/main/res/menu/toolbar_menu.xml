@@ -9,8 +9,4 @@
         android:title="Prefrences"
         android:id="@+id/prefrences"/>
 
-
-
-
-
 </menu>

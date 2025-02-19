@@ -12,6 +12,9 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
 
+        <item name="android:textSize">15sp</item>
+
+
 
         <!-- Set custom splash screen icon (replace with your image) -->
         <!--  <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>-->
@@ -23,6 +26,16 @@
 
     <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="backgroundTint">@color/accent</item>
+    </style>
+
+    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemShapeAppearanceOverlay">@style/SelectedItemShape</item>
+        <item name="itemRippleColor">@null</item> <!-- Disables ripple effect if needed -->
+
+    </style>
+    <style name="SelectedItemShape" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item> <!-- Rounded corners -->
+        <item name="cornerSize">50%</item> <!-- Adjust corner radius -->
     </style>
 
     <style name="Theme.Insight" parent="Base.Theme.Insight" />

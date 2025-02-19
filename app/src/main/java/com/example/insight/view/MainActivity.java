@@ -54,32 +54,9 @@ public class MainActivity extends AppCompatActivity {
         }
         //-------------------Toolbar-----------
 
-        Toolbar toolbar=binding.toolbar;
+        Toolbar toolbar=binding.toolbarLayout.toolbar;
         setSupportActionBar(toolbar);
 
-
-
-        //-------------------------------------logout button ----------------------------
-        binding.btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mAuth = FirebaseAuth.getInstance();
-                if (user != null) {
-                    mAuth.signOut();
-                    finish();
-                    startActivity(new Intent(MainActivity.this, Login.class));
-                }else{
-                    Toast.makeText(getApplicationContext(), "You aren't logged in yet!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        binding.btnGoToVitals.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, VitalsMainActivity.class));
-            }
-        });
 
         // -------------------------------Add Symptom Button --------------------------------------------
         binding.btnSymptom.setOnClickListener(new View.OnClickListener() {

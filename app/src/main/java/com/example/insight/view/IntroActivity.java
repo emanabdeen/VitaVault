@@ -27,7 +27,7 @@ public class IntroActivity extends AppCompatActivity {
         binding.btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentObj = new Intent(getApplicationContext(), MainActivity.class); //Navigate to page
+                Intent intentObj = new Intent(getApplicationContext(), DashboardActivity.class); //Navigate to page
                 startActivity(intentObj);
                 finish();
             }

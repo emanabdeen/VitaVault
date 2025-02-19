@@ -15,6 +15,10 @@
         android:theme="@style/Theme.Insight"
         tools:targetApi="31">
         <activity
+            android:name=".view.MainActivity"
+            android:exported="true" />
+
+        <activity
             android:name=".view.VitalsMainActivity"
             android:exported="false" />
         <activity
@@ -24,7 +28,7 @@
             android:name=".view.VitalsActivity"
             android:exported="false" />
         <activity
-            android:name=".view.MainActivity"
+            android:name=".view.DashboardActivity"
             android:exported="true">
 
             <!-- to set this page as a first page -->
