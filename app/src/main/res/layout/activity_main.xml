@@ -8,6 +8,7 @@
     tools:context=".view.MainActivity">
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"
@@ -48,9 +49,10 @@
         android:id="@+id/ocrTest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="13dp"
         android:text="OCR Test"
-        tools:layout_editor_absoluteX="206dp"
-        tools:layout_editor_absoluteY="167dp" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/button"
+        app:layout_constraintStart_toEndOf="@+id/button" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
