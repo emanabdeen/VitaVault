@@ -1,8 +1,9 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Insight" parent="Theme.Material3.DayNight.NoActionBar">
+
         <!-- Primary brand color -  light theme here. -->
-        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimary">@color/primary_light</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
 
@@ -15,7 +16,6 @@
         <item name="android:textSize">15sp</item>
 
 
-
         <!-- Set custom splash screen icon (replace with your image) -->
         <!--  <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>-->
         <item name="android:windowSplashScreenBrandingImage">@drawable/vitavault_splash_250</item>
@@ -26,16 +26,6 @@
 
     <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="backgroundTint">@color/accent</item>
-    </style>
-
-    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="itemShapeAppearanceOverlay">@style/SelectedItemShape</item>
-        <item name="itemRippleColor">@null</item> <!-- Disables ripple effect if needed -->
-
-    </style>
-    <style name="SelectedItemShape" parent="ShapeAppearance.MaterialComponents.SmallComponent">
-        <item name="cornerFamily">rounded</item> <!-- Rounded corners -->
-        <item name="cornerSize">50%</item> <!-- Adjust corner radius -->
     </style>
 
     <style name="Theme.Insight" parent="Base.Theme.Insight" />

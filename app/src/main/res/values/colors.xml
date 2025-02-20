@@ -2,7 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="buttonsColor">#C8963B</color>
+    <color name="accent_light">#C8963B</color>
     <color name="liteGray">#898787</color>
 
 
