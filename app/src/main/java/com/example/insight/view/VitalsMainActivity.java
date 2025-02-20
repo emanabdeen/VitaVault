@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -18,6 +19,7 @@ import com.example.insight.R;
 import com.example.insight.databinding.ActivityVitalsBinding;
 import com.example.insight.databinding.ActivityVitalsMainBinding;
 import com.example.insight.model.Vital;
+import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.VitalViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,7 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VitalsMainActivity extends AppCompatActivity {
+public class VitalsMainActivity extends DrawerBaseActivity {
     ActivityVitalsMainBinding binding;
     FirebaseAuth mAuth;
     FirebaseUser user;
@@ -37,7 +39,8 @@ public class VitalsMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityVitalsMainBinding.inflate(getLayoutInflater());
-        this.setContentView(binding.getRoot());
+        setContentView(binding.getRoot());
+        allocateActivityTitle("Vitals");
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -47,28 +50,16 @@ public class VitalsMainActivity extends AppCompatActivity {
             startActivity(new Intent(VitalsMainActivity.this, Login.class));
         }
 
-        Toolbar toolbar=binding.toolbar;
-        setSupportActionBar(toolbar);
+        binding.cardTemperature.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentObj = new Intent(getApplicationContext(), VitalsActivity.class);
+                intentObj.putExtra("vitalType",VitalsCategories.BodyTemperature.toString());// register status to the second page
+                startActivity(intentObj);
+            }
+        });
 
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.sittings){
-            Toast.makeText(this,"Setting is clicked",Toast.LENGTH_SHORT).show();
-        }
-        if (id == R.id.prefrences){
-            Toast.makeText(this,"prefrences is clicked",Toast.LENGTH_SHORT).show();
-        }
-        return true;
     }
 
 }

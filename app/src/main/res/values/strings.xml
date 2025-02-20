@@ -4,10 +4,16 @@
     <string name="login">LOGIN</string>
     <string name="enter_email_hint">Enter your email</string>
     <string name="password">Password</string>
+    <string name="open">Open Drawer</string>
+    <string name="close">Close Drawer</string>
     <string name="home">Home</string>
     <string name="report">Report</string>
     <string name="settings">Settings</string>
-    <string name="account">Accuont</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="account">Account</string>
+    <string name="symptoms">Symptoms</string>
+    <string name="add_symptom">➕ Add Symptom</string>
+    <string name="list_symptoms">📜 List Symptoms</string>
+    <string name="logout">Logout</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
 </resources>

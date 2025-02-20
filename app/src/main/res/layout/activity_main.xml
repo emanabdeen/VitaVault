@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.MainActivity"
-    android:background="@drawable/vitavault_page2">
+    android:background="@drawable/vitavault_page_background3">
 
 
     <TextView

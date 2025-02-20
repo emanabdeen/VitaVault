@@ -15,6 +15,9 @@
 
         <item name="android:textSize">15sp</item>
 
+        <!-- This changes the color of icons, including the drawer icon -->
+        <item name="colorControlNormal">#FFFFFF</item>
+
 
         <!-- Set custom splash screen icon (replace with your image) -->
         <!--  <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>-->

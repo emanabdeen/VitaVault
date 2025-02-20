@@ -5,67 +5,66 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.VitalsActivity"
-    android:background="@drawable/vitavault_page2b_trans">
+    android:background="@drawable/vitavault_page_background3"
+    tools:context=".view.VitalsActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/primary_light"
-        app:logo="@drawable/vitavault_icon_back30"
-        app:title="@string/app_name"
-        app:titleMarginStart="30dp"
-        app:titleTextColor="@color/white"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fragmentLayout"
+        android:layout_width="394dp"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3">
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragmentTabs"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0"
-        android:layout_marginTop="20dp">
+        app:layout_constraintBottom_toTopOf="@+id/fragmentLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1">
 
         <Button
             android:layout_width="100dp"
             android:layout_height="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.2"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintHorizontal_bias="0.2"/>
+            app:layout_constraintTop_toTopOf="parent" />
+
         <Button
             android:layout_width="100dp"
             android:layout_height="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.8"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintHorizontal_bias="0.8"/>
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragmentLayout"
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnAdd"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:background="@drawable/button_custom1"
+        android:drawableStart="@drawable/baseline_add"
+        android:paddingStart="5dp"
+        android:text="Add"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/fragmentTabs"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.806"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragmentTabs"
-        app:layout_constraintVertical_bias="0.05">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.345" />
 
     <Button
         android:id="@+id/btnVital"
@@ -74,10 +73,10 @@
         android:text="Add Vital"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.076"
+        app:layout_constraintHorizontal_bias="0.817"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.556" />
+        app:layout_constraintVertical_bias="0.654" />
 
     <Button
         android:id="@+id/btnGetVitalssByDate"
@@ -86,10 +85,10 @@
         android:text="Get All Vitals by Date"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.117"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.642" />
+        app:layout_constraintVertical_bias="0.683" />
 
     <Button
         android:id="@+id/btnGetVitalsByType"
@@ -98,10 +97,10 @@
         android:text="Get All vitals By Type"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.082"
+        app:layout_constraintHorizontal_bias="0.072"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.739" />
+        app:layout_constraintVertical_bias="0.86" />
 
     <Button
         android:id="@+id/btnGetVitalById"
@@ -110,10 +109,10 @@
         android:text="Get vital By Id"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.062"
+        app:layout_constraintHorizontal_bias="0.899"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.856" />
+        app:layout_constraintVertical_bias="0.816" />
 
     <Button
         android:id="@+id/btnGetvitalsInRange"
@@ -122,7 +121,7 @@
         android:text="Get vitals in Range dates"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.093"
+        app:layout_constraintHorizontal_bias="0.082"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976" />
@@ -133,11 +132,11 @@
         android:layout_height="wrap_content"
         android:text="Update"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.922"
+        app:layout_constraintEnd_toStartOf="@+id/btnGetVitalById"
+        app:layout_constraintHorizontal_bias="0.382"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.846" />
+        app:layout_constraintVertical_bias="0.77" />
 
     <Button
         android:id="@+id/btnDelete"
@@ -146,41 +145,10 @@
         android:text="Delet Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.91"
+        app:layout_constraintHorizontal_bias="0.881"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.961" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-thin"
-        android:text="~vital name~"
-        android:textColor="@color/white"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.089"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.1" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:layout_width="80dp"
-        android:layout_height="40dp"
-        android:background="@drawable/button_custom1"
-        android:drawableStart="@drawable/baseline_add"
-        android:paddingStart="5dp"
-        android:text="Add"
-        android:textColor="@color/white"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintVertical_bias="0.02" />
+        app:layout_constraintVertical_bias="0.945" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

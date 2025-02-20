@@ -15,9 +15,20 @@
         android:theme="@style/Theme.Insight"
         tools:targetApi="31">
         <activity
+            android:name=".view.AddVital"
+            android:exported="false" />
+        <activity
+            android:name=".view.ModeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.DrawerBaseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.SymptomActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.MainActivity"
             android:exported="true" />
-
         <activity
             android:name=".view.VitalsMainActivity"
             android:exported="false" />

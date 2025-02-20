@@ -6,9 +6,9 @@
     <color name="liteGray">#898787</color>
 
 
-    <color name="primary">#104561</color>
+    <color name="primary">#165E85</color>
     <color name="primary_dark">#0B3142</color>
-    <color name="primary_light">#165E85</color>
+    <color name="primary_light">#104561</color>
     <color name="accent">#D17B0F</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
@@ -20,6 +20,8 @@
     <color name="primary2_light">#458464</color> 2C5641
 
     <color name="shadow_color_light">#80C12121</color>
+
+    <color name="background_light">#F8F9FA</color>
 
 
 

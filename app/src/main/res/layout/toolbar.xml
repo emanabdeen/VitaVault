@@ -15,8 +15,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:logo="@drawable/vitavault_icon_back30"
+        app:navigationIconTint="@color/white"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="@string/app_name"
+        app:title="old"
         app:titleMarginStart="30dp"
         app:titleTextColor="@color/white" />
 </LinearLayout>

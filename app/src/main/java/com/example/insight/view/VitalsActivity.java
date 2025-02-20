@@ -43,6 +43,7 @@ public class VitalsActivity extends AppCompatActivity {
     private VitalViewModel vitalViewModel;
     List<Vital> vitalsList = new ArrayList<>();
     Vital vital = new Vital();
+    String vitalType;
 
 
     @Override
@@ -59,8 +60,21 @@ public class VitalsActivity extends AppCompatActivity {
             startActivity(new Intent(VitalsActivity.this, Login.class));
         }
 
-        Toolbar toolbar=binding.toolbar;
-        setSupportActionBar(toolbar);
+        //get the vital type from the intent
+        Intent intentObject = getIntent();
+        vitalType = intentObject.getStringExtra("vitalType");
+
+        // -------------------------------Add Button --------------------------------------------
+        binding.btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intentObj = new Intent(getApplicationContext(), AddVital.class);
+                intentObj.putExtra("vitalType",vitalType);// register status to the second page
+                startActivity(intentObj);
+            }
+        });
+
 
 
         // -------------------------------Add Symptom Button --------------------------------------------
