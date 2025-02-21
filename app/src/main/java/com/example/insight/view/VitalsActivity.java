@@ -35,7 +35,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VitalsActivity extends AppCompatActivity {
+public class VitalsActivity extends DrawerBaseActivity {
 
     ActivityVitalsBinding binding;
     FirebaseAuth mAuth;
@@ -44,13 +44,14 @@ public class VitalsActivity extends AppCompatActivity {
     List<Vital> vitalsList = new ArrayList<>();
     Vital vital = new Vital();
     String vitalType;
+    String unit;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityVitalsBinding.inflate(getLayoutInflater());
-        this.setContentView(binding.getRoot());
+        setContentView(binding.getRoot());
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -63,6 +64,14 @@ public class VitalsActivity extends AppCompatActivity {
         //get the vital type from the intent
         Intent intentObject = getIntent();
         vitalType = intentObject.getStringExtra("vitalType");
+        unit = intentObject.getStringExtra("unit");
+        String title = intentObject.getStringExtra("title");
+        String image = intentObject.getStringExtra("image");
+
+        binding.textViewTitle.setText(title);
+        String imageName = image;
+        int imageResId = getResources().getIdentifier(imageName.replace("@drawable/", ""), "drawable", getPackageName());
+        binding.image.setImageResource(imageResId);
 
         // -------------------------------Add Button --------------------------------------------
         binding.btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -71,11 +80,12 @@ public class VitalsActivity extends AppCompatActivity {
 
                 Intent intentObj = new Intent(getApplicationContext(), AddVital.class);
                 intentObj.putExtra("vitalType",vitalType);// register status to the second page
+                intentObj.putExtra("unit",unit);
+                intentObj.putExtra("title", title);
+                intentObj.putExtra("image", image);
                 startActivity(intentObj);
             }
         });
-
-
 
         // -------------------------------Add Symptom Button --------------------------------------------
         binding.btnVital.setOnClickListener(new View.OnClickListener() {

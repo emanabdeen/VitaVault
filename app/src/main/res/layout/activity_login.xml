@@ -79,6 +79,7 @@
         android:paddingHorizontal="10dp"
         android:text="test@test.com"
         android:textColorHint="@color/liteGray"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.359"

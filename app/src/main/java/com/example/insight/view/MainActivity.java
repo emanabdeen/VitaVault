@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends DrawerBaseActivity {
 
     ActivityMainBinding binding;
     FirebaseAuth mAuth;
@@ -43,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        this.setContentView(binding.getRoot());
+        setContentView(binding.getRoot());
+        allocateActivityTitle("Symptoms");
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -52,10 +53,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
             startActivity(new Intent(MainActivity.this, Login.class));
         }
-        //-------------------Toolbar-----------
 
-        Toolbar toolbar=binding.toolbarLayout.toolbar;
-        setSupportActionBar(toolbar);
 
 
         // -------------------------------Add Symptom Button --------------------------------------------

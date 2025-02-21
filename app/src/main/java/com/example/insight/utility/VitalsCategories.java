@@ -31,5 +31,17 @@ public enum VitalsCategories {
         throw new IllegalArgumentException("No enum constant with text: " + text);
     }
 
+    // Method to check if a string is a valid enum value
+    public static boolean isValidVitalCategory(String text) {
+        if (text != null) {
+            for (VitalsCategories vc : VitalsCategories.values()) {
+                if (vc.getVital().equalsIgnoreCase(text.trim())) {
+                    return true; // The string is a valid enum value
+                }
+            }
+        }
+        return false; // The string is not a valid enum value
+    }
+
 
 }

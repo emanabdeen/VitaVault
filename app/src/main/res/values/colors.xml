@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="accent_light">#C8963B</color>
     <color name="liteGray">#898787</color>
+    <color name="error">#FB4E30</color>
 
 
     <color name="primary">#165E85</color>

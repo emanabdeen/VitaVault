@@ -71,6 +71,7 @@
         android:focusedByDefault="true"
         android:hint="@string/enter_email_hint"
         android:inputType="textEmailAddress"
+        android:textStyle="bold"
         android:minHeight="48dp"
         android:paddingHorizontal="10dp"
 

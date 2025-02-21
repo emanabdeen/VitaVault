@@ -2,139 +2,200 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/vitavault_page_background3"
     android:orientation="vertical"
-    android:padding="10dp"
     tools:context=".view.AddVital">
-
-    <!-- Back Button -->
-    <!--    <ImageButton-->
-    <!--        android:id="@+id/btnBack"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:src="@drawable/baseline_arrow_back_24"-->
-    <!--        android:background="?attr/selectableItemBackground"-->
-    <!--        android:contentDescription="Back" />-->
-
-    <!-- Category Label -->
-    <!--    <TextView-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Category"-->
-    <!--        android:textColor="#104460"-->
-    <!--        android:textStyle="bold" />-->
-
-    <!-- Category Dropdown -->
-    <!--    <Spinner-->
-    <!--        android:id="@+id/spinnerCategory"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:background="@drawable/spinner_background"-->
-    <!--        android:padding="8dp" />-->
-
-    <!-- Date Label -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date"
-        android:textColor="#104460"
-        android:textStyle="bold" />
-
-    <!-- Date Picker -->
-    <EditText
-        android:id="@+id/editTextDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/edit_text_background"
-        android:clickable="true"
-        android:focusable="false"
-        android:inputType="none"
-        android:padding="8dp" />
-
-    <!-- Start Hour Label -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Hour"
-        android:textColor="#104460"
-        android:textStyle="bold" />
-
-    <!-- Start Hour -->
-    <EditText
-        android:id="@+id/editTextStartHour"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/edit_text_background"
-        android:clickable="true"
-        android:focusable="false"
-        android:inputType="none"
-        android:padding="8dp" />
-
-    <!-- End Hour Label -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="End Hour"
-        android:textColor="#104460"
-        android:textStyle="bold" />
-
-    <!-- End Hour -->
-    <EditText
-        android:id="@+id/editTextEndHour"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/edit_text_background"
-        android:clickable="true"
-        android:focusable="false"
-        android:inputType="none"
-        android:padding="8dp" />
-
-    <!-- Symptoms Label -->
-    <TextView
-        android:id="@+id/textSymptom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Symptom"
-        android:textColor="#104460"
-        android:textStyle="bold" />
-
-    <!-- Symptoms Input -->
-    <EditText
-        android:id="@+id/editTextSymptom"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="@drawable/edit_text_background"
-        android:gravity="top"
-        android:inputType="textMultiLine"
-        android:padding="8dp" />
-
-    <!-- Submit Button -->
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnSave"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/button_secondary"
-        android:text="@string/save"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="12dp"
+        android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btnBack"
-        android:layout_width="100dp"
-        android:layout_height="35dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/button_custom2"
-        android:drawableStart="@drawable/baseline_arrow_back"
-        android:padding="5dp"
-        android:text="@string/back"
-        android:textColor="@color/primary"
-        android:textSize="18sp" />
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <!-- Wrap your LinearLayout with a ScrollView -->
+    <android.widget.ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp">
+        <!-- Vertical LinearLayout with margin between CardViews -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="50dp"
+            android:paddingEnd="50dp"
+            android:paddingTop="20dp">
 
 
+            <!-- Category Dropdown -->
+            <!--    <Spinner-->
+            <!--        android:id="@+id/spinnerCategory"-->
+            <!--        android:layout_width="match_parent"-->
+            <!--        android:layout_height="wrap_content"-->
+            <!--        android:background="@drawable/spinner_background"-->
+            <!--        android:padding="8dp" />-->
+
+            <!-- Date Label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date"
+                android:textStyle="bold" />
+
+            <!-- Date Picker -->
+            <EditText
+                android:id="@+id/editTextDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_background"
+                android:inputType="date"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/errorDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="error message"
+                android:textColor="@color/error"
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:visibility="gone" />
+
+            <!-- Start Hour Label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Time"
+                android:textStyle="bold" />
+
+            <!-- Start Hour -->
+            <EditText
+                android:id="@+id/editTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_background"
+                android:inputType="time"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/errorTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="error message"
+                android:textColor="@color/error"
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:visibility="gone" />
+
+            <!-- measure1 Label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Measure1"
+                android:textStyle="bold" />
+
+            <!-- Measure1 -->
+            <EditText
+                android:id="@+id/editTextMeasure1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_background"
+                android:focusedByDefault="true"
+                android:inputType="numberDecimal"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/errorMeasure1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="error message"
+                android:textColor="@color/error"
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:visibility="gone" />
+
+            <!-- Measure2 Label -->
+            <TextView
+                android:id="@+id/textMeasure2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Measure2"
+                android:textStyle="bold" />
+
+            <!-- Measure2 Input -->
+            <EditText
+                android:id="@+id/editTextMeasure2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_background"
+                android:inputType="number"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/errorMeasure2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="error message"
+                android:textColor="@color/error"
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:visibility="gone" />
+
+
+            <TextView
+                android:id="@+id/errorGeneral"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="error message"
+                android:textColor="@color/error"
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:visibility="gone" />
+            <!-- Submit Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="30dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/button_secondary"
+                android:text="@string/save"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnBack"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/button_custom2"
+                android:drawableStart="@drawable/baseline_arrow_back"
+                android:padding="5dp"
+                android:text="@string/back"
+                android:textColor="@color/primary"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+    </android.widget.ScrollView>
 </LinearLayout>
