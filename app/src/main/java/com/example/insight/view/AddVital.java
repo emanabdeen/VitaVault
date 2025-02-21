@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,19 +60,27 @@ public class AddVital extends DrawerBaseActivity {
         unit = intentObject.getStringExtra("unit");
         binding.textViewTitle.setText(intentObject.getStringExtra("title"));
 
+        //set the image and the title of the page according to the vital type
         String imageName = intentObject.getStringExtra("image");
         int imageResId = getResources().getIdentifier(imageName.replace("@drawable/", ""), "drawable", getPackageName());
         binding.image.setImageResource(imageResId);
 
 
+        //put initial values for current time and date
         binding.editTextDate.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         binding.editTime.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
 
-        //if the vital not blood pressure, hide measure2
-        if (!Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())){
+        //if the vital is not blood pressure, hide measure2 and put the measurement label = unit
+        if (!Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
             binding.editTextMeasure2.setVisibility(View.GONE);
-            binding.textMeasure2.setVisibility(View.GONE);
-
+            binding.lblMeasure2.setVisibility(View.GONE);
+            binding.lblMeasure1.setText(unit);
+        }
+        //if the vital is blood pressure, hide measure2 and put the measurement labels
+        //if the vital is blood pressure, hide measure2 and put the measurement labels Systolic ,Diastolic
+        if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
+            binding.lblMeasure1.setText("Systolic " + unit);
+            binding.lblMeasure2.setText("Diastolic " + unit);
         }
 
         //Back button
@@ -86,156 +95,84 @@ public class AddVital extends DrawerBaseActivity {
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateNewVital();
+
+                try {
+                    CreateNewVital();
+                    finish();
+                }catch (Exception e) {
+                    Log.e("error", "try-catch error: "+ e.getMessage());
+                }
 
             }
         });
     }
 
     private void CreateNewVital() {
-//        VitalViewModel vitalViewModel = new VitalViewModel();
-//        String uid = user.getUid(); // Get the logged-in user's unique ID
-//
-//        //get data from UI
-//        String recordDateStr = binding.editTextDate.getText().toString();
-//        String recordTimeStr = binding.editTime.getText().toString();
-//        String recordMeasure1 = binding.editTextMeasure1.getText().toString();
-//        String recordMeasure2 = binding.editTextMeasure2.getText().toString();
-//
-//
-//        if (!TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStr) && !TextUtils.isEmpty(recordMeasure1)) {
-//
-//            boolean isDateValid = DateValidator.isValidDate(recordDateStr);
-//            boolean isTimeValid = TimeValidator.isValidTime(recordTimeStr);
-//
-//            if (!isDateValid) {
-//                binding.errorDate.setText("Invalid Date (e.g., 15-05-2025)");
-//                binding.errorDate.setVisibility(View.VISIBLE); // Make the TextView visible
-//                System.out.println("Date is not valid");
-//                Log.d("Activity", "Date is not valid");
-//                Log.e("error","Date is not valid");
-//
-//            }
-//            else{binding.errorDate.setVisibility(View.GONE);}
-//            if (!isTimeValid) {
-//                binding.errorTime.setText("Invalid Date (e.g., 15-05-2025)");
-//                binding.errorTime.setVisibility(View.VISIBLE); // Make the TextView visible
-//                System.out.println("Time is not valid");
-//                Log.d("Activity", "Time is not valid");
-//                Log.e("error","Time is not valid");
-//
-//            }
-//            else{binding.errorTime.setVisibility(View.GONE);}
-//
-//            if(isDateValid && isTimeValid) {
-//
-//                //convert string to localDate & LocalTime
-//                LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-//                LocalTime recordTime = LocalTime.parse(recordTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-//
-//                if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
-//
-//                    //blood pressure need 2 measurement values
-//                    if (!TextUtils.isEmpty(recordMeasure2)) {
-//                        binding.errorGeneral.setVisibility(View.GONE);
-//
-//                        // initialize vital object with current date and time
-//                        Vital newVital = new Vital(recordDate, recordTime, vitalType, unit);
-//                        newVital.setMeasurement1(recordMeasure1);
-//                        newVital.setMeasurement2(recordMeasure2);
-//
-//                        //create new vital
-//                        vitalViewModel.AddVital(newVital);
-//
-//                    } else {
-//                        // At least one field is empty or null
-//                        binding.errorGeneral.setText("One or more fields are empty.");
-//                        binding.errorGeneral.setVisibility(View.VISIBLE); // Make the TextView visible
-//
-//                        System.out.println("One or more fields are empty.");
-//                        Log.d("Activity", "One or more fields are empty.");
-//                    }
-//
-//                } else if (VitalsCategories.isValidVitalCategory(vitalType)) {
-//                    binding.errorGeneral.setVisibility(View.GONE);
-//
-//                    // initialize vital object with current date and time
-//                    Vital newVital = new Vital(recordDate, recordTime, vitalType, unit);
-//                    newVital.setMeasurement1(recordMeasure1);
-//
-//                    //create new vital
-//                    vitalViewModel.AddVital(newVital);
-//
-//                } else {
-//                    System.out.println("could not define the vital type");
-//                    Log.d("Activity", "could not define the vital type");
-//                }
-//            }
-//        } else {
-//
-//            // At least one field is empty or null
-//            binding.errorGeneral.setText("One or more fields are empty.");
-//            binding.errorGeneral.setVisibility(View.VISIBLE); // Make the TextView visible
-//
-//            System.out.println("One or more fields are empty.");
-//            Log.d("Activity", "One or more fields are empty.");
-//        }
-        VitalViewModel vitalViewModel = new VitalViewModel();
-        String uid = user.getUid(); // Get the logged-in user's unique ID
 
-// Get data from UI
-        String recordDateStr = binding.editTextDate.getText().toString();
-        String recordTimeStr = binding.editTime.getText().toString();
-        String recordMeasure1 = binding.editTextMeasure1.getText().toString();
-        String recordMeasure2 = binding.editTextMeasure2.getText().toString();
+        try{
+            VitalViewModel vitalViewModel = new VitalViewModel();
+            String uid = user.getUid(); // Get the logged-in user's unique ID
 
-        if (!TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStr) && !TextUtils.isEmpty(recordMeasure1)) {
-            boolean isDateValid = DateValidator.isValidDate(recordDateStr);
-            boolean isTimeValid = TimeValidator.isValidTime(recordTimeStr);
-            showError(binding.errorGeneral, "", false);
+            // Get data from UI
+            String recordDateStr = binding.editTextDate.getText().toString();
+            String recordTimeStr = binding.editTime.getText().toString();
+            String recordMeasure1 = binding.editTextMeasure1.getText().toString();
+            String recordMeasure2 = binding.editTextMeasure2.getText().toString();
 
-            // Handle date error
-            showError(binding.errorDate, "Invalid Date (e.g., 15-05-2025)", !isDateValid);
+            if (!TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStr) && !TextUtils.isEmpty(recordMeasure1)) {
+                boolean isDateValid = DateValidator.isValidDate(recordDateStr);
+                boolean isTimeValid = TimeValidator.isValidTime(recordTimeStr);
+                showError(binding.errorGeneral, "", false);
 
-            // Handle time error
-            showError(binding.errorTime, "Invalid Time (e.g., 14:30)", !isTimeValid);
+                // Handle date error
+                showError(binding.errorDate, "Invalid Date (e.g., 15-05-2025)", !isDateValid);
 
-            if (isDateValid && isTimeValid) {
-                LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                LocalTime recordTime = LocalTime.parse(recordTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+                // Handle time error
+                showError(binding.errorTime, "Invalid Time (e.g., 14:30)", !isTimeValid);
 
-                if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
-                    if (!TextUtils.isEmpty(recordMeasure2)) {
+                if (isDateValid && isTimeValid) {
+                    LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                    LocalTime recordTime = LocalTime.parse(recordTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+
+                    if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
+                        if (!TextUtils.isEmpty(recordMeasure2)) {
+
+                            // Initialize and save Vital object
+                            Vital newVital = new Vital(recordDate, recordTime, vitalType, unit);
+                            newVital.setMeasurement1(recordMeasure1);
+                            newVital.setMeasurement2(recordMeasure2);
+
+                            //add the record to firestore
+                            vitalViewModel.AddVital(newVital);
+                            Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Handle missing field error
+                            showError(binding.errorGeneral, "One or more fields are empty.", true);
+                            Log.e("error", "One or more fields are empty.");
+                        }
+                    } else if (VitalsCategories.isValidVitalCategory(vitalType)) {
+                        showError(binding.errorGeneral, "", false);
 
                         // Initialize and save Vital object
                         Vital newVital = new Vital(recordDate, recordTime, vitalType, unit);
                         newVital.setMeasurement1(recordMeasure1);
-                        newVital.setMeasurement2(recordMeasure2);
 
+                        //add the record to firestore
                         vitalViewModel.AddVital(newVital);
+                        Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_SHORT).show();
                     } else {
-                        // Handle missing field error
-                        showError(binding.errorGeneral, "One or more fields are empty.", true);
-                        Log.e("error", "One or more fields are empty.");
+                        Log.d("Activity", "Could not define the vital type");
                     }
-                } else if (VitalsCategories.isValidVitalCategory(vitalType)) {
-                    showError(binding.errorGeneral, "", false);
-
-                    Vital newVital = new Vital(recordDate, recordTime, vitalType, unit);
-                    newVital.setMeasurement1(recordMeasure1);
-
-                    vitalViewModel.AddVital(newVital);
-                } else {
-                    Log.d("Activity", "Could not define the vital type");
                 }
+            } else {
+                //Handle missing field error
+                showError(binding.errorGeneral, "One or more fields are empty.", true);
+                Log.e("error", "One or more fields are empty.");
             }
-        } else {
-            //Handle missing field error
-            showError(binding.errorGeneral, "One or more fields are empty.", true);
-            Log.e("error", "One or more fields are empty.");
+
+        }catch (Exception e) {
+            Log.e("error", "try-catch error: "+ e.getMessage());
         }
-
-
     }
 
     private void showError(TextView errorView, String message, boolean isVisible) {

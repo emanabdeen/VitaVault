@@ -16,4 +16,12 @@
     <string name="logout">Logout</string>
     <string name="save">Save</string>
     <string name="back">Back</string>
+    <string name="vitals">Vitals</string>
+    <string name="Symptoms">Symptoms</string>
+    <string name="ocr">OCR</string>
+    <string name="dietary">Dietary</string>
+    <string name="medications">Medications</string>
+    <string name="list">List</string>
+    <string name="trends">Trends</string>
+
 </resources>

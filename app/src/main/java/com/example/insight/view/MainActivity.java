@@ -157,24 +157,8 @@ public class MainActivity extends DrawerBaseActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
 
-        getMenuInflater().inflate(R.menu.toolbar_menu,menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.sittings){
-            Toast.makeText(this,"Setting is clicked",Toast.LENGTH_SHORT).show();
-        }
-        if (id == R.id.prefrences){
-            Toast.makeText(this,"prefrences is clicked",Toast.LENGTH_SHORT).show();
-        }
-        return true;
-    }
 
     /** method to add a new symptom to the system. required parameters that will be collected from the page as follow:
      * - LocalDate date: the input filed will have current date as default "dd-MM-yyyy"(can be updated by user)

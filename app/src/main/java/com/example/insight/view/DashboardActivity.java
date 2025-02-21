@@ -49,14 +49,14 @@ public class DashboardActivity extends DrawerBaseActivity {
         }
 
         //---------------go to vitals----------------------
-        binding.btnGoToVitals.setOnClickListener(new View.OnClickListener() {
+        binding.cardVitals.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(DashboardActivity.this, VitalsMainActivity.class));
             }
         });
 
-        binding.btnGoToSymptom.setOnClickListener(new View.OnClickListener() {
+        binding.cardSymptoms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(DashboardActivity.this, MainActivity.class));
