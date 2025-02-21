@@ -78,6 +78,20 @@ public class VitalsActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View v) {
 
+//                Vital newVital2 = new Vital(VitalsCategories.BloodPressure.toString(), Unites.mmHg.toString()); // initialize vital object with current date and time
+//                newVital2.setMeasurement1("120");
+//                newVital2.setMeasurement2("80");
+//                AddVital(newVital2);// add newVital1 to Firestore
+//
+//                // Create
+//                LocalDate customDate = LocalDate.of(2025, 2, 8);
+//                LocalTime customtime = LocalTime.of(20, 30);
+//
+//                Vital newVital3 = new Vital(customDate, customtime,VitalsCategories.Weight.toString(),Unites.Kilograms.toString()); // initialize vital object with current date and time
+//                newVital3.setMeasurement1("78.5");
+//                AddVital(newVital3);// add newVital1 to Firestore
+
+                //navigate to Add vital page
                 Intent intentObj = new Intent(getApplicationContext(), AddVital.class);
                 intentObj.putExtra("vitalType",vitalType);// register status to the second page
                 intentObj.putExtra("unit",unit);
@@ -87,33 +101,7 @@ public class VitalsActivity extends DrawerBaseActivity {
             }
         });
 
-        // -------------------------------Add Symptom Button --------------------------------------------
-        binding.btnVital.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                VitalsCategories vitalType = VitalsCategories.BodyTemperature;
-                String measure = "37";
-
-                Vital newVital1 = new Vital(vitalType.toString(), Unites.Celsius.toString()); // initialize vital object with current date and time
-                newVital1.setMeasurement1(measure);
-                AddVital(newVital1);// add newVital1 to Firestore
-
-                Vital newVital2 = new Vital(VitalsCategories.BloodPressure.toString(), Unites.mmHg.toString()); // initialize vital object with current date and time
-                newVital2.setMeasurement1("120");
-                newVital2.setMeasurement2("80");
-                AddVital(newVital2);// add newVital1 to Firestore
-
-                // Create
-                LocalDate customDate = LocalDate.of(2025, 2, 8);
-                LocalTime customtime = LocalTime.of(20, 30);
-
-                Vital newVital3 = new Vital(customDate, customtime,VitalsCategories.Weight.toString(),Unites.Kilograms.toString()); // initialize vital object with current date and time
-                newVital3.setMeasurement1("78.5");
-                AddVital(newVital3);// add newVital1 to Firestore
-
-            }
-        });
 
         // -------------------------------Get Symptoms By Date --------------------------------------------
         binding.btnGetVitalssByDate.setOnClickListener(new View.OnClickListener() {
@@ -128,20 +116,15 @@ public class VitalsActivity extends DrawerBaseActivity {
         });
 
         // -------------------------------Get Symptoms By Type --------------------------------------------
-        binding.btnGetVitalsByType.setOnClickListener(new View.OnClickListener() {
+        binding.btnListByType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String vitalType = VitalsCategories.BloodPressure.toString();
                 GetVitalssByTypeResults(vitalType);
             }
         });
 
     }
-
-
-
-
 
     private void AddVital(Vital vital){
         vitalViewModel=new VitalViewModel();
