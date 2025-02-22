@@ -3,13 +3,17 @@ package com.example.insight.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
+import com.example.insight.R;
 import com.example.insight.databinding.ActivityMainBinding;
 
 import com.example.insight.model.Symptom;
@@ -29,7 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends DrawerBaseActivity {
 
     ActivityMainBinding binding;
     FirebaseAuth mAuth;
@@ -37,14 +41,14 @@ public class MainActivity extends AppCompatActivity {
     private SymptomViewModel symptomViewModel;
     List<Symptom> symptomsList = new ArrayList<>();
     Symptom symptom = new Symptom();
-    EditText oldPw, newPw, confirmPw, email;
     Button btn, manageAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        this.setContentView(binding.getRoot());
+        setContentView(binding.getRoot());
+        allocateActivityTitle("Symptoms");
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -85,10 +89,10 @@ public class MainActivity extends AppCompatActivity {
                 String symptomsCategory = SymptomsCategories.HEADACHE.toString();
 
                 Symptom newSymptom1 = new Symptom(symptomsCategory, "moderate"); // initialize symptom object with current date and time
-                //AddSymptom(newSymptom1);// add newSymptom1 to Firestore
+                AddSymptom(newSymptom1);// add newSymptom1 to Firestore
 
                 Symptom newSymptom2 = new Symptom(symptomsCategory, "moderate","Headache with dizziness"); // initialize symptom object with current date and time
-                //AddSymptom(newSymptom2);// add newSymptom2 to Firestore
+                AddSymptom(newSymptom2);// add newSymptom2 to Firestore
 
                 // Create a cough symptom with a custom date and time
                 LocalDate customDate = LocalDate.of(2024, 1, 15);
@@ -100,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
                 symptomsCategory = SymptomsCategories.COUGHING.toString();
                 newSymptom3 = new Symptom(customDate, customStart, customEnd,symptomsCategory, "mild","some notes here");
-                AddSymptom(newSymptom3); // add newSymptom3 to Firestore
+                //AddSymptom(newSymptom3); // add newSymptom3 to Firestore
 
 
             }
@@ -148,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 String symptomId = "hCsmk7jnYBnvG8qKInp4";
-                GetSymptomsByIdResult(symptomId);
+                GetSymptomsByIdResult("v2JIOFpdrgPswXCVgScW");
             }
         });
 
@@ -157,11 +161,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                String timeStr = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"));
+                symptom.setSymptomDescription("updated notes at:"+timeStr);
 
+                EditSymptomResult(symptom);
+            }
+        });
+
+        // -------------------------------Get Symptoms By Id --------------------------------------------
+        binding.btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String symptomId = "6es7qyBgw6UshG9hIOwn";
+                GetSymptomsByIdResult(symptomId);
+                symptomViewModel=new SymptomViewModel();
+                symptomViewModel.deleteSymptom(symptomId);
             }
         });
 
     }
+
+
+
 
     /** method to add a new symptom to the system. required parameters that will be collected from the page as follow:
      * - LocalDate date: the input filed will have current date as default "dd-MM-yyyy"(can be updated by user)
@@ -251,18 +273,40 @@ public class MainActivity extends AppCompatActivity {
 
         // Observe favorite movies data
         symptomViewModel.getSelectedSymptomData().observe(this, selectedSymptomData -> {
+            symptom = new Symptom();//to reset the current list
             if (selectedSymptomData != null) {
-                symptom = new Symptom();//to reset the current list
                 symptom =selectedSymptomData;
-
                 Log.d("MainActivity", "symptomId: " + symptom.getSymptomId()+" Name: "+ symptom.getSymptomName());
+                Log.d("MainActivity", "Description: " + symptom.getSymptomDescription());
+            }
+            else {
+                Log.d("MainActivity", "symptom is null");
+
+            }
+        });
+
+    }
+
+    private void EditSymptomResult(Symptom updatedSymptom){
+        //symptomViewModel=new SymptomViewModel();
+
+        symptomViewModel.UpdateSymptom(updatedSymptom);
+
+        // Observe favorite movies data
+        symptomViewModel.getSelectedSymptomData().observe(this, selectedSymptomData -> {
+
+            if (selectedSymptomData != null) {
+                symptom =selectedSymptomData;
+                Log.d("MainActivity", "symptomId: " + symptom.getSymptomId()+" Name: "+ symptom.getSymptomName());
+                Log.d("MainActivity", "updated Description: " + symptom.getSymptomDescription());
             }
             else {
                 Log.d("MainActivity", "symptom is null");
             }
         });
 
-
     }
+
+
 
 }

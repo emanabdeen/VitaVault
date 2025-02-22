@@ -90,7 +90,7 @@ public class Login extends AppCompatActivity {
                             Log.d("tag", "signInWithEmail:success");
 
                             FirebaseUser user = mAuth.getCurrentUser(); //initialize user object and assign the the value
-                            Intent intentObj = new Intent(getApplicationContext(), MainActivity.class); //Navigate to page
+                            Intent intentObj = new Intent(getApplicationContext(), IntroActivity.class); //Navigate to page
                             startActivity(intentObj);
                             finish();
                         }else{

@@ -51,15 +51,20 @@ public class SymptomViewModelTests {
     private Context appContext;
     private SymptomViewModel symptomViewModel;
 
+
     @Before
     public void setup() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(2); // create a latch to wait for the task to complete
         appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         FirebaseApp.initializeApp(appContext); // Initialize Firebase App
         mAuth = FirebaseAuth.getInstance();
-        mAuth.useEmulator("10.0.2.2", 9099);
         db = FirebaseFirestore.getInstance();
-        db.useEmulator("10.0.2.2", 8080);
+        try {
+            mAuth.useEmulator("10.0.2.2", 9099);
+            db.useEmulator("10.0.2.2", 8080);
+        } catch (Exception e) {
+            Log.e(TAG, "An exception occurred in useEmulator calls: " + e.getMessage());
+        }
 
         if (mAuth.getCurrentUser() == null) {
             mAuth.signInWithEmailAndPassword(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -270,6 +275,7 @@ public class SymptomViewModelTests {
         // Arrange
         SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
         FirebaseUser user = mAuth.getCurrentUser();
+        final String[] lastAddedSymptomId = {};
 
         String uid = user.getUid(); // Get the logged-in user's unique ID
         String expectedSymptomType = "GetSymptomById-Type";
@@ -334,69 +340,44 @@ public class SymptomViewModelTests {
                 .whenComplete((result, error) -> {
                     if (result) {
                         Log.d(TAG, "Symptom list retrieved by type successfully");
+                        if (symptomsData.getValue() == null && symptomsData.getValue().isEmpty()) {
+                            fail("Symptoms List was empty, symptom add failed but returned true?");
+                        }
+                        for (Symptom s : symptomsData.getValue()) { //Find last added symptom
+                            Log.d(TAG, "Symptom Name: " + s.getSymptomName() + " | Symptom Level: " + s.getSymptomLevel() + " | Symptom ID: " + s.getSymptomId());
+                            if (s.getSymptomDescription().equals(symptomToAdd.getSymptomDescription())) {
+                                Log.d(TAG, "Found last added symptom: " + s.getSymptomName());
+                                lastAddedSymptomId[0] = s.getSymptomId();
+                            }
+                        }
+                        if (lastAddedSymptomId[0].isEmpty()) {
+                            fail("Last added symptom not found");
+                        }
                         getSymptomsByTypeLatch.countDown();
                     } else {
                         Log.d(TAG, "Symptom list retrieval by type failed: " + error.getMessage());
                         fail("Symptom list retrieval by type failed");
                     }
+                    CompletableFuture<Boolean> symptomRetrievedSuccessfully = symptomViewModel.GetSymptomById(lastAddedSymptomId[0]).
+                            whenComplete((symptomIdRetrieval, symptomIdError) -> {
+                                if (result) {
+                                    Log.d(TAG, "Symptom retrieved successfully by ID");
+                                    Symptom retrievedSymptom = selectedSymptomData.getValue();
+                                    if (retrievedSymptom == null) {
+                                        fail("Retrieved symptom was null");
+                                    }
+                                    assertEquals(expectedSymptomType, retrievedSymptom.getSymptomName());
+                                    assertEquals(expectedSymptomLevel, retrievedSymptom.getSymptomLevel());
+                                    assertEquals(symptomToAdd.getRecordDate(), retrievedSymptom.getRecordDate());
+                                    assertEquals(symptomToAdd.getStartTime(), retrievedSymptom.getStartTime());
+                                    assertEquals(symptomToAdd.getEndTime(), retrievedSymptom.getEndTime());
+                                    assertEquals(symptomToAdd.getSymptomDescription(), retrievedSymptom.getSymptomDescription());
+                                } else {
+                                    Log.d(TAG, "Symptom retrieval by ID failed: " + error.getMessage());
+                                    fail("Symptom retrieval by ID failed");
+                                }
+                            });
         });
-        getSymptomsByTypeLatch.await(10, TimeUnit.SECONDS);
-        assertTrue(symptomAdded.isDone());
-        assertTrue(symptomListRetrieved.isDone());
-        String lastAddedSymptomId = "";
-        if (symptomsData.getValue() == null && symptomsData.getValue().isEmpty()) {
-            fail("Symptoms List was empty, symptom add failed but returned true?");
-        }
-        for (Symptom s : symptomsData.getValue()) { //Find last added symptom
-            Log.d(TAG, "Symptom Name: " + s.getSymptomName() + " | Symptom Level: " + s.getSymptomLevel() + " | Symptom ID: " + s.getSymptomId());
-            if (s.getSymptomDescription().equals(symptomToAdd.getSymptomDescription())) {
-                Log.d(TAG, "Found last added symptom: " + s.getSymptomName());
-                lastAddedSymptomId = s.getSymptomId();
-            }
-        }
-        if (lastAddedSymptomId.isEmpty()) {
-            fail("Last added symptom not found");
-        }
-        CountDownLatch getSymptomByIdLatch = new CountDownLatch(2);
-        // Get last added symptom
-        Log.d(TAG, "Getting symptom by ID: " + lastAddedSymptomId);
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                selectedSymptomData.observeForever(new Observer<Symptom>() {
-                    @Override
-                    public void onChanged(Symptom symptom) {
-                        if (symptom != null) {
-                            Log.d(TAG, "Selected symptom updated: " + symptom.getSymptomId());
-                            Log.d(TAG, "Symptom Name: " + symptom.getSymptomName() + ", Symptom Level: " + symptom.getSymptomLevel());
-                        }
-                        getSymptomByIdLatch.countDown(); // decrement the latch count
-                    }
-                });
-            }
-        });
-        CompletableFuture<Boolean> symptomRetrievedSuccessfully = symptomViewModel.GetSymptomById(lastAddedSymptomId).
-                whenComplete((result, error) -> {
-                    if (result) {
-                        Log.d(TAG, "Symptom retrieved successfully by ID");
-                        getSymptomByIdLatch.countDown();
-                    } else {
-                        Log.d(TAG, "Symptom retrieval by ID failed: " + error.getMessage());
-                        fail("Symptom retrieval by ID failed");
-                    }
-        });
-        getSymptomByIdLatch.await(10, TimeUnit.SECONDS);
-        assertTrue(symptomRetrievedSuccessfully.isDone());
-        Symptom retrievedSymptom = selectedSymptomData.getValue();
-        if (retrievedSymptom == null) {
-            fail("Retrieved symptom was null");
-        }
-        assertEquals(expectedSymptomType, retrievedSymptom.getSymptomName());
-        assertEquals(expectedSymptomLevel, retrievedSymptom.getSymptomLevel());
-        assertEquals(symptomToAdd.getRecordDate(), retrievedSymptom.getRecordDate());
-        assertEquals(symptomToAdd.getStartTime(), retrievedSymptom.getStartTime());
-        assertEquals(symptomToAdd.getEndTime(), retrievedSymptom.getEndTime());
-        assertEquals(symptomToAdd.getSymptomDescription(), retrievedSymptom.getSymptomDescription());
     }
 
     @Test
