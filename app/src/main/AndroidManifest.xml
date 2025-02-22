@@ -36,9 +36,9 @@
             android:name=".view.Register"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-
-
-
+        <activity
+            android:name=".view.ManageAccount"
+            android:exported="true" />
 
     </application>
 

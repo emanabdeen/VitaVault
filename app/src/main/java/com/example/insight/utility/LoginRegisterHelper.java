@@ -5,15 +5,19 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class LoginRegisterHelper {
     private static final String TAG = "LoginRegisterHelper";
@@ -28,7 +32,6 @@ public class LoginRegisterHelper {
     }
 
     public CompletableFuture<Boolean> validateOldPasswordCorrect(String oldPW, FirebaseAuth mAuth) throws InterruptedException {
-        //final boolean[] oldPasswordCorrectResult = {false};
         CompletableFuture<Boolean> futureBool = new CompletableFuture<>();
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
@@ -44,22 +47,35 @@ public class LoginRegisterHelper {
             return futureBool;
         }
 
+        // Authenticate the user with the provided credential to enable password update in case they haven't authenticated in some time.
         Task<Void> reauthenticateTask = user.reauthenticate(credential);
-        reauthenticateTask.continueWith(executor, new Continuation<Void, Void>() {
+        reauthenticateTask.continueWithTask(executor, new Continuation<Void, Task<Boolean>>() {
            @Override
-           public Void then(@NonNull Task<Void> task) throws Exception {
+           public Task<Boolean> then(@NonNull Task<Void> task) throws Exception {
                if (task.isSuccessful()) {
                    Log.d(TAG, "reAuthenticate:success");
-                   futureBool.complete(true);
+                   return Tasks.forResult(true);
                } else {
                    Log.e(TAG, "reAuthenticate:failure - " + task.getException().getMessage());
-                   futureBool.complete(false);
+                   return Tasks.forResult(false);
                }
-               return null;
            }
+        }).addOnCompleteListener(new OnCompleteListener<Boolean>() {
+            @Override
+            public void onComplete(@NonNull Task<Boolean> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "validateOldPasswordCorrect:success");
+                    futureBool.complete(task.getResult());
+                }
+                else {
+                    Log.e(TAG, "validateOldPasswordCorrect:failure - " + task.getException().getMessage());
+                    futureBool.completeExceptionally(task.getException());
+                }
+            }
         });
         return futureBool;
     }
+
     public boolean validateNewPasswordMatchesConfirmPassword(String newPw, String confirmPw){
         boolean newPwMatchesConfirmPw;
         if (newPw.equals(confirmPw)) {
@@ -70,7 +86,6 @@ public class LoginRegisterHelper {
         return newPwMatchesConfirmPw;
     }
 
-    // Not final code for this method, just WIP for now with a way to get a status output
     public CompletableFuture<String> changePassword(String oldPW, String newPw, String confirmPw, FirebaseAuth mAuth) throws InterruptedException {
         CompletableFuture<String> passwordChangeResult = new CompletableFuture<>(); // make sure status is false to start process
         if (!validPassword(newPw)) {
@@ -82,28 +97,45 @@ public class LoginRegisterHelper {
             passwordChangeResult.complete("New password and confirm password do not match.");
             return passwordChangeResult;
         }
-        CompletableFuture<Boolean> oldPasswordCorrectResult = validateOldPasswordCorrect(oldPW, mAuth); // confirm old password is correct, and re-authenticate to allow the password change call to work
-        oldPasswordCorrectResult.thenAccept(result -> {
-            if (!result) {
-                passwordChangeResult.complete("Old password does not match current password.");
-                return;
-            }
-            FirebaseUser user = mAuth.getCurrentUser();
-            Task<Void> updatePasswordTask = user.updatePassword(newPw);
-            updatePasswordTask.continueWith(executor, new Continuation<Void, Void>() {
-               @Override
-               public Void then(@NonNull Task<Void> task) throws Exception {
-                   if (task.isSuccessful()) {
-                       Log.e(TAG, "changePassword:success");
-                       passwordChangeResult.complete("Password changed successfully");
-                   } else {
-                       Log.e(TAG, "changePassword:failure - " + task.getException().getMessage());
-                       passwordChangeResult.complete("Password change failed, please contact the development team for support.");
-                   }
-                   return null;
-               }
-               });
-            });
+        // Confirm old password is correct, and re-authenticate to allow the password change call to work
+                validateOldPasswordCorrect(oldPW, mAuth)
+                .thenAccept(isValid -> {
+                    if (isValid) {
+                        Log.d(TAG, "changePassword:old password is correct");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        Task<Void> updatePasswordTask = user.updatePassword(newPw);
+                        updatePasswordTask.continueWithTask(executor, new Continuation<Void, Task<Boolean>>() {
+                            @Override
+                            public Task<Boolean> then(@NonNull Task<Void> task) throws Exception {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "UpdatePasswordTask(): Successfully updated user password");
+                                    return Tasks.forResult(true);
+                                } else {
+                                    Log.e(TAG, "UpdatePasswordTask(): Error during password update call: " + task.getException().getMessage());
+                                    return Tasks.forResult(false);
+                                }
+                            }
+                        }).addOnCompleteListener(new OnCompleteListener<Boolean>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Boolean> task) {
+                                if (task.isSuccessful()) {
+                                    Log.e(TAG, "changePassword:success");
+                                    passwordChangeResult.complete("Password changed successfully");
+                                }
+                                else {
+                                    Log.e(TAG, "changePassword:failure - " + task.getException().getMessage());
+                                    passwordChangeResult.complete("Password change failed, please contact the development team for support.");
+                                }
+                            }
+                        });
+                    } else {
+                        Log.d(TAG, "changePassword:old password is incorrect");
+                        passwordChangeResult.complete("Old password does not match current password.");
+                    }
+                }).exceptionally(error -> {
+                    Log.e(TAG, "changePassword:old password does not match current password");
+                    return null;
+                });
         return passwordChangeResult;
     }
 }

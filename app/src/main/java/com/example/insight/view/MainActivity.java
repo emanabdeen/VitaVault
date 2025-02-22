@@ -37,9 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private SymptomViewModel symptomViewModel;
     List<Symptom> symptomsList = new ArrayList<>();
     Symptom symptom = new Symptom();
-
-    Button btn, changePassButton;
     EditText oldPw, newPw, confirmPw, email;
+    Button btn, manageAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +53,15 @@ public class MainActivity extends AppCompatActivity {
             finish();
             startActivity(new Intent(MainActivity.this, Login.class));
         }
-        oldPw = binding.editTextOldPw;
-        newPw = binding.editTextNewPw;
-        confirmPw = binding.editTextConfirmPw;
-        email = binding.editTextEmail;
-
         btn = binding.button;
-        changePassButton = binding.testPasswordChange;
+        manageAccount = binding.manageAccount;
+
+        manageAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, ManageAccount.class));
+            }
+        });
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,25 +73,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(new Intent(MainActivity.this, Login.class));
                 }else{
                     Toast.makeText(getApplicationContext(), "You aren't logged in yet!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        changePassButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mAuth = FirebaseAuth.getInstance();
-                if (user != null) {
-                    LoginRegisterHelper lrh = new LoginRegisterHelper();
-                    try {
-                        CompletableFuture<String> changePasswordResult = lrh.changePassword(oldPw.getText().toString(), newPw.getText().toString(), confirmPw.getText().toString(), mAuth);
-                        changePasswordResult.thenAccept( result -> {
-                            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-                        });
-
-                    } catch (InterruptedException e) {
-                        Log.e("MainActivity", "Change password encountered an error: " + e.getMessage());
-                    }
                 }
             }
         });

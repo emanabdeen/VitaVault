@@ -50,19 +50,19 @@ public class AccountManagementTests {
         latch.countDown(); // decrement the latch count
         mAuth.createUserWithEmailAndPassword(TEST_ACCOUNT_EMAIL, TEST_ACCOUNT_PASSWORD)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    Log.d(TAG, "Account creation was successful");
-                } else {
-                    Log.d(TAG, "Account creation was not successful");
-                    if (task.getException().getMessage() != null && task.getException().getMessage().contains("The email address is already in use by another account.")) {
-                        Log.d(TAG, "Account already exists");
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Account creation was successful");
+                        } else {
+                            Log.d(TAG, "Account creation was not successful");
+                            if (task.getException().getMessage() != null && task.getException().getMessage().contains("The email address is already in use by another account.")) {
+                                Log.d(TAG, "Account already exists");
+                            }
+                        }
+                        latch.countDown(); // decrement the latch count
                     }
-                }
-                latch.countDown(); // decrement the latch count
-            }
-        });
+                });
         mAuth.signOut();
         latch.countDown(); // decrement the latch count
         latch.await(10, TimeUnit.SECONDS); // wait for the latch to count down to zero);
@@ -91,10 +91,20 @@ public class AccountManagementTests {
                 );
         latch.await(10, TimeUnit.SECONDS); // wait for the latch to count down to zero);
         // Act
-        CompletableFuture<Boolean> actual = lrh.validateOldPasswordCorrect(oldPassword, mAuth);
-        actual.thenAccept(result -> {
-            // Assert
-            assertEquals(expected, result);
-        });
+        CountDownLatch passwordChangeLatch = new CountDownLatch(1);
+        CompletableFuture<Boolean> actual = lrh.validateOldPasswordCorrect(oldPassword, mAuth)
+                .whenComplete((result, error) -> {
+                    if (result) {
+                        Log.d(TAG, "Old Password validation was successful.");
+                    } else {
+                        Log.d(TAG, "Error: Old password did not match current password: " + error.getMessage());
+                        fail("Old password did not match current password");
+                    }
+                    passwordChangeLatch.countDown();
+                });
+        // Assert
+        passwordChangeLatch.await(10, TimeUnit.SECONDS);
+        assertTrue(actual.isDone());
+        assertEquals(actual.getNow(false), expected);
     }
 }
