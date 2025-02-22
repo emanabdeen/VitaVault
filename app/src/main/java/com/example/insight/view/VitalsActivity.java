@@ -16,6 +16,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.insight.R;
 import com.example.insight.databinding.ActivityMainBinding;
@@ -38,8 +42,9 @@ import java.util.List;
 public class VitalsActivity extends DrawerBaseActivity {
 
     ActivityVitalsBinding binding;
-    FirebaseAuth mAuth;
-    FirebaseUser user;
+    public FirebaseAuth mAuth;
+    public FirebaseUser user;
+    private VitalsListFragment vitalsListFragment;
     private VitalViewModel vitalViewModel;
     List<Vital> vitalsList = new ArrayList<>();
     Vital vital = new Vital();
@@ -68,10 +73,37 @@ public class VitalsActivity extends DrawerBaseActivity {
         String title = intentObject.getStringExtra("title");
         String image = intentObject.getStringExtra("image");
 
+        // Initialize ViewModel
+        vitalViewModel = new ViewModelProvider(this).get(VitalViewModel.class);
+        vitalViewModel.GetVitalsByType(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        //by default show all vital by type
+        vitalViewModel.GetVitalsByType(vitalType);
+
+        //set the image and the title of the page according to the vital type
         binding.textViewTitle.setText(title);
         String imageName = image;
         int imageResId = getResources().getIdentifier(imageName.replace("@drawable/", ""), "drawable", getPackageName());
         binding.image.setImageResource(imageResId);
+
+        // Create an instance of the fragment
+        vitalsListFragment = new VitalsListFragment();
+
+        // Create a Bundle to hold the data
+        Bundle bundle = new Bundle();
+        bundle.putString("vitalType", vitalType); // Add data to the Bundle
+
+        // Set the Bundle as arguments for the fragment
+        vitalsListFragment.setArguments(bundle);
+
+        replaceFragment(vitalsListFragment); // Show vitals list by default
+
+        binding.btnListByType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replaceFragment(vitalsListFragment);
+            }
+        });
 
         // -------------------------------Add Button --------------------------------------------
         binding.btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +135,7 @@ public class VitalsActivity extends DrawerBaseActivity {
 
 
 
-        // -------------------------------Get Symptoms By Date --------------------------------------------
+        // -------------------------------Get vital By Date --------------------------------------------
         binding.btnGetVitalssByDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +147,7 @@ public class VitalsActivity extends DrawerBaseActivity {
             }
         });
 
-        // -------------------------------Get Symptoms By Type --------------------------------------------
+        // -------------------------------Get vital By Type --------------------------------------------
         binding.btnListByType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,12 +158,24 @@ public class VitalsActivity extends DrawerBaseActivity {
 
     }
 
-    private void AddVital(Vital vital){
-        vitalViewModel=new VitalViewModel();
-        String uid = user.getUid(); // Get the logged-in user's unique ID
 
-        vitalViewModel.AddVital(vital);
+    private void replaceFragment (Fragment fragment){
+        // Get the FragmentManager
+        FragmentManager fm = getSupportFragmentManager();
+
+        // Begin a FragmentTransaction
+        FragmentTransaction ft = fm.beginTransaction();
+
+        // Replace the fragment in the container (R.id.fragmentLayout)
+        ft.replace(R.id.fragmentLayout, fragment);
+
+        // Add the transaction to the back stack
+        //ft.addToBackStack(null);
+
+        // Commit the transaction
+        ft.commit();
     }
+
 
     /** method to get a list of vitals at a selected date*/
     private void GetVitalByDateResults(LocalDate searchDate){

@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Insight"
         tools:targetApi="31">
+
         <activity
             android:name=".view.AddVital"
             android:exported="false" />

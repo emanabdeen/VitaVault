@@ -1,6 +1,7 @@
 package com.example.insight.view;
 
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,18 +14,28 @@ public class VitalsViewHolder extends RecyclerView.ViewHolder {
     TextView dateTime;
     TextView value;
     ItemClickListener clickListener;
+    ImageButton btnDelete;
 
     public VitalsViewHolder(@NonNull View itemView, ItemClickListener clickListener) {
         super(itemView);
         dateTime = itemView.findViewById(R.id.date_time_txt);
         value = itemView.findViewById(R.id.value_txt);
         this.clickListener= clickListener;
+        btnDelete = itemView.findViewById(R.id.btnDelete);
 
         //passing the clicked view and its position in the adapter
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickListener.OnClickItem(v,getAdapterPosition());
+            }
+        });
+
+        //passing the clicked view and its position in the adapter for delete button
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.OnClickDelete(v,getAdapterPosition());
             }
         });
     }

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.insight.model.Symptom;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class SymptomViewModel {
+public class SymptomViewModel extends ViewModel {
     //inst the FirebaseFirestore (DB)
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
 

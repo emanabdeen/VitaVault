@@ -1,9 +1,11 @@
 package com.example.insight.viewmodel;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.example.insight.model.Symptom;
 import com.example.insight.model.Vital;
@@ -16,6 +18,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -26,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class VitalViewModel {
+public class VitalViewModel extends ViewModel {
 
     //inst the FirebaseFirestore (DB)
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -175,22 +178,168 @@ public class VitalViewModel {
     }
 
     public void GetVitalsByType(String vitalType) {
-
-        // Reference to the user's symptoms collection
+        // Reference to the user's vitals collection
         CollectionReference vitalsRef = FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(uid)
                 .collection("vitals");
 
         // Create a query to find documents that match the specified criteria
-        Query query = vitalsRef
-                .whereEqualTo("vitalType", vitalType);
+        Query query = vitalsRef.whereEqualTo("vitalType", vitalType);
+
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                vitalsList = new ArrayList<>();
+                QuerySnapshot querySnapshot = task.getResult();
+
+                if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                    Log.d("debug", "----------------------Get Vitals By type--------------------------------");
+
+                    // Retrieve the documents from the query result
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                        Log.d("debug", "Document ID: " + document.getId());
+                        Log.d("debug", "vital Type: " + document.getString("vitalType"));
+                        Log.d("debug", "unit: " + document.getString("unit"));
+                        Log.d("debug", "measurement1: " + document.getString("measurement1"));
+                        Log.d("debug", "measurement2: " + document.getString("measurement2"));
+                        Log.d("debug", "record Time: " + document.getString("recordTime"));
+                        Log.d("debug", "record Date: " + document.getString("recordDate"));
+                        Log.d("debug", "--------------------------------------------");
+
+                        try {
+                            String vitalTypeStr = document.getString("vitalType");
+                            String measurement1 = document.getString("measurement1");
+                            String measurement2 = document.getString("measurement2");
+                            String unitStr = document.getString("unit");
+                            String recordTimeStr = document.getString("recordTime");
+                            String recordDateStr = document.getString("recordDate");
+
+                            LocalTime recordTime = LocalTime.parse(recordTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+                            LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+                            // Create vital object with the retrieved data
+                            Vital vital = new Vital(recordDate, recordTime, vitalTypeStr, unitStr);
+                            vital.setVitalId(document.getId());
+                            vital.setMeasurement1(measurement1);
+                            vital.setMeasurement2(measurement2);
+
+                            vitalsList.add(vital);
+                        } catch (DateTimeParseException e) {
+                            Log.e("Error", "Error parsing time: " + e.getMessage());
+                        }
+                    }
+                    Log.d("debug", "----------------------vitalsList count>> " + vitalsList.size()); // number of vitals in the list
+
+                    searchResultMessageData.postValue("");
+                    vitalsData.postValue(vitalsList);
+                } else {
+                    searchResultMessageData.postValue("No vitals found ...");
+                    vitalsData.postValue(vitalsList);
+                }
+            } else {
+                // Handle failure
+                Log.e("Firestore", "Error retrieving documents: " + task.getException().getMessage());
+                vitalsData.postValue(null);
+            }
+        });
+    }
+
+//    public void GetVitalsByType(String vitalType) {
+//
+//        // Reference to the user's symptoms collection
+//        CollectionReference vitalsRef = FirebaseFirestore.getInstance()
+//                .collection("users")
+//                .document(uid)
+//                .collection("vitals");
+//
+//        // Create a query to find documents that match the specified criteria
+//        Query query = vitalsRef
+//                .whereEqualTo("vitalType", vitalType);
+//
+//        query.get()
+//                .addOnSuccessListener(querySnapshot -> {
+//                    vitalsList = new ArrayList<>();
+//                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+//                        Log.d("debug", "----------------------Get Vitals By type--------------------------------" );
+//
+//                        // Retrieve the documents from the query result
+//                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+//                            Log.d("debug", "Document ID: " + document.getId());
+//                            Log.d("debug", "vital Type: " + document.getString("vitalType"));
+//                            Log.d("debug", "unit: " + document.getString("unit"));
+//                            Log.d("debug", "measurement1: " + document.getString("measurement1"));
+//                            Log.d("debug", "measurement2: " + document.getString("measurement2"));
+//                            Log.d("debug", "record Time: " + document.getString("recordTime"));
+//                            Log.d("debug", "record Date: " + document.getString("recordDate"));
+//                            Log.d("debug", "--------------------------------------------");
+//
+//                            try {
+//                                String vitalTypeStr = document.getString("vitalType");
+//                                String measurement1 = document.getString("measurement1");
+//                                String measurement2 = document.getString("measurement2");
+//                                String unitStr = document.getString("unit");
+//                                String recordTimeStr = document.getString("recordTime");
+//                                String recordDateStr = document.getString("recordDate");
+//
+//                                LocalTime recordTime = LocalTime.parse(recordTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+//                                LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+//
+//                                // Create symptom object with the retrieved data
+//                                Vital vital = new Vital(recordDate, recordTime, vitalTypeStr,unitStr);
+//                                vital.setVitalId(document.getId());
+//                                vital.setMeasurement1(measurement1);
+//                                vital.setMeasurement2(measurement2);
+//
+//                                vitalsList.add(vital);
+//
+//                            } catch (DateTimeParseException e) {
+//                                Log.e("Error", "Error parsing time: " + e.getMessage());
+//                            }
+//                        }
+//                        Log.d("debug", "----------------------vitalsList count>> " + vitalsList.size()); // number of symptoms in the list
+//
+//                        searchResultMessageData.postValue("");
+//                        vitalsData.postValue(vitalsList);
+//                    } else {
+//                        searchResultMessageData.postValue("No vitals found ...");
+//                        vitalsData.postValue(vitalsList);
+//                    }
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.e("Firestore", "Error retrieving documents: " + e.getMessage());
+//                    vitalsData.postValue(null);// Handle failure
+//                });
+//    }
+
+
+    public void GetSymptomsByDateAndType(LocalDate searchDate, String vitalType) {
+
+        String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
+        // Reference to the user's vital collection
+        CollectionReference symptomsRef = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .collection("vitals");
+
+        Query query;
+
+        if (TextUtils.isEmpty(searchDateStr)){
+            // Create a query to find documents that match the specified criteria
+            query = symptomsRef
+                    .whereEqualTo("vitalType", vitalType);
+        }else{
+            // Create a query to find documents that match the specified criteria
+            query = symptomsRef
+                    .whereEqualTo("recordDate", searchDateStr)
+                    .whereEqualTo("vitalType", vitalType);
+        }
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
                     vitalsList = new ArrayList<>();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        Log.d("debug", "----------------------Get Vitals By type--------------------------------" );
+                        Log.d("debug", "----------------------Get vitals By Date & Type--------------------------------" );
 
                         // Retrieve the documents from the query result
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
@@ -209,19 +358,17 @@ public class VitalViewModel {
                                 String measurement2 = document.getString("measurement2");
                                 String unitStr = document.getString("unit");
                                 String recordTimeStr = document.getString("recordTime");
-                                String recordDateStr = document.getString("recordDate");
 
                                 LocalTime recordTime = LocalTime.parse(recordTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-                                LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
 
                                 // Create symptom object with the retrieved data
-                                Vital vital = new Vital(recordDate, recordTime, vitalTypeStr,unitStr);
+                                Vital vital = new Vital(searchDate, recordTime, vitalTypeStr,unitStr);
                                 vital.setVitalId(document.getId());
                                 vital.setMeasurement1(measurement1);
                                 vital.setMeasurement2(measurement2);
 
                                 vitalsList.add(vital);
-
                             } catch (DateTimeParseException e) {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
                             }
@@ -231,13 +378,33 @@ public class VitalViewModel {
                         searchResultMessageData.postValue("");
                         vitalsData.postValue(vitalsList);
                     } else {
-                        searchResultMessageData.postValue("No vitals found matching your search.");
+
+                        searchResultMessageData.postValue("No movies found matching your search.");
                         vitalsData.postValue(vitalsList);
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error retrieving documents: " + e.getMessage());
                     vitalsData.postValue(null);// Handle failure
+                });
+    }
+    public void DeleteVital(String vitalId) {
+        // Reference to the specific symptom document
+        DocumentReference docRef = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .collection("vitals")
+                .document(vitalId);
+
+        // Delete the document
+        docRef.delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("debug", "vital record is deleted successfully.");
+                    searchResultMessageData.postValue("vital record is deleted successfully.");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Error", "Error deleting vital: " + e.getMessage());
+                    searchResultMessageData.postValue("Error deleting vital.");
                 });
     }
 

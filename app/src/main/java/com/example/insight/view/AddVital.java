@@ -144,7 +144,8 @@ public class AddVital extends DrawerBaseActivity {
 
                             //add the record to firestore
                             vitalViewModel.AddVital(newVital);
-                            Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
+
                         } else {
                             // Handle missing field error
                             showError(binding.errorGeneral, "One or more fields are empty.", true);
@@ -159,7 +160,8 @@ public class AddVital extends DrawerBaseActivity {
 
                         //add the record to firestore
                         vitalViewModel.AddVital(newVital);
-                        Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
+
                     } else {
                         Log.d("Activity", "Could not define the vital type");
                     }
@@ -183,4 +185,6 @@ public class AddVital extends DrawerBaseActivity {
             errorView.setVisibility(View.GONE);
         }
     }
+
+
 }
