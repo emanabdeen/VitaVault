@@ -22,20 +22,21 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.concurrent.CompletableFuture;
 
-public class ManageAccount extends AppCompatActivity {
+public class ManageAccount extends DrawerBaseActivity {
 
     ActivityManageAccountBinding binding;
     FirebaseAuth mAuth;
     FirebaseUser user;
     Button changePassButton;
-    ImageButton backButton;
+    //ImageButton backButton;
     EditText oldPw, newPw, confirmPw, email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityManageAccountBinding.inflate(getLayoutInflater());
-        this.setContentView(binding.getRoot());
+        setContentView(binding.getRoot());
+        allocateActivityTitle("My Account");
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -48,16 +49,16 @@ public class ManageAccount extends AppCompatActivity {
         newPw = binding.editTextNewPw;
         confirmPw = binding.editTextConfirmPw;
         email = binding.editTextEmail;
-        backButton = binding.backButton;
+        //backButton = binding.backButton;
 
         changePassButton = binding.testPasswordChange;
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+//        backButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                finish();
+//            }
+//        });
         changePassButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

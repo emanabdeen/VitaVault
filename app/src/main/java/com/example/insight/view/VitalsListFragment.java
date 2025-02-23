@@ -18,12 +18,12 @@ import android.widget.Toast;
 import com.example.insight.adapter.VitalsListAdapter;
 import com.example.insight.databinding.FragmentVitalsListBinding;
 import com.example.insight.model.Vital;
+import com.example.insight.utility.DateValidator;
 import com.example.insight.viewmodel.VitalViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +36,11 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
     private VitalsListAdapter vitalsListAdapter;
     private String vitalType;
     LocalDate searchDate;
+    String searchDateStr;
     Bundle bundle;
     String searchCriteria;
+    String title;
+    String image;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -60,15 +63,15 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
         if (bundle != null) {
             // Get the data from the Bundle
             vitalType = bundle.getString("vitalType");
+            title = bundle.getString("title");
+            image = bundle.getString("image");
 
         }
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(requireActivity()).get(VitalViewModel.class);
-        viewModel.GetVitalsByType(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
         //by default show all vital by type
-        viewModel.GetVitalsByType(vitalType);
+        //viewModel.GetVitalsByType(vitalType);
         searchCriteria = "type";
 
         // Setup RecyclerView
@@ -86,7 +89,7 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             vitalsListAdapter.updateData(vitalsData); // Update adapter data
 
             // Hide loading indicator
-            binding.progressBar.setVisibility(View.GONE);
+            binding.progressBar.setVisibility(View.GONE);//----it does not work for now
         });
 
         // Observe Search Message
@@ -97,25 +100,34 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
 
         // Search Button Logic
         binding.iconSearch.setOnClickListener(v -> {
-            String searchDateStr = binding.searchTextDate.getText().toString();
-            searchDate = LocalDate.parse(searchDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            searchDateStr = binding.searchTextDate.getText().toString();
 
-            if (searchDateStr.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter a search text", Toast.LENGTH_SHORT).show();
-            } else {
+            if (searchDateStr.isEmpty()){
+                //if the the search date is empty it will get all dates for this vital type
                 Log.i("trace", "Search initiated for: " + searchDateStr);
-                viewModel.GetSymptomsByDateAndType(searchDate, vitalType);
-                searchCriteria = "date";
+                viewModel.GetVitalsByType(vitalType);
+                searchCriteria = "type";
+            }else {
+                //if there is a date inserted, validate it before sending the request
+                boolean isDateValid = DateValidator.isValidDate(searchDateStr);
+                if (isDateValid){
+                    viewModel.GetVitalsByDateAndType(searchDateStr, vitalType);
+                    searchCriteria = "date";
+                }else{
+                    Toast.makeText(requireContext(), "Please enter a valid date", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
-
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
+//        if (!vitalType.isEmpty() && vitalType != null){
+//            viewModel.GetVitalsByType(vitalType);
+//        }
         viewModel.GetVitalsByType(vitalType);
         searchCriteria = "type";
     }
@@ -134,9 +146,13 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             String vitalID = vitalList.get(pos).getVitalId();
 
             //navigate to vitalDetail Page
-//            Intent intentObj = new Intent(requireContext(), VitalDetail.class);
-//            intentObj.putExtra("vitalID", vitalID);
-//            startActivity(intentObj);
+            Intent intentObj = new Intent(requireContext(), VitalDetails.class);
+            intentObj.putExtra("vitalID", vitalID);
+            intentObj.putExtra("vitalType","");
+            intentObj.putExtra("unit","");
+            intentObj.putExtra("title", title);
+            intentObj.putExtra("image", image);
+            startActivity(intentObj);
         }
     }
 
@@ -151,11 +167,11 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             String uid = user.getUid();
             String vitalID = vitalList.get(pos).getVitalId();
             viewModel.DeleteVital(vitalID); // ---------------Delete vital from Firestore DB
-            Toast.makeText(getContext(), "Vital record is successfully deleted", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getContext(), "Vital record is successfully deleted", Toast.LENGTH_LONG).show();
 
             //To refresh the recyclerview list
             if (searchCriteria.equals("date")){
-                viewModel.GetVitalsByDate(searchDate);
+                viewModel.GetVitalsByDate(searchDateStr);
             }else{
                 viewModel.GetVitalsByType(vitalType);
 

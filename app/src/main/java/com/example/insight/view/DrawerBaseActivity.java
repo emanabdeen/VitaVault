@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -25,6 +27,7 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
 
     DrawerLayout drawerLayout;
     Toolbar toolbar;
+    private boolean showBackIcon = true; // Default to showing the back icon
 
     @Override
     public void setContentView(View view) {
@@ -32,9 +35,23 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         FrameLayout container = drawerLayout.findViewById(R.id.activityContainer);
         container.addView(view);
         super.setContentView(drawerLayout);
+        //set up the toolbar
         toolbar =drawerLayout.findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+//        // Enable the back icon in the Toolbar (built in toolbar)
+//        if (getSupportActionBar() != null) {
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Show the back icon
+//            getSupportActionBar().setDisplayShowHomeEnabled(true); // Ensure the icon is clickable
+//        }
+
+        // Find the back button in the custom Toolbar
+        ImageButton backButton = toolbar.findViewById(R.id.back_button);
+
+        // Handle back button click
+        backButton.setOnClickListener(v -> onBackPressed());
+
+        // Set up the NavigationView
 
         NavigationView navigationView = drawerLayout.findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -54,7 +71,7 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
             startActivity(new Intent(this,DashboardActivity.class));
             overridePendingTransition(0,0);
         } else if (id == R.id.nav_symptoms) {
-            startActivity(new Intent(this,SymptomActivity.class));
+            startActivity(new Intent(this,MainActivity.class));
             overridePendingTransition(0,0);
         } else if (id == R.id.nav_vitals) {
             startActivity(new Intent(this,VitalsMainActivity.class));
@@ -64,7 +81,11 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
             // Handle Reports navigation
         } else if (id == R.id.nav_dietary) {
             // Handle Dietary Restrictions navigation
-        } else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_account) {
+            startActivity(new Intent(this,ManageAccount.class));
+            overridePendingTransition(0,0);
+        }
+        else if (id == R.id.nav_logout) {
             FirebaseAuth.getInstance().signOut();
             finish();
             startActivity(new Intent(DrawerBaseActivity.this, Login.class));
@@ -73,11 +94,30 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Handle back icon click
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed(); // Call the back button behavior
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     // to set the title in the action bar
     protected void allocateActivityTitle(String titleString){
         if (getSupportActionBar() != null){
             getSupportActionBar().setTitle((titleString));
 
+        }
+    }
+
+    // Method to control the visibility of the back icon
+    public void setShowBackIcon(boolean showBackIcon) {
+        this.showBackIcon = showBackIcon;
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(showBackIcon);
+            getSupportActionBar().setDisplayShowHomeEnabled(showBackIcon);
         }
     }
 }

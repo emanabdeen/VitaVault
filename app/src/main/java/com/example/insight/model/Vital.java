@@ -5,6 +5,7 @@ import com.example.insight.utility.VitalsCategories;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class Vital {
 
@@ -34,6 +35,8 @@ public class Vital {
         this.unit = unit;
     }
 
+
+
     public Vital(String vitalType, String unit) {
         this.recordDate = LocalDate .now(); // Sets to current date
         this.recordTime = LocalTime.now(); // Sets to current time
@@ -54,12 +57,33 @@ public class Vital {
         return recordTime;
     }
 
+    public String getRecordTimeStr() {
+        String recordTimeStr;
+        if (recordDate != null) {
+            recordTimeStr = recordDate.format(DateTimeFormatter.ofPattern("HH:mm"));
+        } else {
+            recordTimeStr="";
+        }
+        return recordTimeStr;
+    }
+
     public void setRecordTime(LocalTime recordTime) {
         this.recordTime = recordTime;
     }
 
     public LocalDate getRecordDate() {
         return recordDate;
+    }
+
+    public String getRecordDateStr() {
+        String recordDateStr;
+        if (recordDate != null) {
+            recordDateStr = recordDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        } else {
+            recordDateStr="";
+        }
+
+        return recordDateStr;
     }
 
     public void setRecordDate(LocalDate recordDate) {

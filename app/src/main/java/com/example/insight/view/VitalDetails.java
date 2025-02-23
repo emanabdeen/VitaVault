@@ -8,19 +8,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.example.insight.R;
-import com.example.insight.databinding.ActivityAddVitalBinding;
-import com.example.insight.databinding.ActivityVitalsBinding;
+import com.example.insight.databinding.ActivityVitalDetailsBinding;
 import com.example.insight.model.Vital;
 import com.example.insight.utility.DateValidator;
 import com.example.insight.utility.TimeValidator;
-import com.example.insight.utility.Unites;
 import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.VitalViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,23 +22,29 @@ import com.google.firebase.auth.FirebaseUser;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-public class AddVital extends DrawerBaseActivity {
-    ActivityAddVitalBinding binding;
+public class VitalDetails extends DrawerBaseActivity {
+    ActivityVitalDetailsBinding binding;
     FirebaseAuth mAuth;
     FirebaseUser user;
+    VitalViewModel viewModel;
+    String pageFunction;
+    String vitalId;
     String vitalType;
     String unit;
+    Vital vital;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityAddVitalBinding.inflate(getLayoutInflater());
-        this.setContentView(binding.getRoot());
+        binding = ActivityVitalDetailsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        allocateActivityTitle("Vitals");
+
+        //inst ViewModel that handles fetching the vitals details
+        viewModel=new ViewModelProvider(this).get(VitalViewModel.class);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -56,40 +55,83 @@ public class AddVital extends DrawerBaseActivity {
 
         //get the vital type from the intent
         Intent intentObject = getIntent();
-        vitalType = intentObject.getStringExtra("vitalType");
-        unit = intentObject.getStringExtra("unit");
+
+        //set the title of the page according to the vital type
         binding.textViewTitle.setText(intentObject.getStringExtra("title"));
 
-        //set the image and the title of the page according to the vital type
+        //set the image of the page according to the vital type
         String imageName = intentObject.getStringExtra("image");
         int imageResId = getResources().getIdentifier(imageName.replace("@drawable/", ""), "drawable", getPackageName());
         binding.image.setImageResource(imageResId);
 
 
-        //put initial values for current time and date
-        binding.editTextDate.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-        binding.editTime.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
 
-        //if the vital is not blood pressure, hide measure2 and put the measurement label = unit
-        if (!Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
-            binding.editTextMeasure2.setVisibility(View.GONE);
-            binding.lblMeasure2.setVisibility(View.GONE);
-            binding.lblMeasure1.setText(unit);
-        }
-        //if the vital is blood pressure, hide measure2 and put the measurement labels
-        //if the vital is blood pressure, hide measure2 and put the measurement labels Systolic ,Diastolic
-        if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
-            binding.lblMeasure1.setText("Systolic " + unit);
-            binding.lblMeasure2.setText("Diastolic " + unit);
-        }
+        //if vitalId has value, so this page is edit vital
+        if (!intentObject.getStringExtra("vitalID").isEmpty()){
 
-        //Back button
-        binding.btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
+            pageFunction="editVital";
+            vitalId=intentObject.getStringExtra("vitalID");
+            viewModel.GetVitalById(vitalId);
+
+            //to observe the data and display it
+            viewModel.getSelectedVitalData().observe(this,selectedVitalData ->{
+                vital= selectedVitalData; //vital object
+
+                //set the input fields values only when object is retrieved
+                if (vital.getRecordDate()!=null && vital.getRecordTime()!=null){
+                    vitalType = vital.getVitalType();
+                    unit = vital.getUnit();
+
+                    //add the retrieved vital data into the input fields
+                    binding.editTextDate.setText(selectedVitalData.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                    binding.editTime.setText(selectedVitalData.getRecordTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+                    binding.editTextMeasure1.setText(selectedVitalData.getMeasurement1());
+
+                    //if the vital is not blood pressure, hide measure2 and put the measurement label = unit
+                    if (!Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
+                        binding.editTextMeasure2.setVisibility(View.GONE);
+                        binding.lblMeasure2.setVisibility(View.GONE);
+                        binding.lblMeasure1.setText(unit);
+                    }
+                    //if the vital is blood pressure, hide measure2 and put the measurement labels Systolic ,Diastolic
+                    if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
+                        binding.lblMeasure1.setText("Systolic " + unit);
+                        binding.lblMeasure2.setText("Diastolic " + unit);
+                        binding.editTextMeasure2.setText(selectedVitalData.getMeasurement2());
+                    }
+                }
+
+            });
+        }else{
+            //if vitalId does not have value, so this page is create new vital
+            pageFunction = "createVital";
+            vitalType = intentObject.getStringExtra("vitalType");
+            unit = intentObject.getStringExtra("unit");
+
+            //put initial values for current time and date
+            binding.editTextDate.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+            binding.editTime.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+
+            //if the vital is not blood pressure, hide measure2 and put the measurement label = unit
+            if (!Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
+                binding.editTextMeasure2.setVisibility(View.GONE);
+                binding.lblMeasure2.setVisibility(View.GONE);
+                binding.lblMeasure1.setText(unit);
             }
-        });
+            //if the vital is blood pressure, hide measure2 and put the measurement labels Systolic ,Diastolic
+            if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
+                binding.lblMeasure1.setText("Systolic " + unit);
+                binding.lblMeasure2.setText("Diastolic " + unit);
+            }
+        }
+
+//        //Back button
+//        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                finish();
+//            }
+//        });
 
         //  Save Button
         binding.btnSave.setOnClickListener(new View.OnClickListener() {

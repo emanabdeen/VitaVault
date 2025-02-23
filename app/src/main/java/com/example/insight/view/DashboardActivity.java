@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -38,6 +39,13 @@ public class DashboardActivity extends DrawerBaseActivity {
         binding = ActivityDashboardBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         allocateActivityTitle("Dashboard");
+
+        //// Disable the back icon for this activity
+        //setShowBackIcon(false);
+
+        // Hide the back button for this activity
+        ImageButton backButton = toolbar.findViewById(R.id.back_button);
+        backButton.setVisibility(View.GONE);
 
 
         mAuth = FirebaseAuth.getInstance();
