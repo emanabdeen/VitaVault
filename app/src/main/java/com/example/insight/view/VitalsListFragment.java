@@ -22,6 +22,7 @@ import com.example.insight.R;
 import com.example.insight.adaoter.VitalsListAdapter;
 import com.example.insight.databinding.FragmentVitalsListBinding;
 import com.example.insight.model.Vital;
+import com.example.insight.utility.DateValidator;
 import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.VitalViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,6 +42,7 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
     private VitalsListAdapter vitalsListAdapter;
     private String vitalType;
     LocalDate searchDate;
+    String searchDateStr;
     Bundle bundle;
     String searchCriteria;
 
@@ -91,7 +93,7 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             vitalsListAdapter.updateData(vitalsData); // Update adapter data
 
             // Hide loading indicator
-            binding.progressBar.setVisibility(View.GONE);
+            binding.progressBar.setVisibility(View.GONE);//----it does not work for now
         });
 
         // Observe Search Message
@@ -102,19 +104,25 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
 
         // Search Button Logic
         binding.iconSearch.setOnClickListener(v -> {
-            String searchDateStr = binding.searchTextDate.getText().toString();
-            searchDate = LocalDate.parse(searchDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            searchDateStr = binding.searchTextDate.getText().toString();
 
-            if (searchDateStr.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter a search text", Toast.LENGTH_SHORT).show();
-            } else {
+            if (searchDateStr.isEmpty()){
+                //if the the search date is empty it will get all dates for this vital type
                 Log.i("trace", "Search initiated for: " + searchDateStr);
-                viewModel.GetSymptomsByDateAndType(searchDate, vitalType);
-                searchCriteria = "date";
+                viewModel.GetVitalsByType(vitalType);
+                searchCriteria = "type";
+            }else {
+                //if there is a date inserted, validate it before sending the request
+                boolean isDateValid = DateValidator.isValidDate(searchDateStr);
+                if (isDateValid){
+                    viewModel.GetSymptomsByDateAndType(searchDateStr, vitalType);
+                    searchCriteria = "date";
+                }else{
+                    Toast.makeText(requireContext(), "Please enter a valid date", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
-
-
     }
 
     @Override
@@ -137,7 +145,6 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
     public void OnClickItem(View v, int pos) {
         if (vitalList != null && pos < vitalList.size()) {
             String vitalID = vitalList.get(pos).getVitalId();
-
             //navigate to vitalDetail Page
 //            Intent intentObj = new Intent(requireContext(), VitalDetail.class);
 //            intentObj.putExtra("vitalID", vitalID);
@@ -156,11 +163,11 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             String uid = user.getUid();
             String vitalID = vitalList.get(pos).getVitalId();
             viewModel.DeleteVital(vitalID); // ---------------Delete vital from Firestore DB
-            Toast.makeText(getContext(), "Vital record is successfully deleted", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getContext(), "Vital record is successfully deleted", Toast.LENGTH_LONG).show();
 
             //To refresh the recyclerview list
             if (searchCriteria.equals("date")){
-                viewModel.GetVitalsByDate(searchDate);
+                viewModel.GetVitalsByDate(searchDateStr);
             }else{
                 viewModel.GetVitalsByType(vitalType);
 

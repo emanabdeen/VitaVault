@@ -108,9 +108,11 @@ public class VitalViewModel extends ViewModel {
 
     }
 
-    public void GetVitalsByDate(LocalDate searchDate) {
+    public void GetVitalsByDate(String recordDateStr) {
 
-        String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        //String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
 
         // Reference to the user's symptoms collection
         CollectionReference vitalsRef = FirebaseFirestore.getInstance()
@@ -120,7 +122,7 @@ public class VitalViewModel extends ViewModel {
 
         // Create a query to find documents that match the specified criteria
         Query query = vitalsRef
-                .whereEqualTo("recordDate", searchDateStr);
+                .whereEqualTo("recordDate", recordDateStr);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -150,7 +152,7 @@ public class VitalViewModel extends ViewModel {
 
 
                                 // Create symptom object with the retrieved data
-                                Vital vital = new Vital(searchDate, recordTime, vitalTypeStr,unitStr);
+                                Vital vital = new Vital(recordDate, recordTime, vitalTypeStr,unitStr);
                                 vital.setVitalId(document.getId());
                                 vital.setMeasurement1(measurement1);
                                 vital.setMeasurement2(measurement2);
@@ -312,9 +314,11 @@ public class VitalViewModel extends ViewModel {
 //    }
 
 
-    public void GetSymptomsByDateAndType(LocalDate searchDate, String vitalType) {
+    public void GetSymptomsByDateAndType(String searchDateStr, String vitalType) {
 
-        String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        //String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate searchDate = LocalDate.parse(searchDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+
 
         // Reference to the user's vital collection
         CollectionReference symptomsRef = FirebaseFirestore.getInstance()
@@ -400,11 +404,11 @@ public class VitalViewModel extends ViewModel {
         docRef.delete()
                 .addOnSuccessListener(aVoid -> {
                     Log.d("debug", "vital record is deleted successfully.");
-                    searchResultMessageData.postValue("vital record is deleted successfully.");
+                    //searchResultMessageData.postValue("vital record is deleted successfully.");
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Error", "Error deleting vital: " + e.getMessage());
-                    searchResultMessageData.postValue("Error deleting vital.");
+                    //searchResultMessageData.postValue("Error deleting vital.");
                 });
     }
 

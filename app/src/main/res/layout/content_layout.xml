@@ -10,16 +10,23 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <include
+            layout="@layout/custom_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:titleTextColor="@color/white"
-            app:titleMarginBottom="10dp"/>
+            android:layout_height="?attr/actionBarSize" />
     </com.google.android.material.appbar.AppBarLayout>
+
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolbar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:background="@color/primary"-->
+<!--            android:minHeight="?attr/actionBarSize"-->
+<!--            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
+<!--            app:titleTextColor="@color/white"-->
+<!--            app:titleMarginBottom="10dp"-->
+<!--            app:navigationIcon="@drawable/ic_arrow_back_activity"/>-->
+<!--    </com.google.android.material.appbar.AppBarLayout>-->
     
     <FrameLayout
         android:layout_width="match_parent"
