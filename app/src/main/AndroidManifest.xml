@@ -15,6 +15,12 @@
         android:theme="@style/Theme.Insight"
         tools:targetApi="31">
         <activity
+            android:name=".view.DietaryRestrictionsAddCustomActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.DietaryRestrictionsMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.AddVital"
             android:exported="false" />
         <activity

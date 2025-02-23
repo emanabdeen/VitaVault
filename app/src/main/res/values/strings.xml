@@ -23,5 +23,6 @@
     <string name="medications">Medications</string>
     <string name="list">List</string>
     <string name="trends">Trends</string>
+    <string name="dietaryRestrictionsTitle">Dietary Restrictions</string>
 
 </resources>

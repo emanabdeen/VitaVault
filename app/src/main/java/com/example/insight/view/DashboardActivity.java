@@ -62,6 +62,13 @@ public class DashboardActivity extends DrawerBaseActivity {
                 startActivity(new Intent(DashboardActivity.this, MainActivity.class));
             }
         });
+
+        binding.cardDietry.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(DashboardActivity.this, DietaryRestrictionsMainActivity.class));
+            }
+        });
     }
 
     @Override

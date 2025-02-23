@@ -1,0 +1,136 @@
+package com.example.insight.viewmodel;
+
+import android.util.Log;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
+import com.example.insight.model.DietaryResrtictionIngredient;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class DietaryRestrictionIngredientViewModel extends ViewModel {
+
+    public FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    //get the current user
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    public FirebaseUser currentUser = auth.getCurrentUser();
+    public String uid = currentUser.getUid();
+
+
+    //set the LiveData
+    private final MutableLiveData<List<DietaryResrtictionIngredient>> ingredientLiveData = new MutableLiveData<>();
+    List<DietaryResrtictionIngredient> ingredientList = new ArrayList<>();
+
+
+    //Constructor
+    public DietaryRestrictionIngredientViewModel() {
+        ingredientLiveData.setValue(ingredientList);
+
+    }
+
+    //Getter
+    public LiveData<List<DietaryResrtictionIngredient>> getIngredientsData() {
+        return ingredientLiveData;
+    }
+
+
+    public void GetAllDietaryRestrictionIngredients() {
+/*
+        db.collection("users")
+                .document(uid)
+                .collection("dietaryRestrictions")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                        if (snapshot != null && !snapshot.isEmpty()) {
+                            ingredientList = new ArrayList<>();
+
+                            for (DocumentSnapshot document : snapshot.getDocuments()) {
+
+                                try {
+                                    DietaryResrtictionIngredient ingredient = new DietaryResrtictionIngredient(document.getString("ingredientName"), document.getString("ingredientCategory"));
+                                    ingredientList.add(ingredient);
+                                } catch (Exception e) {
+                                    Log.e("Error", "Error parsing time: " + e.getMessage());
+                                }
+
+                            }
+                            ingredientLiveData.postValue(ingredientList);
+                        }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error retrieving documents: " + e.getMessage());
+                    ingredientLiveData.postValue(null);// Handle failure
+                });
+
+*/
+
+/*
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .collection("dietaryRestrictions")
+        .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                ingredientList = new ArrayList<>();
+                QuerySnapshot querySnapshot = task.getResult();
+
+                if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                    Log.d("debug", "----------------------Get Vitals By type--------------------------------");
+
+                    // Retrieve the documents from the query result
+                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+
+                            String category = document.getString("ingredientCategory");
+                            String name = document.getString("ingredientName");
+
+                            // Create vital object with the retrieved data
+                            DietaryResrtictionIngredient ingredient = new DietaryResrtictionIngredient(name,category);
+                            ingredient.setIngredientId(document.getId());
+
+                            ingredientList.add(ingredient);
+                    }
+
+                    ingredientLiveData.postValue(ingredientList);
+                } else {
+
+                    ingredientLiveData.postValue(ingredientList);
+                }
+            } else {
+                // Handle failure
+                Log.e("Firestore", "Error retrieving documents: " + task.getException().getMessage());
+                ingredientLiveData.postValue(null);
+            }
+        });
+        */
+
+    }
+
+
+    public void AddDietaryRestrictionIngredient(DietaryResrtictionIngredient ingredient) {
+
+        try {
+            DocumentReference addDocRef = db.collection("users")
+                    .document(uid)
+                    .collection("dietaryRestrictions")
+                    .add(ingredient).getResult();
+
+            String generatedId = addDocRef.getId(); //get the iD of the created document
+            Log.d("debug", "Document added with ID: " + generatedId);
+
+        } catch (Exception e) {
+            Log.e("Firestore", "Error adding document: " + e.getMessage());
+        }
+    }
+
+}
