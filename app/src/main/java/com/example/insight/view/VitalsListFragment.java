@@ -119,15 +119,14 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
 
             }
         });
+
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-//        if (!vitalType.isEmpty() && vitalType != null){
-//            viewModel.GetVitalsByType(vitalType);
-//        }
         viewModel.GetVitalsByType(vitalType);
         searchCriteria = "type";
     }

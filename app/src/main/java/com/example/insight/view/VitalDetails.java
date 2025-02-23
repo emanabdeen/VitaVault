@@ -125,21 +125,18 @@ public class VitalDetails extends DrawerBaseActivity {
             }
         }
 
-//        //Back button
-//        binding.btnBack.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                finish();
-//            }
-//        });
-
         //  Save Button
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 try {
-                    CreateNewVital();
+                    if (pageFunction.equals("createVital")){
+                        CreateNewVital();
+                    }
+                    if (pageFunction.equals("editVital")){
+                        EditVital();
+                    }
                     finish();
                 }catch (Exception e) {
                     Log.e("error", "try-catch error: "+ e.getMessage());
@@ -203,6 +200,77 @@ public class VitalDetails extends DrawerBaseActivity {
                         //add the record to firestore
                         vitalViewModel.AddVital(newVital);
                         Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
+
+                    } else {
+                        Log.d("Activity", "Could not define the vital type");
+                    }
+                }
+            } else {
+                //Handle missing field error
+                showError(binding.errorGeneral, "One or more fields are empty.", true);
+                Log.e("error", "One or more fields are empty.");
+            }
+
+        }catch (Exception e) {
+            Log.e("error", "try-catch error: "+ e.getMessage());
+        }
+    }
+
+    private void EditVital(){
+        try{
+            VitalViewModel vitalViewModel = new VitalViewModel();
+
+            // Get data from UI
+            String recordDateStr = binding.editTextDate.getText().toString();
+            String recordTimeStr = binding.editTime.getText().toString();
+            String recordMeasure1 = binding.editTextMeasure1.getText().toString();
+            String recordMeasure2 = binding.editTextMeasure2.getText().toString();
+
+            if (!TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStr) && !TextUtils.isEmpty(recordMeasure1)) {
+                boolean isDateValid = DateValidator.isValidDate(recordDateStr);
+                boolean isTimeValid = TimeValidator.isValidTime(recordTimeStr);
+                showError(binding.errorGeneral, "", false);
+
+                // Handle date error
+                showError(binding.errorDate, "Invalid Date (e.g., 15-05-2025)", !isDateValid);
+
+                // Handle time error
+                showError(binding.errorTime, "Invalid Time (e.g., 14:30)", !isTimeValid);
+
+                if (isDateValid && isTimeValid) {
+                    LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                    LocalTime recordTime = LocalTime.parse(recordTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+
+                    if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
+                        if (!TextUtils.isEmpty(recordMeasure2)) {
+
+                            // Initialize and save Vital object
+                            Vital updatedVital = new Vital(recordDate, recordTime, vitalType, unit);
+                            updatedVital.setMeasurement1(recordMeasure1);
+                            updatedVital.setMeasurement2(recordMeasure2);
+                            updatedVital.setVitalId(vitalId);
+
+
+                            //add the record to firestore
+                            vitalViewModel.UpdateVital(updatedVital);
+                            Toast.makeText(getApplicationContext(), "Updated Successfully", Toast.LENGTH_LONG).show();
+
+                        } else {
+                            // Handle missing field error
+                            showError(binding.errorGeneral, "One or more fields are empty.", true);
+                            Log.e("error", "One or more fields are empty.");
+                        }
+                    } else if (VitalsCategories.isValidVitalCategory(vitalType)) {
+                        showError(binding.errorGeneral, "", false);
+
+                        // Initialize and save Vital object
+                        Vital updatedVital = new Vital(recordDate, recordTime, vitalType, unit);
+                        updatedVital.setMeasurement1(recordMeasure1);
+                        updatedVital.setVitalId(vitalId);
+
+                        //add the record to firestore
+                        vitalViewModel.UpdateVital(updatedVital);
+                        Toast.makeText(getApplicationContext(), "Updated Successfully", Toast.LENGTH_LONG).show();
 
                     } else {
                         Log.d("Activity", "Could not define the vital type");

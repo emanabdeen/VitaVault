@@ -15,6 +15,7 @@ public class VitalsViewHolder extends RecyclerView.ViewHolder {
     TextView value;
     ItemClickListener clickListener;
     ImageButton btnDelete;
+    ImageButton btnEdit;
 
     public VitalsViewHolder(@NonNull View itemView, ItemClickListener clickListener) {
         super(itemView);
@@ -22,7 +23,7 @@ public class VitalsViewHolder extends RecyclerView.ViewHolder {
         value = itemView.findViewById(R.id.value_txt);
         this.clickListener= clickListener;
         btnDelete = itemView.findViewById(R.id.btnDelete);
-
+        btnEdit = itemView.findViewById(R.id.btnEdit);
         //passing the clicked view and its position in the adapter
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,6 +37,13 @@ public class VitalsViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
                 clickListener.OnClickDelete(v,getAdapterPosition());
+            }
+        });
+
+        btnEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.OnClickItem(v,getAdapterPosition());
             }
         });
     }
