@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insight.R;
-import com.example.insight.model.DietaryResrtictionIngredient;
+import com.example.insight.model.DietaryRestrictionIngredient;
 import com.example.insight.view.DietaryRestrictionCustomIngredientsViewHolder;
 import com.example.insight.view.ItemClickListener;
 
@@ -19,10 +19,10 @@ import java.util.List;
 public class DietaryRestrictionCustomIngredientAdapter extends RecyclerView.Adapter<DietaryRestrictionCustomIngredientsViewHolder> {
 
     Context context;
-    List<DietaryResrtictionIngredient> ingredientsList = new ArrayList<>();
+    List<DietaryRestrictionIngredient> ingredientsList = new ArrayList<>();
     ItemClickListener clickListener;
 
-    public DietaryRestrictionCustomIngredientAdapter(Context context, List<DietaryResrtictionIngredient> ingredientsList) {
+    public DietaryRestrictionCustomIngredientAdapter(Context context, List<DietaryRestrictionIngredient> ingredientsList) {
         this.context = context;
         this.ingredientsList = ingredientsList;
 
@@ -42,7 +42,7 @@ public class DietaryRestrictionCustomIngredientAdapter extends RecyclerView.Adap
     @Override
     public void onBindViewHolder(@NonNull DietaryRestrictionCustomIngredientsViewHolder holder, int position) {
 
-        DietaryResrtictionIngredient ingredient = ingredientsList.get(position);
+        DietaryRestrictionIngredient ingredient = ingredientsList.get(position);
 
         holder.ingredient.setText(ingredient.getIngredientName());
 
@@ -54,7 +54,7 @@ public class DietaryRestrictionCustomIngredientAdapter extends RecyclerView.Adap
         return ingredientsList.size();
     }
 
-    public void updateMovies(List<DietaryResrtictionIngredient> ingredients) {
+    public void updateIngredientList(List<DietaryRestrictionIngredient> ingredients) {
         this.ingredientsList.clear();
         this.ingredientsList.addAll(ingredients);
         notifyDataSetChanged();

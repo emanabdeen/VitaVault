@@ -6,27 +6,18 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.insight.model.DietaryResrtictionIngredient;
-import com.example.insight.model.Vital;
-import com.example.insight.utility.DateValidator;
-import com.example.insight.utility.StringHandler;
-import com.example.insight.utility.TimeValidator;
+import com.example.insight.model.DietaryRestrictionIngredient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DietaryRestrictionIngredientViewModel extends ViewModel {
+public class dietaryRestrictionIngredientViewModel extends ViewModel {
 
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -37,23 +28,23 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
 
 
     //set the LiveData
-    private final MutableLiveData<List<DietaryResrtictionIngredient>> ingredientLiveData = new MutableLiveData<>();
-    List<DietaryResrtictionIngredient> ingredientList = new ArrayList<>();
+    private final MutableLiveData<List<DietaryRestrictionIngredient>> ingredientLiveData = new MutableLiveData<>();
+    List<DietaryRestrictionIngredient> ingredientList = new ArrayList<>();
 
 
     //Constructor
-    public DietaryRestrictionIngredientViewModel() {
+    public dietaryRestrictionIngredientViewModel() {
         ingredientLiveData.setValue(ingredientList);
 
     }
 
     //Getter
-    public LiveData<List<DietaryResrtictionIngredient>> getIngredientsData() {
+    public LiveData<List<DietaryRestrictionIngredient>> getIngredientsData() {
         return ingredientLiveData;
     }
 
 
-    public void GetAllDietaryRestrictionIngredients() {
+    public void getAllDietaryRestrictionIngredients() {
 
         FirebaseFirestore.getInstance()
                 .collection("users")
@@ -78,7 +69,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
                         Log.d("AddCustomIngredientdebug", "name: " + name);
 
                         // Create vital object with the retrieved data
-                            DietaryResrtictionIngredient ingredient = new DietaryResrtictionIngredient(name,category);
+                            DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(name,category);
                             ingredient.setIngredientId(document.getId());
 
                         Log.d("AddCustomIngredientdebug", ingredient.getIngredientName());
@@ -105,7 +96,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
     }
 
 
-    public void AddDietaryRestrictionIngredient(DietaryResrtictionIngredient ingredient) {
+    public void addDietaryRestrictionIngredient(DietaryRestrictionIngredient ingredient) {
 
         try {
             DocumentReference addDocRef = db.collection("users")
@@ -119,6 +110,26 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
         } catch (Exception e) {
             Log.e("Firestore", "Error adding document: " + e.getMessage());
         }
+    }
+
+    public void deleteDietaryRestrictionIngredient(String ingredientId){
+
+        Log.e("AddCustomIngredient",ingredientId);
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .collection("dietaryRestrictions")
+                .document(ingredientId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("debug", "Dietary Restriction  record is deleted successfully.");
+                    //searchResultMessageData.postValue("vital record is deleted successfully.");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Error", "Error deleting : " + e.getMessage());
+                });
+
     }
 
 }

@@ -1,6 +1,6 @@
 package com.example.insight.model;
 
-public class DietaryResrtictionIngredient {
+public class DietaryRestrictionIngredient {
 
     private String ingredientId;
     private String ingredientName;
@@ -14,11 +14,11 @@ public class DietaryResrtictionIngredient {
         this.ingredientCategory = ingredientCategory;
     }
 
-    public DietaryResrtictionIngredient(){
+    public DietaryRestrictionIngredient(){
 
     }
 
-    public DietaryResrtictionIngredient(String ingredientName, String category){
+    public DietaryRestrictionIngredient(String ingredientName, String category){
         this.ingredientName = ingredientName;
         this.ingredientCategory = category == null ? "Custom" : category;
     }

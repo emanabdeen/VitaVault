@@ -62,7 +62,7 @@
                     android:gravity="end">
 
                     <ImageButton
-                        android:id="@+id/btnDelete"
+                        android:id="@+id/btnEdit"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@null"
@@ -71,7 +71,7 @@
 
 
                     <ImageButton
-                        android:id="@+id/btnDelete2"
+                        android:id="@+id/btnDelete"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="@null"
