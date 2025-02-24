@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -50,7 +51,8 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
                 .collection("users")
                 .document(uid)
                 .collection("dietaryRestrictions")
-        .get().addOnCompleteListener(task -> {
+                .orderBy("ingredientName", Query.Direction.ASCENDING)
+                .get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 ingredientList = new ArrayList<>();
                 QuerySnapshot querySnapshot = task.getResult();
@@ -112,6 +114,28 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
         }
     }
 
+    public void updateDietaryRestrictionIngredient(DietaryRestrictionIngredient ingredient) {
+        try {
+            db.collection("users")
+                    .document(uid)
+                    .collection("dietaryRestrictions")
+                    .document(ingredient.getIngredientId())
+                    .update("ingredientName", ingredient.getIngredientName())
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("debug", "Vital updated successfully.");
+
+
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Error", "Error updating vital: " + e.getMessage());
+
+                    });
+        } catch (Exception e) {
+            Log.e("Firestore", "Error updating document: " + e.getMessage());
+        }
+    }
+
+
     public void deleteDietaryRestrictionIngredient(String ingredientId){
 
         Log.e("AddCustomIngredient",ingredientId);
@@ -131,5 +155,8 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
                 });
 
     }
+
+
+
 
 }

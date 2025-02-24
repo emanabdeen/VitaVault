@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity implements ItemClickListener{
+public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity implements ItemClickListener {
 
     ActivityDietaryRestrictionsAddCustomBinding binding;
     DietaryRestrictionCustomIngredientAdapter ingredientAdapter;
@@ -28,6 +28,14 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
     List<DietaryRestrictionIngredient> ingredientList = new ArrayList<>();
     FirebaseAuth mAuth;
     FirebaseUser user;
+    DietaryRestrictionIngredient ingredient;
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchIngredientList();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
         binding = ActivityDietaryRestrictionsAddCustomBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         allocateActivityTitle("Dietary Restrictions");
+        binding.textViewTitle.setText("Add Custom Dietary Restriction\"");
 
         viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
 
@@ -65,34 +74,34 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
             @Override
             public void onClick(View v) {
 
-               try{
-                   dietaryRestrictionIngredientViewModel viewModel = new dietaryRestrictionIngredientViewModel();
-                   String uid = user.getUid();
+
+                    try {
+                        dietaryRestrictionIngredientViewModel viewModel = new dietaryRestrictionIngredientViewModel();
+                        String uid = user.getUid();
+
+                        String ingredientText = String.valueOf(binding.editIngredient.getText());
+
+                        if (!ingredientText.isEmpty()) {
+
+                            DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(ingredientText, "Custom");
 
 
-                   String ingredientText = String.valueOf(binding.editIngredient.getText());
+                                viewModel.addDietaryRestrictionIngredient(ingredient);
+                                Toast.makeText(DietaryRestrictionsAddCustomActivity.this, "Saved Successfully", Toast.LENGTH_LONG).show();
+                                showError(binding.errorIngredient, "", false);
 
-                   if(!ingredientText.isEmpty()){
 
-                       DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(ingredientText, "Custom");
+                            //reloads the ingredient list for both scenarios
+                            clear();
+                            fetchIngredientList();
+                        } else {
 
-                       viewModel.addDietaryRestrictionIngredient(ingredient);
-                       Toast.makeText(DietaryRestrictionsAddCustomActivity.this, "Saved Successfully",Toast.LENGTH_LONG).show();
-                       showError(binding.errorIngredient, "",false);
+                            showError(binding.errorIngredient, "Required field cannot be empty", true);
+                        }
 
-                       //reloads the ingredient list
-                       clear();
-                       fetchIngredientList();
-
-                   }else{
-
-                       showError(binding.errorIngredient, "Required field cannot be empty",true);
-                   }
-
-               }catch (Exception e){
-                   Log.e("error", "try-catch error: "+ e.getMessage());
-               }
-
+                    } catch (Exception e) {
+                        Log.e("error", "try-catch error: " + e.getMessage());
+                    }
             }
 
         });
@@ -103,6 +112,8 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
                 finish();
             }
         });
+
+
 
     }
 
@@ -145,13 +156,31 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
     @Override
     public void OnClickItem(View v, int pos) {
 
-        Log.e("AddCustomIngredient", "Click!!");
+        if (user == null) {
+            Intent intentObj = new Intent(this, Login.class);
+            startActivity(intentObj);
+            Log.d("tag", "Redirect user to login page");
+
+        } else if (pos >= 0 && pos < ingredientList.size()) {
+            String uid = user.getUid();
+
+            DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(ingredientList.get(pos).getIngredientName(), ingredientList.get(pos).getIngredientCategory());
+            ingredient.setIngredientId(ingredientList.get(pos).getIngredientId());
+
+            Intent editIngredientIntent = new Intent(this, DietaryRestrictionsEditCustomActivity.class);
+            //Bundle bundle = new Bundle();
+            //bundle.putSerializable("customDietaryRestriction", ingredient);
+            editIngredientIntent.putExtra("customDietaryRestriction", ingredient);
+            startActivity(editIngredientIntent);
+
+
+        }
+
     }
 
     @Override
     public void OnClickDelete(View v, int pos) {
 
-        Log.e("AddCustomIngredient","click delete!!");
 
         if (user == null) {
             Intent intentObj = new Intent(this, Login.class);
@@ -172,4 +201,5 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
         }
 
     }
+
 }

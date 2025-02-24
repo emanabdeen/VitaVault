@@ -97,17 +97,6 @@
                 android:textStyle="bold" />
 
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/customIngredientList"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="0dp"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="10dp"
-                    />
-
-
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnBack"
                 android:layout_width="100dp"

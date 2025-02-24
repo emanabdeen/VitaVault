@@ -1,6 +1,8 @@
 package com.example.insight.model;
 
-public class DietaryRestrictionIngredient {
+import java.io.Serializable;
+
+public class DietaryRestrictionIngredient implements Serializable {
 
     private String ingredientId;
     private String ingredientName;

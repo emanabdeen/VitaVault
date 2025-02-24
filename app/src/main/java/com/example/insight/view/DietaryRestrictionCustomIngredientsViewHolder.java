@@ -1,5 +1,6 @@
 package com.example.insight.view;
 
+import android.media.Image;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -15,6 +16,7 @@ public class DietaryRestrictionCustomIngredientsViewHolder extends RecyclerView.
     public TextView ingredient;
     ItemClickListener clickListener;
     ImageButton btnDelete;
+    ImageButton btnEdit;
 
 
     public DietaryRestrictionCustomIngredientsViewHolder(@NonNull View itemView, ItemClickListener clickListener) {
@@ -24,7 +26,9 @@ public class DietaryRestrictionCustomIngredientsViewHolder extends RecyclerView.
         this.clickListener = clickListener;
 
         //passing the clicked view and its position in the adapter
-        itemView.setOnClickListener(new View.OnClickListener() {
+        btnEdit = itemView.findViewById(R.id.btnEdit);
+
+        btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickListener.OnClickItem(v,getAdapterPosition());
@@ -37,7 +41,6 @@ public class DietaryRestrictionCustomIngredientsViewHolder extends RecyclerView.
             @Override
             public void onClick(View v) {
                 clickListener.OnClickDelete(v,getAdapterPosition());
-                Log.e("AddCustomIngredient","Delete!!");
             }
         });
     }
