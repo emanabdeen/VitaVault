@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -82,7 +83,7 @@ public class SymptomViewModel extends ViewModel {
     }
 
 
-    public CompletableFuture<Boolean> AddSymptom(String uid, Symptom symptom){
+    public CompletableFuture<Boolean> AddSymptom(Symptom symptom){
         CompletableFuture<Boolean> symptomAdded = new CompletableFuture<>();
         
         // Create a map to hold the details of the document under the symptoms collection
@@ -93,7 +94,7 @@ public class SymptomViewModel extends ViewModel {
             
             String recordDateStr = DateValidator.LocalDateToString(symptom.getRecordDate());
             String startTimeStr = TimeValidator.LocalTimeToString(symptom.getStartTime());
-            String endTimeStr = TimeValidator.LocalTimeToString(symptom.getEndTime());
+            String endTimeStr = StringHandler.defaultIfNull(TimeValidator.LocalTimeToString(symptom.getEndTime().orElse(null))); // because endTime is optional, so it may have value null. Because it is an optional object so to get it you have to use this expression symptom.getEndTime().orElse(null)
             String symptomName = symptom.getSymptomName();
             String symptomLevel = symptom.getSymptomLevel();
             String symptomDescription = symptom.getSymptomDescription();
@@ -183,13 +184,22 @@ public class SymptomViewModel extends ViewModel {
                                 String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
 
                                 LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
-                                LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
 
-                                // Create symptom object with the retrieved data
-                                Symptom symptom = new Symptom(searchDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                                symptom.setSymptomId(document.getId());
+                                if (endTimeStr.isEmpty()){
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(searchDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
 
-                                symptomsList.add(symptom);
+                                }else{
+                                    LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(searchDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+                                }
+
                             } catch (DateTimeParseException e) {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
                             }
@@ -250,13 +260,21 @@ public class SymptomViewModel extends ViewModel {
                                 String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
 
                                 LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
-                                LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+                                if (endTimeStr.isEmpty()){
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(searchDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
 
-                                // Create symptom object with the retrieved data
-                                Symptom symptom = new Symptom(searchDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                                symptom.setSymptomId(document.getId());
+                                }else{
+                                    LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
 
-                                symptomsList.add(symptom);
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(searchDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+                                }
+
                             } catch (DateTimeParseException e) {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
                             }
@@ -315,15 +333,23 @@ public class SymptomViewModel extends ViewModel {
                                 String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
                                 String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
 
-                                LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
-                                LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
                                 LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+                                LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
 
-                                // Create symptom object with the retrieved data
-                                Symptom symptom = new Symptom(recordDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                                symptom.setSymptomId(document.getId());
+                                if (endTimeStr.isEmpty()){
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
 
-                                symptomsList.add(symptom);
+                                }else{
+                                    LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+                                }
 
                             } catch (DateTimeParseException e) {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
@@ -381,15 +407,23 @@ public class SymptomViewModel extends ViewModel {
                                 String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
                                 String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
 
-                                LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
-                                LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
                                 LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+                                LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
 
-                                // Create symptom object with the retrieved data
-                                Symptom symptom = new Symptom(recordDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                                symptom.setSymptomId(document.getId());
+                                if (endTimeStr.isEmpty()){
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
 
-                                symptomsList.add(symptom);
+                                }else{
+                                    LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+                                }
 
                             } catch (DateTimeParseException e) {
                                 Log.e(TAG, "Error parsing time: " + e.getMessage());
@@ -451,13 +485,21 @@ public class SymptomViewModel extends ViewModel {
                             String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
                             String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
 
-                            LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
-                            LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
                             LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+                            LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
 
-                            //create symptom object with the retrieved data
-                            selectedSymptom = new Symptom(recordDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                            selectedSymptom.setSymptomId(symptomId);
+                            if (endTimeStr.isEmpty()){
+                                // Create symptom object with the retrieved data
+                                selectedSymptom = new Symptom(recordDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                selectedSymptom.setSymptomId(symptomId);
+
+                            }else{
+                                LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+
+                                // Create symptom object with the retrieved data
+                                selectedSymptom = new Symptom(recordDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                selectedSymptom.setSymptomId(symptomId);
+                            }
 
                         } catch (DateTimeParseException e) {
                             Log.e("Error", "Error parsing time: " + e.getMessage());
@@ -495,13 +537,20 @@ public class SymptomViewModel extends ViewModel {
         // Document reference for the specific symptom to be updated
         DocumentReference docRef = symptomsRef.document(updatedSymptom.getSymptomId());
 
+        String symptomName = updatedSymptom.getSymptomName();
+        String symptomLevel = updatedSymptom.getSymptomLevel();
+        String symptomDescription = updatedSymptom.getSymptomDescription();
+        String recordDateStr = DateValidator.LocalDateToString(updatedSymptom.getRecordDate());
+        String startTimeStr = TimeValidator.LocalTimeToString(updatedSymptom.getStartTime());
+        String endTimeStr = StringHandler.defaultIfNull(TimeValidator.LocalTimeToString(updatedSymptom.getEndTime().orElse(null))); // because endTime is optional, so it may have value null. Because it is an optional object so to get it you have to use this expression symptom.getEndTime().orElse(null)
+
         Map<String, Object> updatedData = new HashMap<>();
-        updatedData.put("symptomName", updatedSymptom.getSymptomName());
-        updatedData.put("symptomLevel", updatedSymptom.getSymptomLevel());
-        updatedData.put("symptomDescription", updatedSymptom.getSymptomDescription());
-        updatedData.put("startTime", TimeValidator.LocalTimeToString(updatedSymptom.getStartTime()));
-        updatedData.put("endTime", TimeValidator.LocalTimeToString(updatedSymptom.getEndTime()));
-        updatedData.put("recordDate", DateValidator.LocalDateToString(updatedSymptom.getRecordDate()));
+        updatedData.put("symptomName", symptomName);
+        updatedData.put("symptomLevel", symptomLevel);
+        updatedData.put("symptomDescription", symptomDescription);
+        updatedData.put("startTime", startTimeStr);
+        updatedData.put("endTime", endTimeStr);
+        updatedData.put("recordDate", recordDateStr);
 
         // Update the document in Firestore
         docRef.update(updatedData)

@@ -185,7 +185,7 @@ public class MainActivity extends DrawerBaseActivity {
         symptomViewModel=new SymptomViewModel();
         String uid = user.getUid(); // Get the logged-in user's unique ID
 
-        symptomViewModel.AddSymptom(uid, symptom);
+        symptomViewModel.AddSymptom(symptom);
     }
 
     /** method to get a list of symptoms at a selected date*/

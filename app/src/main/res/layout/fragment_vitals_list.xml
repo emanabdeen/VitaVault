@@ -30,6 +30,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/edit_text_background"
             android:hint="search for records by date"
+            android:textColorHint="@color/liteGray"
             android:inputType="date"
             android:padding="8dp"
             android:textSize="13sp"

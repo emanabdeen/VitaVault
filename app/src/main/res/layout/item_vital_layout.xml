@@ -52,7 +52,7 @@
                         android:layout_gravity="center_vertical"
                         android:fontFamily="sans-serif-condensed"
                         android:shadowColor="#E7E3E3"
-                        android:text="10-10-2025 (13:30)"
+                        android:text=""
                         android:textColor="@color/accent"
                         android:textSize="15sp"
                         android:textStyle="italic|bold" />
@@ -64,7 +64,7 @@
                         android:layout_gravity="center_vertical"
                         android:fontFamily="sans-serif-condensed"
                         android:shadowColor="#E7E3E3"
-                        android:text="80 Kg"
+                        android:text=""
                         android:textSize="18sp"/>
 
                 </LinearLayout>

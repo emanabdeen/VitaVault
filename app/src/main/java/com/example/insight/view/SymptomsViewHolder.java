@@ -12,7 +12,7 @@ import com.example.insight.R;
 public class SymptomsViewHolder extends RecyclerView.ViewHolder  {
     TextView dateTime;
     TextView value;
-    TextView notes;
+    TextView description;
     ItemClickListener clickListener;
     ImageButton btnDelete;
     ImageButton btnEdit;
@@ -21,7 +21,7 @@ public class SymptomsViewHolder extends RecyclerView.ViewHolder  {
         super(itemView);
         dateTime = itemView.findViewById(R.id.date_time_txt);
         value = itemView.findViewById(R.id.value_txt);
-        notes = itemView.findViewById(R.id.notes_txt);
+        description = itemView.findViewById(R.id.notes_txt);
         this.clickListener= clickListener;
         btnDelete = itemView.findViewById(R.id.btnDelete);
         btnEdit = itemView.findViewById(R.id.btnEdit);
@@ -55,12 +55,12 @@ public class SymptomsViewHolder extends RecyclerView.ViewHolder  {
         return dateTime;
     }
 
-    public TextView getNotes() {
-        return notes;
+    public TextView getDescription() {
+        return description;
     }
 
-    public void setNotes(TextView notes) {
-        this.notes = notes;
+    public void setDescription(TextView description) {
+        this.description = description;
     }
 
     public void setDateTime(TextView dateTime) {

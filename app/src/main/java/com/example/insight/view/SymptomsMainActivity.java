@@ -22,7 +22,7 @@ public class SymptomsMainActivity extends DrawerBaseActivity {
     FirebaseUser user;
     private SymptomViewModel viewModel;
     List<Symptom> symptomsList = new ArrayList<>();
-    Symptom symptom = new Symptom();
+    //Symptom symptom = new Symptom();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

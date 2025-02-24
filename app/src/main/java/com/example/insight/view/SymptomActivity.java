@@ -28,7 +28,7 @@ public class SymptomActivity extends DrawerBaseActivity {
     private SymptomsListFragment symptomsListFragment;
     private SymptomViewModel viewModel;
     List<Symptom> symptomsList = new ArrayList<>();
-    Symptom symptom = new Symptom();
+    //Symptom symptom = new Symptom();
     String symptomType;
 
     @Override

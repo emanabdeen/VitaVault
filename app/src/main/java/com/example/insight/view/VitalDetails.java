@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.insight.databinding.ActivityVitalDetailsBinding;
 import com.example.insight.model.Vital;
 import com.example.insight.utility.DateValidator;
+import com.example.insight.utility.StringHandler;
 import com.example.insight.utility.TimeValidator;
 import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.VitalViewModel;
@@ -110,7 +111,7 @@ public class VitalDetails extends DrawerBaseActivity {
 
             //put initial values for current time and date
             binding.editTextDate.setText(DateValidator.LocalDateToString(LocalDate.now()));
-            binding.editTime.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+            binding.editTime.setText(TimeValidator.LocalTimeToString(LocalTime.now()));
 
             //if the vital is not blood pressure, hide measure2 and put the measurement label = unit
             if (!Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
@@ -226,7 +227,7 @@ public class VitalDetails extends DrawerBaseActivity {
             String recordDateStr = binding.editTextDate.getText().toString();
             String recordTimeStr = binding.editTime.getText().toString();
             String recordMeasure1 = binding.editTextMeasure1.getText().toString();
-            String recordMeasure2 = binding.editTextMeasure2.getText().toString();
+            String recordMeasure2 = StringHandler.defaultIfNull(binding.editTextMeasure2.getText());
 
             if (!TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStr) && !TextUtils.isEmpty(recordMeasure1)) {
                 boolean isDateValid = DateValidator.isValidDate(recordDateStr);

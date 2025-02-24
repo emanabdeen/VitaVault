@@ -111,7 +111,7 @@ public class SymptomViewModelTests {
         Symptom symptom = new Symptom("testSymptom", "testLevel");
         FirebaseUser user = mAuth.getCurrentUser();
         String uid = user.getUid(); // Get the logged-in user's unique ID
-        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptom);
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(symptom);
         symptomAdded.whenComplete((result, error) -> {
             if (error != null) {
                 fail("Symptom add failed: " + error.getMessage());
@@ -151,7 +151,7 @@ public class SymptomViewModelTests {
                 });
             }
         });
-        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptomToAdd);
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(symptomToAdd);
         symptomAdded.whenComplete((result, error) -> {
             if (result) {
                 Log.d(TAG, "Symptom added successfully");
@@ -202,7 +202,7 @@ public class SymptomViewModelTests {
                 });
             }
         });
-        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptomToAdd);
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(symptomToAdd);
         symptomAdded.whenComplete((result, error) -> {
             if (result) {
                 Log.d(TAG, "Symptom added successfully");
@@ -252,7 +252,7 @@ public class SymptomViewModelTests {
                 });
             }
         });
-        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptom);
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(symptom);
         symptomAdded.whenComplete((result, error) -> {
             if (result) {
                 Log.d(TAG, "Symptom added successfully");
@@ -309,7 +309,7 @@ public class SymptomViewModelTests {
         //addLatch.await(10, TimeUnit.SECONDS);
         // Get symptoms of expectedSymptomType
         CountDownLatch getSymptomsByTypeLatch = new CountDownLatch(3);
-        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptomToAdd)
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(symptomToAdd)
                 .whenComplete((result, error) -> {
                     if (error != null) {
                         fail("Symptom add failed: " + error.getMessage());
@@ -411,7 +411,7 @@ public class SymptomViewModelTests {
                 });
             }
         });
-        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptom);
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(symptom);
         symptomAdded.whenComplete((result, error) -> {
             if (result) {
                 Log.d(TAG, "Symptom added successfully");
@@ -442,7 +442,7 @@ public class SymptomViewModelTests {
         String uid = user.getUid(); // Get the logged-in user's unique ID
         mAuth.signOut();
         Log.d(TAG, "Signed out of unittestaccount");
-        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(uid, symptom);
+        CompletableFuture<Boolean> symptomAdded = symptomViewModel.AddSymptom(symptom);
         symptomAdded.whenComplete((result, error) -> {
             if (error != null) {
                 fail("Symptom add failed: " + error.getMessage());
