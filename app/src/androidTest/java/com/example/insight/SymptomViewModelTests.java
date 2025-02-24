@@ -14,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.example.insight.model.Symptom;
+import com.example.insight.utility.DateValidator;
 import com.example.insight.viewmodel.SymptomViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -129,7 +130,8 @@ public class SymptomViewModelTests {
         LiveData<List<Symptom>> symptomsData = symptomViewModel.getSymptomsData();
         Symptom symptomToAdd = new Symptom("testSymptom", "testLevel");
         symptomToAdd.setRecordDate(LocalDate.now().minusDays(1));
-        symptomViewModel.GetSymptomsByDate(LocalDate.now().minusDays(1));
+
+        symptomViewModel.GetSymptomsByDate(DateValidator.LocalDateToString(LocalDate.now().minusDays(1)));//---------------
         List<Symptom> symptomsList = symptomsData.getValue();
         int initialSize = symptomsList.size();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
@@ -153,7 +155,7 @@ public class SymptomViewModelTests {
         symptomAdded.whenComplete((result, error) -> {
             if (result) {
                 Log.d(TAG, "Symptom added successfully");
-                symptomViewModel.GetSymptomsByDate(LocalDate.now().minusDays(1));
+                symptomViewModel.GetSymptomsByDate(DateValidator.LocalDateToString(LocalDate.now().minusDays(1)));//-------------
                 latch.countDown();
             } else {
                 Log.d(TAG, "Symptom add failed: " + error.getMessage());
@@ -180,7 +182,7 @@ public class SymptomViewModelTests {
         String expectedSymptomType = "Custom Symptom Type";
         Symptom symptomToAdd = new Symptom(expectedSymptomType, "testLevel");
         symptomToAdd.setRecordDate(LocalDate.now().minusDays(1));
-        symptomViewModel.GetSymptomsByDateAndType(LocalDate.now().minusDays(1), expectedSymptomType);
+        symptomViewModel.GetSymptomsByDateAndType(DateValidator.LocalDateToString(LocalDate.now().minusDays(1)), expectedSymptomType);//----------
         List<Symptom> symptomsList = symptomsData.getValue();
         int initialSize = symptomsList.size();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
@@ -204,7 +206,7 @@ public class SymptomViewModelTests {
         symptomAdded.whenComplete((result, error) -> {
             if (result) {
                 Log.d(TAG, "Symptom added successfully");
-                symptomViewModel.GetSymptomsByDateAndType(LocalDate.now().minusDays(1), expectedSymptomType);
+                symptomViewModel.GetSymptomsByDateAndType(DateValidator.LocalDateToString(LocalDate.now().minusDays(1)), expectedSymptomType);//---------
                 latch.countDown();
             } else {
                 Log.d(TAG, "Symptom add failed: " + error.getMessage());
@@ -389,7 +391,7 @@ public class SymptomViewModelTests {
         String uid = user.getUid(); // Get the logged-in user's unique ID
         CountDownLatch latch = new CountDownLatch(3);
         LiveData<List<Symptom>> symptomsData = symptomViewModel.getSymptomsData();
-        symptomViewModel.GetSymptomsByDate(LocalDate.now());
+        symptomViewModel.GetSymptomsByDate(DateValidator.LocalDateToString(LocalDate.now()));//--------------
         List<Symptom> symptomsList = symptomsData.getValue();
         int initialSize = symptomsList.size();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
@@ -413,7 +415,7 @@ public class SymptomViewModelTests {
         symptomAdded.whenComplete((result, error) -> {
             if (result) {
                 Log.d(TAG, "Symptom added successfully");
-                symptomViewModel.GetSymptomsByDate(LocalDate.now());
+                symptomViewModel.GetSymptomsByDate(DateValidator.LocalDateToString(LocalDate.now()));//----------------
                 latch.countDown();
             } else {
                 Log.d(TAG, "Symptom add failed: " + error.getMessage());
@@ -456,7 +458,7 @@ public class SymptomViewModelTests {
         SymptomViewModel symptomViewModel = new SymptomViewModel(this.db, this.mAuth);
         // Act
         LiveData<String> searchResultString = symptomViewModel.getSearchResultMessageData();
-        symptomViewModel.GetSymptomsByDate(LocalDate.now());
+        symptomViewModel.GetSymptomsByDate(DateValidator.LocalDateToString(LocalDate.now()));//------------
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {

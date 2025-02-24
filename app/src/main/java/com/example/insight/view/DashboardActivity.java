@@ -67,7 +67,7 @@ public class DashboardActivity extends DrawerBaseActivity {
         binding.cardSymptoms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DashboardActivity.this, MainActivity.class));
+                startActivity(new Intent(DashboardActivity.this, SymptomsMainActivity.class));
             }
         });
     }

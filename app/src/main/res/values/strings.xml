@@ -17,12 +17,30 @@
     <string name="save">Save</string>
     <string name="back">Back</string>
     <string name="vitals">Vitals</string>
-    <string name="Symptoms">Symptoms</string>
     <string name="ocr">OCR</string>
     <string name="dietary">Dietary</string>
     <string name="medications">Medications</string>
     <string name="list">List</string>
     <string name="trends">Trends</string>
     <string name="back_button">Back</string>
+    <string name="Headache">Headache</string>
+    <string name="Coughing">Coughing</string>
+    <string name="Nausea">Nausea</string>
+    <string name="Other">Other</string>
+    <string name="Rash">Rash</string>
+    <string name="Chest_Pain">Chest Pain</string>
+    <string name="Sore_Throat">Sore Throat</string>
+    <string name="Joint_Pain">Joint Pain</string>
+    <string name="HeartRate">Heart Rate</string>
+    <string name="BloodPressure">Blood Pressure</string>
+    <string name="BodyTemperature">Body Temperature</string>
+    <string name="Weight">Weight</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    RASH("Rash"),
+    CHEST_PAIN("Chest Pain"),
+    SORE_THROAT("Sore Throat"),
+    JOIN_PAIN("Join Pain"),
 
 </resources>

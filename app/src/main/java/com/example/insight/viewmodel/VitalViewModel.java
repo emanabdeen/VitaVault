@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class VitalViewModel extends ViewModel {
-
+    private final static String TAG = "ViewModel";
     //inst the FirebaseFirestore (DB)
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -73,27 +73,30 @@ public class VitalViewModel extends ViewModel {
     }
 
     public void AddVital(Vital vital){
-
-        // Extract details from LocalDate
-        LocalDate recordDate = vital.getRecordDate();
-
-        String recordDateStr = DateValidator.LocalDateToString(vital.getRecordDate());
-        String recordTimeStr = TimeValidator.LocalTimeToString(vital.getRecordTime());
-        String vitalType = vital.getVitalType();
-        String measurement1 = vital.getMeasurement1();
-        String measurement2 = vital.getMeasurement2();
-        String unit = vital.getUnit();
-
-
-
-        // Create a map to hold the details of the document under the symptoms collection
+        // Create a map to hold the details of the document under the collection
         Map<String, Object> vitalDetails = new HashMap<>();
-        vitalDetails.put("recordDate", recordDateStr);
-        vitalDetails.put("recordTime", recordTimeStr);
-        vitalDetails.put("vitalType", vitalType);
-        vitalDetails.put("measurement1", measurement1);
-        vitalDetails.put("measurement2", measurement2);
-        vitalDetails.put("unit",unit);
+        try{
+            // Extract details from LocalDate
+            LocalDate recordDate = vital.getRecordDate();
+
+            String recordDateStr = DateValidator.LocalDateToString(vital.getRecordDate());
+            String recordTimeStr = TimeValidator.LocalTimeToString(vital.getRecordTime());
+            String vitalType = vital.getVitalType();
+            String measurement1 = vital.getMeasurement1();
+            String measurement2 = vital.getMeasurement2();
+            String unit = vital.getUnit();
+
+            // Create a map to hold the details of the document under the symptoms collection
+
+            vitalDetails.put("recordDate", recordDateStr);
+            vitalDetails.put("recordTime", recordTimeStr);
+            vitalDetails.put("vitalType", vitalType);
+            vitalDetails.put("measurement1", measurement1);
+            vitalDetails.put("measurement2", measurement2);
+            vitalDetails.put("unit",unit);
+        }catch(Exception e) {
+            Log.e("Error", "Error mapping data: " + e.getMessage());
+        }
 
         try {
             DocumentReference addedDocRef = db.collection("users")
@@ -102,7 +105,7 @@ public class VitalViewModel extends ViewModel {
                     .add(vitalDetails).getResult();
 
             String generatedId = addedDocRef.getId(); //get the iD of the created document
-            Log.d("debug", "Document added with ID: " + generatedId);
+            Log.d(TAG, "Document added with ID: " + generatedId);
 
         } catch (Exception e) {
             Log.e("Firestore", "Error adding document: " + e.getMessage());
@@ -128,17 +131,17 @@ public class VitalViewModel extends ViewModel {
                 .addOnSuccessListener(querySnapshot -> {
                     vitalsList = new ArrayList<>();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        Log.d("debug", "----------------------GetObjectsByDate--------------------------------" );
+                        Log.d(TAG, "----------------------GetObjectsByDate--------------------------------" );
                         // Retrieve the documents from the query result
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            Log.d("debug", "Document ID: " + document.getId());
-                            Log.d("debug", "vital Type: " + document.get("vitalType"));
-                            Log.d("debug", "unit: " + document.get("unit"));
-                            Log.d("debug", "measurement1: " + document.get("measurement1"));
-                            Log.d("debug", "measurement2: " + document.get("measurement2"));
-                            Log.d("debug", "record Time: " + document.get("recordTime"));
-                            Log.d("debug", "record Date: " + document.get("recordDate"));
-                            Log.d("debug", "--------------------------------------------");
+                            Log.d(TAG, "Document ID: " + document.getId());
+                            Log.d(TAG, "vital Type: " + document.get("vitalType"));
+                            Log.d(TAG, "unit: " + document.get("unit"));
+                            Log.d(TAG, "measurement1: " + document.get("measurement1"));
+                            Log.d(TAG, "measurement2: " + document.get("measurement2"));
+                            Log.d(TAG, "record Time: " + document.get("recordTime"));
+                            Log.d(TAG, "record Date: " + document.get("recordDate"));
+                            Log.d(TAG, "--------------------------------------------");
 
                             try {
                                 String vitalTypeStr = StringHandler.defaultIfNull(document.get("vitalType"));
@@ -160,7 +163,7 @@ public class VitalViewModel extends ViewModel {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
                             }
                         }
-                        Log.d("debug", "----------------------vitalsList count>> " + vitalsList.size()); // number of symptoms in the list
+                        Log.d(TAG, "----------------------vitalsList count>> " + vitalsList.size()); // number of symptoms in the list
 
                         searchResultMessageData.postValue("");
                         vitalsData.postValue(vitalsList);
@@ -193,18 +196,18 @@ public class VitalViewModel extends ViewModel {
                 QuerySnapshot querySnapshot = task.getResult();
 
                 if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                    Log.d("debug", "----------------------Get Vitals By type--------------------------------");
+                    Log.d(TAG, "----------------------Get Vitals By type--------------------------------");
 
                     // Retrieve the documents from the query result
                     for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                        Log.d("debug", "Document ID: " + document.getId());
-                        Log.d("debug", "vital Type: " + document.get("vitalType"));
-                        Log.d("debug", "unit: " + document.get("unit"));
-                        Log.d("debug", "measurement1: " + document.get("measurement1"));
-                        Log.d("debug", "measurement2: " + document.get("measurement2"));
-                        Log.d("debug", "record Time: " + document.get("recordTime"));
-                        Log.d("debug", "record Date: " + document.get("recordDate"));
-                        Log.d("debug", "--------------------------------------------");
+                        Log.d(TAG, "Document ID: " + document.getId());
+                        Log.d(TAG, "vital Type: " + document.get("vitalType"));
+                        Log.d(TAG, "unit: " + document.get("unit"));
+                        Log.d(TAG, "measurement1: " + document.get("measurement1"));
+                        Log.d(TAG, "measurement2: " + document.get("measurement2"));
+                        Log.d(TAG, "record Time: " + document.get("recordTime"));
+                        Log.d(TAG, "record Date: " + document.get("recordDate"));
+                        Log.d(TAG, "--------------------------------------------");
 
                         try {
                             String vitalTypeStr = StringHandler.defaultIfNull(document.get("vitalType"));
@@ -228,7 +231,7 @@ public class VitalViewModel extends ViewModel {
                             Log.e("Error", "Error parsing time: " + e.getMessage());
                         }
                     }
-                    Log.d("debug", "----------------------vitalsList count>> " + vitalsList.size()); // number of vitals in the list
+                    Log.d(TAG, "----------------------vitalsList count>> " + vitalsList.size()); // number of vitals in the list
 
                     searchResultMessageData.postValue("");
                     vitalsData.postValue(vitalsList);
@@ -260,18 +263,18 @@ public class VitalViewModel extends ViewModel {
                 .addOnSuccessListener(querySnapshot -> {
                     vitalsList = new ArrayList<>();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        Log.d("debug", "----------------------Get Vitals By type--------------------------------" );
+                        Log.d(TAG, "----------------------Get Vitals By type--------------------------------" );
 
                         // Retrieve the documents from the query result
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            Log.d("debug", "Document ID: " + document.getId());
-                            Log.d("debug", "vital Type: " + document.get("vitalType"));
-                            Log.d("debug", "unit: " + document.get("unit"));
-                            Log.d("debug", "measurement1: " + document.get("measurement1"));
-                            Log.d("debug", "measurement2: " + document.get("measurement2"));
-                            Log.d("debug", "record Time: " + document.get("recordTime"));
-                            Log.d("debug", "record Date: " + document.get("recordDate"));
-                            Log.d("debug", "--------------------------------------------");
+                            Log.d(TAG, "Document ID: " + document.getId());
+                            Log.d(TAG, "vital Type: " + document.get("vitalType"));
+                            Log.d(TAG, "unit: " + document.get("unit"));
+                            Log.d(TAG, "measurement1: " + document.get("measurement1"));
+                            Log.d(TAG, "measurement2: " + document.get("measurement2"));
+                            Log.d(TAG, "record Time: " + document.get("recordTime"));
+                            Log.d(TAG, "record Date: " + document.get("recordDate"));
+                            Log.d(TAG, "--------------------------------------------");
 
                             try {
                                 String vitalTypeStr = StringHandler.defaultIfNull(document.get("vitalType"));
@@ -296,7 +299,7 @@ public class VitalViewModel extends ViewModel {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
                             }
                         }
-                        Log.d("debug", "----------------------vitalsList count>> " + vitalsList.size()); // number of symptoms in the list
+                        Log.d(TAG, "----------------------vitalsList count>> " + vitalsList.size()); // number of symptoms in the list
 
                         searchResultMessageData.postValue("");
                         vitalsData.postValue(vitalsList);
@@ -339,18 +342,18 @@ public class VitalViewModel extends ViewModel {
                 .addOnSuccessListener(querySnapshot -> {
                     vitalsList = new ArrayList<>();
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        Log.d("debug", "----------------------Get vitals By Date & Type--------------------------------" );
+                        Log.d(TAG, "----------------------Get vitals By Date & Type--------------------------------" );
 
                         // Retrieve the documents from the query result
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            Log.d("debug", "Document ID: " + document.getId());
-                            Log.d("debug", "vital Type: " + document.get("vitalType"));
-                            Log.d("debug", "unit: " + document.get("unit"));
-                            Log.d("debug", "measurement1: " + document.get("measurement1"));
-                            Log.d("debug", "measurement2: " + document.get("measurement2"));
-                            Log.d("debug", "record Time: " + document.get("recordTime"));
-                            Log.d("debug", "record Date: " + document.get("recordDate"));
-                            Log.d("debug", "--------------------------------------------");
+                            Log.d(TAG, "Document ID: " + document.getId());
+                            Log.d(TAG, "vital Type: " + document.get("vitalType"));
+                            Log.d(TAG, "unit: " + document.get("unit"));
+                            Log.d(TAG, "measurement1: " + document.get("measurement1"));
+                            Log.d(TAG, "measurement2: " + document.get("measurement2"));
+                            Log.d(TAG, "record Time: " + document.get("recordTime"));
+                            Log.d(TAG, "record Date: " + document.get("recordDate"));
+                            Log.d(TAG, "--------------------------------------------");
 
                             try {
                                 String vitalTypeStr = StringHandler.defaultIfNull(document.get("vitalType"));
@@ -372,7 +375,7 @@ public class VitalViewModel extends ViewModel {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
                             }
                         }
-                        Log.d("debug", "----------------------vitalsList count>> " + vitalsList.size()); // number of symptoms in the list
+                        Log.d(TAG, "----------------------vitalsList count>> " + vitalsList.size()); // number of symptoms in the list
 
                         searchResultMessageData.postValue("");
                         vitalsData.postValue(vitalsList);
@@ -407,14 +410,14 @@ public class VitalViewModel extends ViewModel {
                         // Document exists, retrieve the data
                         Map<String, Object> document = documentSnapshot.getData();
 
-                        Log.d("debug", "Document ID: " + vitalId);
-                        Log.d("debug", "recordDate: " + document.get("recordDate"));
-                        Log.d("debug", "recordTime: " + document.get("recordTime"));
-                        Log.d("debug", "vitalType: " + document.get("vitalType"));
-                        Log.d("debug", "measurement1: " + document.get("measurement1"));
-                        Log.d("debug", "measurement2: " + document.get("measurement2"));
-                        Log.d("debug", "unit: " + document.get("unit"));
-                        Log.d("debug", "--------------------------------------------");
+                        Log.d(TAG, "Document ID: " + vitalId);
+                        Log.d(TAG, "recordDate: " + document.get("recordDate"));
+                        Log.d(TAG, "recordTime: " + document.get("recordTime"));
+                        Log.d(TAG, "vitalType: " + document.get("vitalType"));
+                        Log.d(TAG, "measurement1: " + document.get("measurement1"));
+                        Log.d(TAG, "measurement2: " + document.get("measurement2"));
+                        Log.d(TAG, "unit: " + document.get("unit"));
+                        Log.d(TAG, "--------------------------------------------");
 
                         try {
                             String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
@@ -466,7 +469,7 @@ public class VitalViewModel extends ViewModel {
                 .document(uid)
                 .collection("vitals");
 
-        Log.d("debug", "vital ID: " + vitalId);
+        Log.d(TAG, "vital ID: " + vitalId);
 
         DocumentReference docRef = symptomsRef.document(vitalId);
         docRef.get()
@@ -478,14 +481,14 @@ public class VitalViewModel extends ViewModel {
                         // Document exists, retrieve the data
                         Map<String, Object> document = documentSnapshot.getData();
                         try {
-                            Log.d("debug", "Document ID: " + vitalId);
-                            Log.d("debug", "recordDate: " + document.get("recordDate"));
-                            Log.d("debug", "recordTime: " + document.get("recordTime"));
-                            Log.d("debug", "vitalType: " + document.get("vitalType"));
-                            Log.d("debug", "measurement1: " + document.get("measurement1"));
-                            Log.d("debug", "measurement2: " + document.get("measurement2"));
-                            Log.d("debug", "unit: " + document.get("unit"));
-                            Log.d("debug", "--------------------------------------------");
+                            Log.d(TAG, "Document ID: " + vitalId);
+                            Log.d(TAG, "recordDate: " + document.get("recordDate"));
+                            Log.d(TAG, "recordTime: " + document.get("recordTime"));
+                            Log.d(TAG, "vitalType: " + document.get("vitalType"));
+                            Log.d(TAG, "measurement1: " + document.get("measurement1"));
+                            Log.d(TAG, "measurement2: " + document.get("measurement2"));
+                            Log.d(TAG, "unit: " + document.get("unit"));
+                            Log.d(TAG, "--------------------------------------------");
 
                             String vitalType = StringHandler.defaultIfNull(document.get("vitalType").toString());
                             String unit = StringHandler.defaultIfNull(document.get("unit"));
@@ -506,13 +509,13 @@ public class VitalViewModel extends ViewModel {
                                 selectedVital.setMeasurement2(measurement2);
                             }else{
                                 Log.e("Error", "Date or Time is not valid" );
-                                Log.d("debug", "Date or Time is not valid" );
+                                Log.d(TAG, "Date or Time is not valid" );
 
                             }
 
                         } catch (DateTimeParseException e) {
                             Log.e("Error", "Error parsing time: " + e.getMessage());
-                            Log.d("debug", "Error parsing time: " + e.getMessage());
+                            Log.d(TAG, "Error parsing time: " + e.getMessage());
                             vitalRetrieved.complete(false);
                         }
 
@@ -524,14 +527,14 @@ public class VitalViewModel extends ViewModel {
                         searchResultMessageData.postValue("vital is not found");
                         selectedVitalData.postValue(null);
                         Log.e("Error", "No such document");
-                        Log.d("debug", "Error: No such document");
+                        Log.d(TAG, "Error: No such document");
                         vitalRetrieved.complete(false);
                     }
                 })
                 .addOnFailureListener(e -> {
                     // Handle errors
                     Log.e("Error", "Error getting document: " + e.getMessage());
-                    Log.d("debug", "Error getting document: " + e.getMessage());
+                    Log.d(TAG, "Error getting document: " + e.getMessage());
                     selectedVitalData.postValue(null);
                     vitalRetrieved.complete(false);
                 });
@@ -560,7 +563,7 @@ public class VitalViewModel extends ViewModel {
         // Update the document in Firestore
         docRef.update(updatedData)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("debug", "Vital updated successfully.");
+                    Log.d(TAG, "Vital updated successfully.");
                     searchResultMessageData.postValue("Vital is updated successfully.");
                     selectedVital =updatedVital;
                     selectedVitalData.postValue(updatedVital);
@@ -583,7 +586,7 @@ public class VitalViewModel extends ViewModel {
         // Delete the document
         docRef.delete()
                 .addOnSuccessListener(aVoid -> {
-                    Log.d("debug", "vital record is deleted successfully.");
+                    Log.d(TAG, "vital record is deleted successfully.");
                     //searchResultMessageData.postValue("vital record is deleted successfully.");
                 })
                 .addOnFailureListener(e -> {

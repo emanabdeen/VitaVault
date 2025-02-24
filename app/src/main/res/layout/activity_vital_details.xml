@@ -60,7 +60,6 @@
                 android:text="Date"
                 android:textStyle="bold" />
 
-            <!-- Date Picker -->
             <EditText
                 android:id="@+id/editTextDate"
                 android:layout_width="match_parent"
@@ -79,7 +78,6 @@
                 android:textStyle="italic"
                 android:visibility="gone" />
 
-            <!-- Start Hour Label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -87,7 +85,6 @@
                 android:text="Time"
                 android:textStyle="bold" />
 
-            <!-- Start Hour -->
             <EditText
                 android:id="@+id/editTime"
                 android:layout_width="match_parent"
