@@ -35,12 +35,5 @@
     <string name="BloodPressure">Blood Pressure</string>
     <string name="BodyTemperature">Body Temperature</string>
     <string name="Weight">Weight</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-    RASH("Rash"),
-    CHEST_PAIN("Chest Pain"),
-    SORE_THROAT("Sore Throat"),
-    JOIN_PAIN("Join Pain"),
 
 </resources>
