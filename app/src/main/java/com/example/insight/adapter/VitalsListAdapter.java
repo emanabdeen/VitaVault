@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insight.R;
 import com.example.insight.model.Vital;
+import com.example.insight.utility.DateValidator;
+import com.example.insight.utility.TimeValidator;
 import com.example.insight.view.ItemClickListener;
 import com.example.insight.view.VitalsViewHolder;
 
@@ -48,7 +50,7 @@ public class VitalsListAdapter extends RecyclerView.Adapter<VitalsViewHolder>{
     public void onBindViewHolder(@NonNull VitalsViewHolder holder, int position) {
         Vital item = vitals.get(position);
 
-        String dateTimeStr = item.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))+" ("+item.getRecordTime().format(DateTimeFormatter.ofPattern("HH:mm"))+")"; // 10-10-2025 (13:30)
+        String dateTimeStr = DateValidator.LocalDateToString(item.getRecordDate()) +" ("+ TimeValidator.LocalTimeToString(item.getRecordTime()) +")"; // 10-10-2025 (13:30)
         String valueStr;
 
         //if measurement2 empty

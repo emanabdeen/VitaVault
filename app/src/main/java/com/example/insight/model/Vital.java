@@ -1,5 +1,6 @@
 package com.example.insight.model;
 
+import com.example.insight.utility.DateValidator;
 import com.example.insight.utility.Unites;
 import com.example.insight.utility.VitalsCategories;
 
@@ -78,7 +79,7 @@ public class Vital {
     public String getRecordDateStr() {
         String recordDateStr;
         if (recordDate != null) {
-            recordDateStr = recordDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            recordDateStr = DateValidator.LocalDateToString(recordDate);
         } else {
             recordDateStr="";
         }

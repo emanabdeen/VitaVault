@@ -115,7 +115,7 @@ public class VitalViewModel extends ViewModel {
 
     public void GetVitalsByDate(String recordDateStr) {
 
-        LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format dd-MM-yyyy
+        LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format yyyy-MM-dd
 
         // Reference to the user's symptoms collection
         CollectionReference vitalsRef = FirebaseFirestore.getInstance()
@@ -218,7 +218,7 @@ public class VitalViewModel extends ViewModel {
                             String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
 
                             LocalTime recordTime = TimeValidator.StringToLocalTime(recordTimeStr);//convert from string format HH:mm
-                            LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format dd-MM-yyyy
+                            LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format yyyy-MM-dd
 
                             // Create vital object with the retrieved data
                             Vital vital = new Vital(recordDate, recordTime, vitalTypeStr, unitStr);
@@ -257,7 +257,8 @@ public class VitalViewModel extends ViewModel {
 
         // Create a query to find documents that match the specified criteria
         Query query = vitalsRef
-                .whereEqualTo("vitalType", vitalType);
+                .whereEqualTo("vitalType", vitalType)
+                .orderBy("recordDate", Query.Direction.DESCENDING);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -285,7 +286,7 @@ public class VitalViewModel extends ViewModel {
                                 String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
 
                                 LocalTime recordTime = TimeValidator.StringToLocalTime(recordTimeStr);//convert from string format HH:mm
-                                LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format dd-MM-yyyy
+                                LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format yyyy-MM-dd
 
                                 // Create symptom object with the retrieved data
                                 Vital vital = new Vital(recordDate, recordTime, vitalTypeStr,unitStr);
@@ -316,8 +317,8 @@ public class VitalViewModel extends ViewModel {
 
     public void GetVitalsByDateAndType(String searchDateStr, String vitalType) {
 
-        //String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        LocalDate searchDate = DateValidator.StringToLocalDate(searchDateStr); //convert from string format dd-MM-yyyy
+        //String searchDateStr = DateValidator.LocalDateToString(searchDate);
+        LocalDate searchDate = DateValidator.StringToLocalDate(searchDateStr); //convert from string format yyyy-MM-dd
 
         // Reference to the user's vital collection
         CollectionReference symptomsRef = FirebaseFirestore.getInstance()
@@ -330,7 +331,8 @@ public class VitalViewModel extends ViewModel {
         if (TextUtils.isEmpty(searchDateStr)){
             // Create a query to find documents that match the specified criteria
             query = symptomsRef
-                    .whereEqualTo("vitalType", vitalType);
+                    .whereEqualTo("vitalType", vitalType)
+                    .orderBy("recordDate", Query.Direction.DESCENDING);
         }else{
             // Create a query to find documents that match the specified criteria
             query = symptomsRef
@@ -428,7 +430,7 @@ public class VitalViewModel extends ViewModel {
                             String unitStr = StringHandler.defaultIfNull(document.get("unit"));
 
                             LocalTime recordTime = TimeValidator.StringToLocalTime(recordTimeStr);//convert from string format HH:mm
-                            LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format dd-MM-yyyy
+                            LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format yyyy-MM-dd
 
                             //create vital object with the retrieved data
                             selectedVital = new Vital(recordDate, recordTime, vitalTypeStr,unitStr);
@@ -500,7 +502,7 @@ public class VitalViewModel extends ViewModel {
 
                             if (DateValidator.isValidDate(recordDateStr) && TimeValidator.isValidTime(recordTimeStr)){
                                 LocalTime recordTime = TimeValidator.StringToLocalTime(recordTimeStr);//convert from string format HH:mm
-                                LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format dd-MM-yyyy
+                                LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format yyyy-MM-dd
 
                                 //create symptom object with the retrieved data
                                 selectedVital = new Vital(recordDate,recordTime,vitalType,unit);

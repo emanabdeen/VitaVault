@@ -11,18 +11,18 @@ import java.time.format.DateTimeParseException;
 public final class DateValidator {
 
     // Define the date pattern as a constant
-    private static final String DATE_PATTERN = "dd-MM-yyyy";
+    private static final String DATE_PATTERN = "yyyy-MM-dd";
     private static final String TAG = "DateValidator"; // Tag for logging
 
     /**
-     * Validates if the input string is a valid date in the format "dd-MM-yyyy".
+     * Validates if the input string is a valid date in the format "yyyy-MM-dd".
      *
      * @param date The string to validate.
      * @return true if the date is valid, false otherwise.
      */
     public static boolean isValidDate(String date) {
         // Regex to match the format 00-00-0000
-        String regex = "^\\d{2}-\\d{2}-\\d{4}$";
+        String regex = "^\\d{4}-\\d{2}-\\d{2}$";
         if (date == null || !date.matches(regex)) {
             return false;
         }
@@ -39,7 +39,7 @@ public final class DateValidator {
     }
 
     /**
-     * Converts a string to a LocalDate object using the pattern "dd-MM-yyyy".
+     * Converts a string to a LocalDate object using the pattern "yyyy-MM-dd".
      *
      * @param dateStr The string to convert.
      * @return The parsed LocalDate, or null if the input is invalid or null.
@@ -64,7 +64,7 @@ public final class DateValidator {
     }
 
     /**
-     * Converts a LocalDate object to a formatted string using the pattern "dd-MM-yyyy".
+     * Converts a LocalDate object to a formatted string using the pattern "yyyy-MM-dd".
      *
      * @param date The LocalDate object to convert.
      * @return The formatted date string, or null if the input date is null.
@@ -83,11 +83,11 @@ public final class DateValidator {
 
     public static void main(String[] args) {
         // Test cases
-//        String date1 = "12-05-2023"; // Valid
-//        String date2 = "31-02-2023"; // Invalid (February doesn't have 31 days)
-//        String date3 = "00-00-0000"; // Invalid (invalid date)
-//        String date4 = "12/05/2023"; // Invalid (wrong format)
-//        String date5 = "123-05-2023"; // Invalid (extra digit)
+//        String date1 = "2023-05-12"; // Valid
+//        String date2 = "2023-02-31"; // Invalid (February doesn't have 31 days)
+//        String date3 = "0000-00-00"; // Invalid (invalid date)
+//        String date4 = "2023/05/12"; // Invalid (wrong format)
+//        String date5 = "2023-05-123"; // Invalid (extra digit)
 //
 //        System.out.println(date1 + " is valid: " + isValidDate(date1)); // true
 //        System.out.println(date2 + " is valid: " + isValidDate(date2)); // false
