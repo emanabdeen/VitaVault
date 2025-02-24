@@ -7,6 +7,10 @@ android {
     namespace = "com.example.insight"
     compileSdk = 34
 
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+
     defaultConfig {
         applicationId = "com.example.insight"
         minSdk = 31
@@ -48,6 +52,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(libs.okhttp) //implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    //implementation (libs.google.cloud.firestore.v3306) //implementation ("com.google.cloud:google-cloud-firestore:3.6.4")
+    implementation(libs.okhttp)
 }

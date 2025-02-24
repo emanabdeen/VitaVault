@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/vitavault_page_background3"
     android:orientation="vertical"
-    tools:context=".view.AddVital">
+    tools:context=".view.VitalDetails">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -185,18 +185,18 @@
                 android:text="@string/save"
                 android:textStyle="bold" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnBack"
-                android:layout_width="100dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/button_custom2"
-                android:drawableStart="@drawable/baseline_arrow_back"
-                android:padding="5dp"
-                android:text="@string/back"
-                android:textColor="@color/primary"
-                android:textSize="18sp" />
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:id="@+id/btnBack"-->
+<!--                android:layout_width="100dp"-->
+<!--                android:layout_height="35dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:background="@drawable/button_custom2"-->
+<!--                android:drawableStart="@drawable/baseline_arrow_back"-->
+<!--                android:padding="5dp"-->
+<!--                android:text="@string/back"-->
+<!--                android:textColor="@color/primary"-->
+<!--                android:textSize="18sp" />-->
 
         </LinearLayout>
     </android.widget.ScrollView>

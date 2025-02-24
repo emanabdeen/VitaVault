@@ -7,14 +7,22 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.insight.model.DietaryResrtictionIngredient;
+import com.example.insight.model.Vital;
+import com.example.insight.utility.DateValidator;
+import com.example.insight.utility.StringHandler;
+import com.example.insight.utility.TimeValidator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,36 +54,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
 
 
     public void GetAllDietaryRestrictionIngredients() {
-/*
-        db.collection("users")
-                .document(uid)
-                .collection("dietaryRestrictions")
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                        if (snapshot != null && !snapshot.isEmpty()) {
-                            ingredientList = new ArrayList<>();
 
-                            for (DocumentSnapshot document : snapshot.getDocuments()) {
-
-                                try {
-                                    DietaryResrtictionIngredient ingredient = new DietaryResrtictionIngredient(document.getString("ingredientName"), document.getString("ingredientCategory"));
-                                    ingredientList.add(ingredient);
-                                } catch (Exception e) {
-                                    Log.e("Error", "Error parsing time: " + e.getMessage());
-                                }
-
-                            }
-                            ingredientLiveData.postValue(ingredientList);
-                        }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error retrieving documents: " + e.getMessage());
-                    ingredientLiveData.postValue(null);// Handle failure
-                });
-
-*/
-
-/*
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(uid)
@@ -94,17 +73,26 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
                             String category = document.getString("ingredientCategory");
                             String name = document.getString("ingredientName");
 
-                            // Create vital object with the retrieved data
+                        Log.d("AddCustomIngredientdebug", "Document ID: " + document.getId());
+                        Log.d("AddCustomIngredientdebug", "Category: " + category);
+                        Log.d("AddCustomIngredientdebug", "name: " + name);
+
+                        // Create vital object with the retrieved data
                             DietaryResrtictionIngredient ingredient = new DietaryResrtictionIngredient(name,category);
                             ingredient.setIngredientId(document.getId());
 
-                            ingredientList.add(ingredient);
+                        Log.d("AddCustomIngredientdebug", ingredient.getIngredientName());
+
+
+                        ingredientList.add(ingredient);
                     }
 
                     ingredientLiveData.postValue(ingredientList);
-                } else {
+                    Log.d("AddCustomIngredientdebug","passou Aqui!");
 
-                    ingredientLiveData.postValue(ingredientList);
+
+                }else{
+                    ingredientLiveData.postValue(null);
                 }
             } else {
                 // Handle failure
@@ -112,7 +100,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
                 ingredientLiveData.postValue(null);
             }
         });
-        */
+
 
     }
 

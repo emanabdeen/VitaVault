@@ -4,21 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.insight.adaoter.DietaryRestrictionCustomIngredientAdapter;
-import com.example.insight.databinding.ActivityDietaryRestrictionsAddCustomBinding;
+import com.example.insight.adapter.DietaryRestrictionCustomIngredientAdapter;
 import com.example.insight.databinding.ActivityDietaryRestrictionsAddCustomBinding;
 import com.example.insight.model.DietaryResrtictionIngredient;
+import com.example.insight.model.Vital;
 import com.example.insight.viewmodel.DietaryRestrictionIngredientViewModel;
+import com.example.insight.viewmodel.VitalViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity{
         setContentView(binding.getRoot());
         allocateActivityTitle("Dietary Restrictions");
 
-        viewModel = new DietaryRestrictionIngredientViewModel();
+        viewModel = new ViewModelProvider(this).get(DietaryRestrictionIngredientViewModel.class);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -51,11 +50,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity{
         }
 
         //Fetch ingredient list
-        viewModel.GetAllDietaryRestrictionIngredients();
-        observeIngredientList();
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-
         binding.customIngredientList.setLayoutManager(layoutManager);
 
 
@@ -63,6 +58,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity{
         ingredientAdapter = new DietaryRestrictionCustomIngredientAdapter(getApplicationContext(), ingredientList);
         binding.customIngredientList.setAdapter(ingredientAdapter);
 
+        fetchIngredientList();
 
         // Add new custom ingredient
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
@@ -86,15 +82,12 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity{
 
                        //reloads the ingredient list
                        clear();
-                       observeIngredientList();
+                       fetchIngredientList();
 
                    }else{
 
                        showError(binding.errorIngredient, "Required field cannot be empty",true);
                    }
-
-
-
 
                }catch (Exception e){
                    Log.e("error", "try-catch error: "+ e.getMessage());
@@ -103,7 +96,17 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity{
             }
 
         });
+
+        binding.btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
+
+
 
     private void showError(TextView errorView, String message, boolean isVisible) {
         if (isVisible) {
@@ -115,15 +118,17 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity{
     }
 
 
-    private void observeIngredientList(){
+    private void fetchIngredientList(){
 
+        viewModel.GetAllDietaryRestrictionIngredients();
         viewModel.getIngredientsData().observe(this, ingredientData -> {
             if (ingredientData != null || !ingredientData.isEmpty()) {
-                ingredientData.clear();//to reset the current list
-                ingredientList.addAll(ingredientData);
-                //symptomsListAdapter.notifyDataSetChanged();
+                ingredientList = ingredientData;//to reset the current list
 
-                Log.d("AddCustomIngredient", "vitalsList count>> " + ingredientList.size());
+                ingredientAdapter.updateMovies(ingredientList);
+
+
+                Log.d("AddCustomIngredient", "ingredientList count>> " + ingredientList.size());
             }
             else {
                 Log.d("AddCustomIngredient", "ingredientList is null or empty.");
@@ -135,5 +140,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity{
         binding.editIngredient.setText("");
         showError(binding.errorIngredient, "", false);
     }
+
+
 
 }

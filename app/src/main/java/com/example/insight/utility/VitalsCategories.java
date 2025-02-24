@@ -5,7 +5,7 @@ public enum VitalsCategories {
     HeartRate("HeartRate"),
     BloodPressure("BloodPressure"),
     BodyTemperature("BodyTemperature"),
-    Weight ("Weight ");
+    Weight ("Weight");
 
     private final String vitalCategory;
 

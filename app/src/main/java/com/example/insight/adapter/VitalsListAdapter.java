@@ -1,4 +1,4 @@
-package com.example.insight.adaoter;
+package com.example.insight.adapter;
 
 import android.content.Context;
 import android.text.TextUtils;

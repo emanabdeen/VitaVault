@@ -19,8 +19,13 @@ import com.example.insight.databinding.ActivityMainBinding;
 import com.example.insight.model.Symptom;
 import com.example.insight.utility.SymptomsCategories;
 import com.example.insight.viewmodel.SymptomViewModel;
+import com.example.insight.utility.LoginRegisterHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.concurrent.CompletableFuture;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,11 +38,10 @@ public class MainActivity extends DrawerBaseActivity {
     ActivityMainBinding binding;
     FirebaseAuth mAuth;
     FirebaseUser user;
-    Button btn;
     private SymptomViewModel symptomViewModel;
     List<Symptom> symptomsList = new ArrayList<>();
     Symptom symptom = new Symptom();
-
+    Button btn, manageAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +57,29 @@ public class MainActivity extends DrawerBaseActivity {
             finish();
             startActivity(new Intent(MainActivity.this, Login.class));
         }
+        btn = binding.button;
+        manageAccount = binding.manageAccount;
 
+        manageAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, ManageAccount.class));
+            }
+        });
 
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth = FirebaseAuth.getInstance();
+                if (user != null) {
+                    mAuth.signOut();
+                    finish();
+                    startActivity(new Intent(MainActivity.this, Login.class));
+                }else{
+                    Toast.makeText(getApplicationContext(), "You aren't logged in yet!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         // -------------------------------Add Symptom Button --------------------------------------------
         binding.btnSymptom.setOnClickListener(new View.OnClickListener() {

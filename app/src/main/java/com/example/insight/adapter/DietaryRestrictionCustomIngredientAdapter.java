@@ -1,4 +1,4 @@
-package com.example.insight.adaoter;
+package com.example.insight.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -53,4 +53,11 @@ public class DietaryRestrictionCustomIngredientAdapter extends RecyclerView.Adap
     public int getItemCount() {
         return ingredientsList.size();
     }
+
+    public void updateMovies(List<DietaryResrtictionIngredient> ingredients) {
+        this.ingredientsList.clear();
+        this.ingredientsList.addAll(ingredients);
+        notifyDataSetChanged();
+    }
+
 }

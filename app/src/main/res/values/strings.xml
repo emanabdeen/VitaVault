@@ -24,5 +24,6 @@
     <string name="list">List</string>
     <string name="trends">Trends</string>
     <string name="dietaryRestrictionsTitle">Dietary Restrictions</string>
+    <string name="back_button">Back</string>
 
 </resources>
