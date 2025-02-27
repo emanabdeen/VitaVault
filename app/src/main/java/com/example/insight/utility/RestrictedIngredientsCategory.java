@@ -6,11 +6,11 @@ import java.util.List;
 public enum RestrictedIngredientsCategory {
 
     DAIRY("Diary"),
-    NUTS("Nuts"),
-    MEATS("Meats"),
     GLUTEN("Gluten"),
-    SHELLFISH("Shellfish"),
+    MEATS("Meats"),
     PORK("Pork"),
+    SHELLFISH("Shellfish"),
+    NUTS("Nuts"),
     OTHER("Other");
 
     private final String categoryDescription;

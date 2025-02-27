@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/fragmentTabs"
+        app:layout_constraintBottom_toTopOf="@+id/btnAdd"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -37,28 +37,36 @@
             android:textSize="20sp"
             android:text="@string/dietaryRestrictionsTitle"/>
     </LinearLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragmentLayout"
         android:layout_width="394dp"
-        android:layout_height="400dp"
+        android:layout_height="550dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragmentTabs"
+        app:layout_constraintTop_toBottomOf="@+id/btnAdd"
         app:layout_constraintVertical_bias="0.01">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/externalGroupedList"
+            android:layout_width="392dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:paddingTop="20dp"
+   />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnAdd"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:background="@drawable/button_custom2"
         android:drawableStart="@drawable/baseline_add_primary"
         android:paddingStart="15dp"
         android:paddingEnd="15dp"
-        android:text="Add"
+        android:text="Add Custom"
         android:textSize="18sp"
         android:textColor="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -68,107 +76,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.165" />
 
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/fragmentTabs"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnAdd"
-            app:layout_constraintVertical_bias="0.01">
-
-            <!--
-                    <Button
-                        android:id="@+id/btnListByType"
-                        android:layout_width="150dp"
-                        android:layout_height="50dp"
-                        android:text="@string/list"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.15"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <Button
-                        android:layout_width="150dp"
-                        android:layout_height="50dp"
-                        android:text="@string/trends"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.85"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                          -->
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-    <!--
-    <Button
-        android:id="@+id/btnGetVitalssByDate"
-        android:layout_width="215dp"
-        android:layout_height="49dp"
-        android:text="Get All Vitals by Date"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.081"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.906" />
--->
-    <!--
-    <Button
-        android:id="@+id/btnGetVitalById"
-        android:layout_width="142dp"
-        android:layout_height="43dp"
-        android:text="Get vital By Id"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.94"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.898" />
--->
-    <!--
-    <Button
-        android:id="@+id/btnGetvitalsInRange"
-        android:layout_width="167dp"
-        android:layout_height="44dp"
-        android:text="Get vitals in Range dates"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.082"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976" />
--->
-    <!--
-    <Button
-        android:id="@+id/btnUpdate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Update"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.982" />
--->
-    <!--
-    <Button
-        android:id="@+id/btnDelete"
-        android:layout_width="96dp"
-        android:layout_height="39dp"
-        android:text="Delet Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.622"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.969" />
--->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

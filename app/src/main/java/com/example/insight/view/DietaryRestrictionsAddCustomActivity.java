@@ -44,7 +44,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
         binding = ActivityDietaryRestrictionsAddCustomBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         allocateActivityTitle("Dietary Restrictions");
-        binding.textViewTitle.setText("Add Custom Dietary Restriction\"");
+        binding.textViewTitle.setText("Add Custom Dietary Restriction");
 
         viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
 
