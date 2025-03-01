@@ -2,41 +2,49 @@ package com.example.insight.utility;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.SparseArray;
+import android.util.Log;
 
-import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.text.TextBlock;
-import com.google.android.gms.vision.text.TextRecognizer;
-
-import java.util.concurrent.CompletableFuture;
+import com.example.insight.R;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.vision.v1.*;
+import com.google.protobuf.ByteString;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
 
 public class OcrApiClient {
 
-    private static String baseUrl = "https://vision.googleapis.com/v1/images:annotate";
-    private static String apiKey = "YOUR_API_KEY";
-    private static String endpoint = baseUrl + "?key=" + apiKey;
+    private static final String TAG = "OcrApiClient";
 
-    public static CompletableFuture<String> SendOcrRequest(String imageUrl, Context context){
-        CompletableFuture<String> ocrTextResult = new CompletableFuture<String>();
+    public static String detectText(Context context, Bitmap bitmap) {
+        try {
+            // Load API credentials from JSON file in 'res/raw'
+            InputStream stream = context.getResources().openRawResource(R.raw.vision_api_key);
+            GoogleCredentials credentials = GoogleCredentials.fromStream(stream)
+                    .createScoped(Collections.singletonList("https://www.googleapis.com/auth/cloud-platform"));
+            ImageAnnotatorClient visionClient = ImageAnnotatorClient.create(ImageAnnotatorSettings.newBuilder()
+                    .setCredentialsProvider(() -> credentials)
+                    .build());
 
-        TextRecognizer textRecognizer = new TextRecognizer.Builder(context).build();
-        Bitmap imageBitmap = BitmapFactory.decodeFile(imageUrl);
-        Frame frameImage = new Frame.Builder().setBitmap(imageBitmap).build();
-        SparseArray<TextBlock> textBlockSparseArray = textRecognizer.detect(frameImage);
+            // Convert Bitmap to ByteString
+            ByteString imgBytes = ByteString.copyFrom(ImageUtils.bitmapToByteArray(bitmap));
 
-        String stringImageText = "";
+            // Prepare Image for Vision API
+            Image image = Image.newBuilder().setContent(imgBytes).build();
+            Feature feature = Feature.newBuilder().setType(Feature.Type.TEXT_DETECTION).build();
+            AnnotateImageRequest request = AnnotateImageRequest.newBuilder()
+                    .addFeatures(feature)
+                    .setImage(image)
+                    .build();
 
-        for (int i=0; i <textBlockSparseArray.size();i++) {
-            TextBlock textBlock = textBlockSparseArray.valueAt(i);
-            stringImageText += textBlock.getValue();
+            // Perform OCR
+            BatchAnnotateImagesResponse response = visionClient.batchAnnotateImages(Collections.singletonList(request));
+            TextAnnotation annotation = response.getResponses(0).getFullTextAnnotation();
+
+            return annotation.getText(); // Extracted text from image
+        } catch (IOException e) {
+            Log.e(TAG, "Error initializing Google Vision API", e);
         }
-        if (stringImageText.length() > 0){
-            ocrTextResult.complete(stringImageText);
-        } else {
-            ocrTextResult.complete("No text found");
-        }
-
-        return ocrTextResult;
+        return null;
     }
 }

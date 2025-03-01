@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "insighthealthapp-b72bc",
+  "private_key_id": "9f4eef11c63f658e487f2a8c9dc6816974fc6584",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQCngUZLQZnCujEC\n/5SfW3oWEBdCZYJvDSsgr2zIJniiQ7ChzHrvs2Szy+07BKceaRKvqdYbfAPpTwoq\nwL9VGa1fKX4K1PTXj3sSrlR1+0a2YBHBzOy/tky9hXgMU989c6QVZX73sJmnjeO6\ngP3879XRt1TlboQB6nGbuNq+yXrBlmTK5qrY3GcwGd5l6Ag/NmbhhJMT/agJjt/g\nkujk0L6/BBUfKk+ys9+gE0vXUZvlZd/wsI6pGpRdYpvnF8Q7MUL5QGjCqhD8kPMc\n6QJpH/T+dcmS5Se4Y2HzlDVCns/C1FmoPrKQbBP5sDnbDQxx8KdR89D/n69vfSe/\nobUgH78nAgMBAAECggEAAV9MDQcudDIKf1l9q7W+cQDUiyabiqWQEi/6hnc+N/VL\nAXOHf4A31a5yTpbFEbkCcXr4NiuhbCwwGDwraE4rpYk7yM+Ial2sDSUHEk8qyKK0\npbxNvwWGaNHeAAF0S9biY/FInxnZk5q6rPpfWk7SsLZwrrWyXvU/O56oXoJcpZck\n7n47CDSVWt5uuSNBsk6HQJSBXf3he2kFLJXTyM8IVmwHNrDr7lg2l4bJu27sbIBD\nhxPG6DgUPCi4NEYQbzblKxqQ7ykWEnlfZfM18SyoHe8NCFyozsQFpiqLAPvKpm28\nfsD03+VpL3WJXIccnbqqgDVUb72K820UPQF8Xc72fQKBgQDTDBL44tDdc1W6MVO1\n6v90G9UrL3YtE+EM2Ry8vwc1TkgxO2PE5OpJs6EjwGEmip1S0KAEJhvmeKWjZLG9\nkAqxX85nM+xtAo8Dgt3R7S3mSO0uqBmHPE8dBjgTrn1TvRA/XRWsZMVTCSfy4FyN\nT8pRkh5nakyW9A97ffeNWBJ4QwKBgQDLLvF736Cn5QPY4iX4nEvyk9S3tlncqaBi\nvMrSJ/j1IEO3fUrAXasBL+yfF2/uNu7fi96UJSo76tzvQzA85GbNrZkWJKP49pnQ\nQ7BcT2l0g0sEYbdIEmdSngWzFrtJqV3QufJSAY5NU78NlpJjjd60H188usOglDVU\nrGlGTNRxTQKBgD1MRXpqjpWzeRPSXej5r2au6tRXPbDMFFKiANnFdjeCXC+Ie2rl\nvjLX7Jawusbx/c3e8Isj8niXVCzIA2P2oVRxakbJawMieh1f9kOR6wH27oTdqESC\nPMxGUSVOSfJ3eG+e/ruKrVF32FWP2vHkWfQlR5Vr54D0tEZ/CNbR3NN3An9cEOlb\nN/mUGjGkFNUf0bKYOGQq2nXdhv8lvmYo0/P7HqOQgTVd9ROHdi/B5tzRFBMpODei\n6TQ58jIqOEejT9tFV2QGpJOoPBV2STWgnlsqcFONqLlj7vLifLgYbjRvLE9WROuI\nPSw93bS0c4XhlmdTNuPwoLAEEyQXOgh50lZxAoGBAIrggAKn7htx5oYpf3wUwRTE\nxm4YmSau4ruWl+5sSgcabjnPkKPmIx52c70aHn2SGu3MEwxtYOb9VR0IZ81nAV7r\nPScS5cU9u/J6Guy8FGI0l8c2gCeJ4r0qRNB2A3Wu5om91ktt4uTWMzMR+3i94mgn\n7NzR6lZQZo+jqIiuTmP6\n-----END PRIVATE KEY-----\n",
+  "client_email": "my-service-account@insighthealthapp-b72bc.iam.gserviceaccount.com",
+  "client_id": "107085454655528308126",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/my-service-account%40insighthealthapp-b72bc.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
