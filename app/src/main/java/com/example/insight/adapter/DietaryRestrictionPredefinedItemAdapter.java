@@ -51,13 +51,13 @@ public class DietaryRestrictionPredefinedItemAdapter extends RecyclerView.Adapte
 
         holder.itemView.setClickable(true);
 
+
+
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickListener.onItemClick(v,position, recyclerViewId);
-                Log.e("TESTADAPTER", String.valueOf(position));
-                Log.e("TESTADAPTER", recyclerViewId);
-                Log.e("TEST", "There was a click2!!");
+                clickListener.onItemClick(v,position, recyclerViewId,holder.ingredientCheckBox.isChecked());
             }
         });
     }

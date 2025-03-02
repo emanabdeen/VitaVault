@@ -31,7 +31,9 @@ import org.w3c.dom.Text;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implements MultipleRecyclerViewItemClickListener {
@@ -40,7 +42,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
     FirebaseAuth mAuth;
     FirebaseUser user;
     Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> restrictionsMap;
-
+    private dietaryRestrictionIngredientViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,23 +66,11 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
         restrictionsMap = CommonRestrictedIngredients.GetAllIngredientsWithCategory();
 
-        // viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
-
-        //Creates the future "inner" recyclerViewer with 2 columns.
-        //RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        //binding.externalGroupedList.setLayoutManager(layoutManager);
-
-        //connects adapter with list item
-
-        /*
-        RecyclerView mainList = findViewById(R.id.externalGroupedList);
-        DietaryRestrictionPredefinedGroupAdapter groupedIngredientsAdapter = new DietaryRestrictionPredefinedGroupAdapter(this,this,flattenedList);
-        mainList.setAdapter(groupedIngredientsAdapter);
-*/
+        viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
 
 
         int i = 0;
-        for(Map.Entry<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> entry : restrictionsMap.entrySet()){
+        for (Map.Entry<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> entry : restrictionsMap.entrySet()) {
 
             try {
 
@@ -88,7 +78,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
                 List<CommonRestrictedIngredients> commonRestrictedIngredientsList = entry.getValue();
 
                 //dynamically fills each category label
-                String fieldName = "group"+(i+1);
+                String fieldName = "group" + (i + 1);
 
 
                 Field field = binding.getClass().getDeclaredField(fieldName);
@@ -99,11 +89,10 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
                 textView.setText(ingredientsCategory.getCategoryDescription());
 
 
-
                 //parse Enum to Bean
                 List<DietaryRestrictionIngredient> ingredientListBean = new ArrayList<>();
 
-                for(CommonRestrictedIngredients ingredient : commonRestrictedIngredientsList){
+                for (CommonRestrictedIngredients ingredient : commonRestrictedIngredientsList) {
                     DietaryRestrictionIngredient newIngredient = new DietaryRestrictionIngredient();
                     newIngredient.setIngredientName(ingredient.getIngredientDescription());
                     newIngredient.setIngredientCategory(ingredientsCategory.getCategoryDescription());
@@ -111,17 +100,16 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
                 }
 
 
+                String recyclerName = "groupList" + (i + 1);
 
-                String recyclerName = "groupList"+(i+1);
 
-
-               //dynamically sets the adapter for each one of the recyclerViews
+                //dynamically sets the adapter for each one of the recyclerViews
                 Field recyclerView = binding.getClass().getDeclaredField(recyclerName);
                 recyclerView.setAccessible(true);
 
                 RecyclerView recycler = (RecyclerView) recyclerView.get(binding);
-                Log.e("TEST",recyclerView.getName());
-                DietaryRestrictionPredefinedItemAdapter groupedIngredientsAdapter = new DietaryRestrictionPredefinedItemAdapter(this,ingredientListBean, this,recyclerView.getName());
+
+                DietaryRestrictionPredefinedItemAdapter groupedIngredientsAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, recyclerView.getName());
 
 
                 recycler.setAdapter(groupedIngredientsAdapter);
@@ -140,53 +128,45 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
             //// end of dynamically setting recycler views
 
 
-
             binding.btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentObj = new Intent(getApplicationContext(), DietaryRestrictionsAddCustomActivity.class);
-                startActivity(intentObj);
-            }
-        });
+                @Override
+                public void onClick(View v) {
+                    Intent intentObj = new Intent(getApplicationContext(), DietaryRestrictionsAddCustomActivity.class);
+                    startActivity(intentObj);
+                }
+            });
 
-    }
-
-/*
-    @Override
-    public void onItemClick(View v, int outerPos, int innerPos) {
-      /*
-        RestrictedIngredientsCategory category = (RestrictedIngredientsCategory) restrictionsMap.keySet().toArray()[outerPos];
-        List<CommonRestrictedIngredients> itemList = restrictionsMap.get(category);
-
-        // Use innerPos to get the clicked item
-        CommonRestrictedIngredients clickedItem = itemList.get(innerPos);
-
-        // Do something with the clicked item
-        Toast.makeText(this, "Clicked item: " + clickedItem.getIngredientDescription(), Toast.LENGTH_SHORT).show();
-
-        Log.e("PredefItem - MAIN", category.getCategoryDescription() +" "+ clickedItem.getIngredientDescription() );
-*/
-
-        /*
-        Object clickedItem = flattenedList.get(outerPos);
-        if (clickedItem instanceof RestrictedIngredientsCategory) {
-            // Handle category click
-            RestrictedIngredientsCategory category = (RestrictedIngredientsCategory) clickedItem;
-            Toast.makeText(this, "Clicked category: " + category.getCategoryDescription(), Toast.LENGTH_SHORT).show();
-        } else if (clickedItem instanceof CommonRestrictedIngredients) {
-            // Handle item click
-            CommonRestrictedIngredients item = (CommonRestrictedIngredients) clickedItem;
-            Toast.makeText(this, "Clicked item: " + item.getIngredientDescription(), Toast.LENGTH_SHORT).show();
         }
-        */
 
     }
 
 
     @Override
-    public void onItemClick(View v,int position, String recyclerViewId) {
-        Log.e("TEST", "There was a click!!");
-        Log.e("TEST", String.valueOf(position));
-        Log.e("TEST",recyclerViewId);
+    public void onItemClick(View v, int position, String recyclerViewId, boolean isChecked) {
+
+
+        //based on the list, identifies the category in the map
+
+        String[] categoryPosition = recyclerViewId.split("groupList");
+
+        if (categoryPosition.length > 1) {
+
+            //decrease 1 as map index starts in 0, and groupList starts as 1.
+            int mapCategoryPosition = Integer.parseInt(categoryPosition[1])-1;
+            RestrictedIngredientsCategory selectedCategory = (RestrictedIngredientsCategory) restrictionsMap.keySet().toArray()[mapCategoryPosition];
+            List<CommonRestrictedIngredients> selectedIngredientList = restrictionsMap.get(selectedCategory);
+            CommonRestrictedIngredients selectedItem = selectedIngredientList.get(position);
+
+            DietaryRestrictionIngredient selectedIngredient = new DietaryRestrictionIngredient(selectedItem.getIngredientDescription(),selectedCategory.getCategoryDescription() );
+
+            if (isChecked) {
+                viewModel.addDietaryRestrictionIngredient(selectedIngredient);
+            } else {
+                //viewModel.deleteDietaryRestrictionIngredient(selectedIngredient);
+            }
+
+        }
+
+
     }
 }

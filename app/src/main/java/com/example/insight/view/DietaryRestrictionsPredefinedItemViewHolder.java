@@ -28,7 +28,7 @@ public class DietaryRestrictionsPredefinedItemViewHolder extends RecyclerView.Vi
         ingredientCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickListener.onItemClick(v,getAdapterPosition(),recyclerViewId);
+                clickListener.onItemClick(v,getAdapterPosition(),recyclerViewId, ingredientCheckBox.isChecked());
             }
         });
 
