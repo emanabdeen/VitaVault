@@ -12,9 +12,9 @@ public class DietaryRestrictionsPredefinedItemViewHolder extends RecyclerView.Vi
 
 
     public CheckBox ingredientCheckBox;
-    ItemClickListener clickListener;
+    GroupedRecyclerViewItemClickListener clickListener;
 
-    public DietaryRestrictionsPredefinedItemViewHolder(@NonNull View itemView, ItemClickListener clickListener) {
+    public DietaryRestrictionsPredefinedItemViewHolder(@NonNull View itemView, GroupedRecyclerViewItemClickListener clickListener) {
         super(itemView);
 
 

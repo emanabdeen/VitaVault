@@ -46,7 +46,7 @@ public enum CommonRestrictedIngredients {
     }
 
 
-    public String GetIngredientDescription(){
+    public String getIngredientDescription(){
         return  description;
     }
 
@@ -58,7 +58,7 @@ public enum CommonRestrictedIngredients {
     public static  Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> GetAllIngredientsWithCategory(){
 
 
-        Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> ingredientCategoryMap = new TreeMap<>();
+        Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> ingredientCategoryMap = new LinkedHashMap<>();
 
         for (CommonRestrictedIngredients ingredient : CommonRestrictedIngredients.values()) {
             // Get the category of the ingredient

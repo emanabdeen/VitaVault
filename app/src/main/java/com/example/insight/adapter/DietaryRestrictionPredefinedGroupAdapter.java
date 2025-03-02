@@ -1,6 +1,7 @@
 package com.example.insight.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import com.example.insight.R;
 import com.example.insight.utility.CommonRestrictedIngredients;
 import com.example.insight.utility.RestrictedIngredientsCategory;
 import com.example.insight.view.DietaryRestrictionsGroupedPredefinedListViewHolder;
+import com.example.insight.view.GroupedRecyclerViewItemClickListener;
+import com.example.insight.view.ItemClickListener;
 
 import java.util.List;
 import java.util.Map;
@@ -22,13 +25,13 @@ public class DietaryRestrictionPredefinedGroupAdapter extends RecyclerView.Adapt
 
     Context context;
     Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> restrictionsMap;
-
-
     DietaryRestrictionPredefinedItemAdapter itemAdapter;
+    private GroupedRecyclerViewItemClickListener clickListener;
 
-    public DietaryRestrictionPredefinedGroupAdapter(Context context,Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> map) {
+    public DietaryRestrictionPredefinedGroupAdapter(Context context,Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> map, GroupedRecyclerViewItemClickListener clickListener) {
         this.context = context;
         this.restrictionsMap = map;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -37,7 +40,7 @@ public class DietaryRestrictionPredefinedGroupAdapter extends RecyclerView.Adapt
 
           View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.grouped_item_predefined_dietary_restriction, parent,false);
 
-        return new DietaryRestrictionsGroupedPredefinedListViewHolder(itemView);
+        return new DietaryRestrictionsGroupedPredefinedListViewHolder(itemView, clickListener);
 
     }
 
@@ -52,9 +55,15 @@ public class DietaryRestrictionPredefinedGroupAdapter extends RecyclerView.Adapt
 
 
         holder.category.setText(categoryName);
-        itemAdapter = new DietaryRestrictionPredefinedItemAdapter(restrictionsMap.get(category));
-       holder.ingredientRecyclerView.setAdapter(itemAdapter);
 
+
+
+        //set inner adapter
+        itemAdapter = new DietaryRestrictionPredefinedItemAdapter(restrictionsMap.get(category), (outerPos, innerPos) -> {
+            clickListener.onItemClick(outerPos, innerPos);
+        });
+
+        holder.ingredientRecyclerView.setAdapter(itemAdapter);
 
     }
 

@@ -4,6 +4,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insight.R;
@@ -19,12 +20,14 @@ public class DietaryRestrictionsGroupedPredefinedListViewHolder extends Recycler
     public TextView category;
     public RecyclerView ingredientRecyclerView;
     private DietaryRestrictionPredefinedItemAdapter itemAdapter;
+    private GroupedRecyclerViewItemClickListener clickListener;
 
-    public DietaryRestrictionsGroupedPredefinedListViewHolder(@NonNull View itemView) {
+    public DietaryRestrictionsGroupedPredefinedListViewHolder(@NonNull View itemView, GroupedRecyclerViewItemClickListener clickListener) {
         super(itemView);
 
         this.category = itemView.findViewById(R.id.categoryTitle);
         this.ingredientRecyclerView = itemView.findViewById(R.id.groupedItemList);
+        this.clickListener = clickListener;
 
     }
 

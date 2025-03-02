@@ -2,6 +2,7 @@ package com.example.insight.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -24,7 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
 import java.util.Map;
 
-public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implements ItemClickListener {
+public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implements GroupedRecyclerViewItemClickListener {
 
     ActivityDietaryRestrictionsMainBinding binding;
     FirebaseAuth mAuth;
@@ -56,9 +57,6 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
        // viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
 
-
-
-
         //Creates the future "inner" recyclerViewer with 2 columns.
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         binding.externalGroupedList.setLayoutManager(layoutManager);
@@ -66,7 +64,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
         //connects adapter with list item
 
         RecyclerView mainList = findViewById(R.id.externalGroupedList);
-        DietaryRestrictionPredefinedGroupAdapter groupedIngredientsAdapter = new DietaryRestrictionPredefinedGroupAdapter(this,restrictionsMap);
+        DietaryRestrictionPredefinedGroupAdapter groupedIngredientsAdapter = new DietaryRestrictionPredefinedGroupAdapter(this,restrictionsMap,this);
         mainList.setAdapter(groupedIngredientsAdapter);
 
 
@@ -82,14 +80,19 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
     }
 
-    @Override
-    public void OnClickItem(View v, int pos) {
-
-        Toast.makeText(DietaryRestrictionsMainActivity.this, pos, Toast.LENGTH_LONG).show();
-    }
 
     @Override
-    public void OnClickDelete(View v, int pos) {
+    public void onItemClick(int outerPos, int innerPos) {
+        RestrictedIngredientsCategory category = (RestrictedIngredientsCategory) restrictionsMap.keySet().toArray()[outerPos];
+        List<CommonRestrictedIngredients> itemList = restrictionsMap.get(category);
+
+        // Use innerPos to get the clicked item
+        CommonRestrictedIngredients clickedItem = itemList.get(innerPos);
+
+        // Do something with the clicked item
+        Toast.makeText(this, "Clicked item: " + clickedItem.getIngredientDescription(), Toast.LENGTH_SHORT).show();
+
+        Log.e("PredefItem - MAIN", category.getCategoryDescription() +" "+ clickedItem.getIngredientDescription() );
 
     }
 }

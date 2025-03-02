@@ -1,41 +1,38 @@
 package com.example.insight.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insight.R;
-import com.example.insight.model.DietaryRestrictionIngredient;
 
 import com.example.insight.utility.CommonRestrictedIngredients;
-import com.example.insight.utility.RestrictedIngredientsCategory;
 import com.example.insight.view.DietaryRestrictionsPredefinedItemViewHolder;
-import com.example.insight.view.ItemClickListener;
+import com.example.insight.view.GroupedRecyclerViewItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class DietaryRestrictionPredefinedItemAdapter extends RecyclerView.Adapter<DietaryRestrictionsPredefinedItemViewHolder> {
 
     //Context context;
-    List<CommonRestrictedIngredients> ingredientsList = new ArrayList<>();
-    ItemClickListener clickListener;
-    Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> restrictionsMap;
+    private List<CommonRestrictedIngredients> ingredientsList = new ArrayList<>();
+    private GroupedRecyclerViewItemClickListener clickListener;
 
-    public DietaryRestrictionPredefinedItemAdapter(List<CommonRestrictedIngredients> ingredientsList) {
+
+    public DietaryRestrictionPredefinedItemAdapter(List<CommonRestrictedIngredients> ingredientsList, GroupedRecyclerViewItemClickListener clickListener) {
        // this.context = context;
         this.ingredientsList = ingredientsList;
-
-    }
-
-    public void setClickListener(ItemClickListener clickListener){
         this.clickListener = clickListener;
+
     }
+
+
 
 
     @NonNull
@@ -51,7 +48,19 @@ public class DietaryRestrictionPredefinedItemAdapter extends RecyclerView.Adapte
     public void onBindViewHolder(@NonNull DietaryRestrictionsPredefinedItemViewHolder holder, int position) {
 
         CommonRestrictedIngredients ingredient = ingredientsList.get(position);
-        holder.ingredientCheckBox.setText(ingredient.GetIngredientDescription());
+
+        holder.ingredientCheckBox.setText(ingredient.getIngredientDescription());
+
+        holder.ingredientCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (clickListener != null) {
+                    clickListener.onItemClick(holder.getAdapterPosition(), position);
+                }
+                Log.e("INNER-PredefItem",ingredient.getIngredientDescription());
+            }
+        });
+
     }
 
     @Override
