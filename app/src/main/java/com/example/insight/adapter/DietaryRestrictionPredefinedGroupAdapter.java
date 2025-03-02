@@ -1,3 +1,4 @@
+/*
 package com.example.insight.adapter;
 
 import android.content.Context;
@@ -25,13 +26,15 @@ public class DietaryRestrictionPredefinedGroupAdapter extends RecyclerView.Adapt
 
     Context context;
     Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> restrictionsMap;
-    DietaryRestrictionPredefinedItemAdapter itemAdapter;
+    //DietaryRestrictionPredefinedItemAdapter itemAdapter;
     private GroupedRecyclerViewItemClickListener clickListener;
+    private List<Object> flatennedList;
 
-    public DietaryRestrictionPredefinedGroupAdapter(Context context,Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> map, GroupedRecyclerViewItemClickListener clickListener) {
+    public DietaryRestrictionPredefinedGroupAdapter(Context context, GroupedRecyclerViewItemClickListener clickListener, List<Object> flatList) {
         this.context = context;
-        this.restrictionsMap = map;
+        //this.restrictionsMap = map;
         this.clickListener = clickListener;
+        this.flatennedList = flatList;
     }
 
     @NonNull
@@ -40,13 +43,13 @@ public class DietaryRestrictionPredefinedGroupAdapter extends RecyclerView.Adapt
 
           View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.grouped_item_predefined_dietary_restriction, parent,false);
 
-        return new DietaryRestrictionsGroupedPredefinedListViewHolder(itemView, clickListener);
+        return new DietaryRestrictionsGroupedPredefinedListViewHolder(itemView, clickListener, flatennedList);
 
     }
 
     @Override
     public void onBindViewHolder(@NonNull DietaryRestrictionsGroupedPredefinedListViewHolder holder, int position) {
-
+/*
        RestrictedIngredientsCategory category = (RestrictedIngredientsCategory) restrictionsMap.keySet().toArray()[position];
        String categoryName = category.getCategoryDescription();
 
@@ -64,11 +67,20 @@ public class DietaryRestrictionPredefinedGroupAdapter extends RecyclerView.Adapt
         });
 
         holder.ingredientRecyclerView.setAdapter(itemAdapter);
-
+        */
+/*
+        Object item = flatennedList.get(position);
+        if (item instanceof RestrictedIngredientsCategory) {
+            holder.bindCategory((RestrictedIngredientsCategory) item, position);
+        } else if (item instanceof CommonRestrictedIngredients) {
+            holder.bindItem((CommonRestrictedIngredients) item, position);
+        }
+       // holder.setListener(listener);  // Pass listener to ViewHolder
     }
+
 
     @Override
     public int getItemCount() {
-        return restrictionsMap.size();
+        return flatennedList.size();
     }
-}
+}*/

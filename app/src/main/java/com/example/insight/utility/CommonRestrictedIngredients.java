@@ -124,5 +124,18 @@ public enum CommonRestrictedIngredients {
     }
 
 
+    public static List<Object> getFlatennedList() {
+        List<Object> flattenedList = new ArrayList<>();
+
+        Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> ingredientMap = GetAllIngredientsWithCategory();
+
+        for (Map.Entry<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> entry : ingredientMap.entrySet()) {
+            RestrictedIngredientsCategory category = entry.getKey();
+            flattenedList.add(category);  // Add the category first
+            flattenedList.addAll(entry.getValue());  // Add all items under the category
+        }
+
+        return flattenedList;
+    }
 
 }
