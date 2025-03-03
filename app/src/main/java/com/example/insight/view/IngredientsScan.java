@@ -26,11 +26,13 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.example.insight.databinding.ActivityIngredientsScanBinding;
+import com.example.insight.utility.IngredientUtils;
 import com.example.insight.utility.OcrApiClient;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class IngredientsScan extends AppCompatActivity {
@@ -38,6 +40,7 @@ public class IngredientsScan extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private ActivityIngredientsScanBinding binding;
+    private IngredientUtils ingredientUtils;
     private Button cameraButton, ocrTestButton;
     private ImageView cameraResultImageView;
     private TextView ocrResultText;
@@ -51,6 +54,7 @@ public class IngredientsScan extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityIngredientsScanBinding.inflate(getLayoutInflater());
         this.setContentView(binding.getRoot());
+        ingredientUtils = new IngredientUtils();
 
         ocrResultText = binding.ocrResultText;
         ocrResultText.setMovementMethod(new ScrollingMovementMethod());
@@ -68,9 +72,12 @@ public class IngredientsScan extends AppCompatActivity {
                             Log.d(TAG, "Running OcrApiClient.detectText");
                             String textResult = OcrApiClient.detectText(getApplicationContext(), imageBitmap[0]);
                             Log.d(TAG, "onClick: OCR result: " + textResult);
+                            Log.d(TAG, "Test parsing OCR result text...");
                             runOnUiThread(() -> {
                                 ocrResultText.setText(textResult);
                             });
+                            ArrayList<String> ingredientsList = ingredientUtils.splitIngredientList(textResult);
+                            Log.d(TAG, "Ingredients List: " + ingredientsList);
                         }).start();
                     } catch (Exception e) {
                         Log.e(TAG, "onClick: " + e.getMessage());
