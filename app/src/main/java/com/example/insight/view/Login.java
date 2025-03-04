@@ -51,11 +51,15 @@ public class Login extends AppCompatActivity {
                 //Validate Email & PW are not empty
                 String userEmail= binding.editTxtEmail.getText().toString();
                 String userPW= binding.editTxtPW.getText().toString();
+                //String userEmail= "test@test.com";
+                //String userPW= "Test@123";
+
                 if(userEmail.matches("")||userPW.matches("")){
                     //show error message
                     binding.txtErrorMessage.setText("Please insert a valid email and a valid password.");
                 }else{
                     signIn(binding.editTxtEmail.getText().toString(), binding.editTxtPW.getText().toString());
+                    //signIn("test@test.com", "Test@123");
                 }
             }
         });
@@ -63,7 +67,17 @@ public class Login extends AppCompatActivity {
         Intent intentObj = getIntent();
         TextView title = binding.pageTitle;
         ConstraintLayout successMessage = binding.successMessage;
-        LoginRegisterHelper.checkRegistrationMessage(intentObj, title, successMessage);
+
+        //Read Intent value. if registration process succeeded, will show success message
+        boolean registerSuccess = intentObj.getBooleanExtra("registerSuccess",false);
+        // Set visibility based on registerSuccess
+        if (registerSuccess) {
+            title.setVisibility(View.GONE);
+            successMessage.setVisibility(View.VISIBLE);
+        } else {
+            successMessage.setVisibility(View.GONE);
+            title.setVisibility(View.VISIBLE);
+        }
     }
 
     private void signIn(String email, String password) {
@@ -76,7 +90,7 @@ public class Login extends AppCompatActivity {
                             Log.d("tag", "signInWithEmail:success");
 
                             FirebaseUser user = mAuth.getCurrentUser(); //initialize user object and assign the the value
-                            Intent intentObj = new Intent(getApplicationContext(), MainActivity.class); //Navigate to page
+                            Intent intentObj = new Intent(getApplicationContext(), IntroActivity.class); //Navigate to page
                             startActivity(intentObj);
                             finish();
                         }else{

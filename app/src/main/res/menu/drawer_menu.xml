@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_home"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/nav_symptoms"
+        android:icon="@drawable/icon_symptoms"
+        android:title="Symptoms" />
+
+    <item
+        android:id="@+id/nav_vitals"
+        android:icon="@drawable/ic_vitals2"
+        android:title="Vitals" />
+
+    <item
+        android:id="@+id/nav_reports"
+        android:icon="@drawable/ic_report2"
+        android:title="Reports" />
+
+    <item
+        android:id="@+id/nav_dietary"
+        android:icon="@drawable/ic_diet2"
+        android:title="Dietary Restrictions" />
+
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/icon_power"
+        android:title="Logout" />
+
+</menu>
