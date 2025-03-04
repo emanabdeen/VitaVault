@@ -35,6 +35,7 @@ public class IngredientUtils {
             Log.e(TAG, "splitIngredientList: input text is null or empty");
             return new ArrayList<String>(); // Return an empty list if the input is null or empty
         }
+        ArrayList<String> newIngredientsList = new ArrayList<String>();
         String trimmedLowerInputText = inputText.trim().toLowerCase();
         String ingredientsInputText = "";
         String mayContainInputText = "";
@@ -110,14 +111,13 @@ public class IngredientUtils {
 
 
         for (String ingredient : splitIngredientsInputText) {
-            Log.d(TAG, "splitIngredientList: adding ingredient - " + ingredient);
             if (!ingredient.trim().isEmpty()) {
-                this.addIngredient(ingredient);
+                Log.d(TAG, "splitIngredientList: adding ingredient - " + ingredient);
+                newIngredientsList.add(ingredient);
             } else {
                 Log.d(TAG, "splitIngredientList: ingredient is empty, skipping");
             }
         }
-
-        return this.ingredientList;
+        return newIngredientsList;
     }
 }
