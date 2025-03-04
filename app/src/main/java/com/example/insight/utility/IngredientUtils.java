@@ -43,37 +43,55 @@ public class IngredientUtils {
 
         if (trimmedLowerInputText.contains("ingredients")) {
             ingredientsInputText = trimmedLowerInputText.substring(trimmedLowerInputText.indexOf("ingredients"));
+            Log.d(TAG, "Ingredients string detected, carving out");
         }
         if (trimmedLowerInputText.contains("may contain")) {
             mayContainInputText = trimmedLowerInputText.substring(trimmedLowerInputText.indexOf("may contain"));
             ingredientsInputText = ingredientsInputText.replace(mayContainInputText, "");
+            Log.d(TAG, "May contain string detected, carving out then cleaning it from ingredients string");
         }
-        if (ingredientsInputText.contains("contains")) {
+        if (trimmedLowerInputText.contains("contains")) {
             containsInputText = trimmedLowerInputText.substring(trimmedLowerInputText.indexOf("contains"));
+            mayContainInputText = mayContainInputText.replace(containsInputText, "");
             ingredientsInputText = ingredientsInputText.replace(containsInputText, "");
+            Log.d(TAG, "Contains string detected, carving out then cleaning it from ingredients string");
         }
-        if (ingredientsInputText.contains("ingrédients")) { // sanitize french ingredients from string
-            frenchIngredients = ingredientsInputText.substring(ingredientsInputText.indexOf("ingrédients"));
+        if (trimmedLowerInputText.contains("ingrédients") ){ //|| ingredientsInputText.contains("ingrêdients") || ingredientsInputText.contains("ingrëdients") || ingredientsInputText.contains("ingrèdients")) { // sanitize french ingredients from string
+            frenchIngredients = trimmedLowerInputText.substring(trimmedLowerInputText.indexOf("ingrédients"));
             ingredientsInputText = ingredientsInputText.replace(frenchIngredients, "");
+            Log.d(TAG,"French ingredients string detected, cleaning it from strings");
         }
         if (!frenchIngredients.isEmpty()) {
+            Log.d(TAG, "French ingredients string not empty, cleaning it from other strings");
             if (mayContainInputText.contains(frenchIngredients)) {
                 mayContainInputText = mayContainInputText.replace(frenchIngredients, "");
+                Log.d(TAG, "Removed french ingredients string from may contain string");
             }
             if (containsInputText.contains(frenchIngredients)) {
                 containsInputText = containsInputText.replace(frenchIngredients, "");
+                Log.d(TAG, "Removed french ingredients string from contains string");
             }
         }
 
         // Sanitize colons and semicolons
+        ingredientsInputText = ingredientsInputText.replace("ingredients", "");
         ingredientsInputText = ingredientsInputText.replace(":", "");
         ingredientsInputText = ingredientsInputText.replace(";", "");
+        ingredientsInputText = ingredientsInputText.replace(".", ",");
+        ingredientsInputText = ingredientsInputText.replace("\n", " ");
 
+        mayContainInputText = mayContainInputText.replace("may contain", "");
         mayContainInputText = mayContainInputText.replace(":", "");
         mayContainInputText = mayContainInputText.replace(";", "");
+        mayContainInputText = mayContainInputText.replace(".", ",");
+        mayContainInputText = mayContainInputText.replace("\n", " ");
 
+
+        containsInputText = containsInputText.replace("contains", "");
         containsInputText = containsInputText.replace(":", "");
         containsInputText = containsInputText.replace(";", "");
+        containsInputText = containsInputText.replace(".", ",");
+        containsInputText = containsInputText.replace("\n", "");
 
         Log.d(TAG, "Ingredients Input Text: " + ingredientsInputText);
         Log.d(TAG, "May Contain Input Text: " + mayContainInputText);
@@ -84,16 +102,20 @@ public class IngredientUtils {
 
         String[] splitMayContainInputText;
         splitMayContainInputText = mayContainInputText.split(",");
-        Log.d(TAG, "splitMayContainInputText: " + splitMayContainInputText.toString());
+        Log.d(TAG, "splitMayContainInputText length: " + splitMayContainInputText.length);
 
         String[] splitContainsInputText;
         splitContainsInputText = containsInputText.split(",");
-        Log.d(TAG, "splitContainsInputText: " + splitContainsInputText.toString());
+        Log.d(TAG, "splitContainsInputText length: " + splitContainsInputText.length);
 
 
         for (String ingredient : splitIngredientsInputText) {
             Log.d(TAG, "splitIngredientList: adding ingredient - " + ingredient);
-            this.addIngredient(ingredient);
+            if (!ingredient.trim().isEmpty()) {
+                this.addIngredient(ingredient);
+            } else {
+                Log.d(TAG, "splitIngredientList: ingredient is empty, skipping");
+            }
         }
 
         return this.ingredientList;
