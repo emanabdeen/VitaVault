@@ -13,6 +13,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
@@ -35,8 +37,12 @@ import com.example.insight.databinding.ActivityIngredientsScanBinding;
 import com.example.insight.utility.ImageUtils;
 import com.example.insight.utility.IngredientUtils;
 import com.example.insight.utility.OcrApiClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import com.google.mlkit.vision.text.Text;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -53,7 +59,7 @@ public class IngredientsScan extends AppCompatActivity {
     private Button cameraButton, ocrTestButton, parseIngredientsButton, detectTextButton;
     private ImageCapture imageCapture;
     private ImageView cameraResultImageView;
-    private TextView ocrResultText;
+    private EditText ocrResultText;
     private Bitmap capturedImageBitmap, croppedImageBitmap;
     // TODO: Use capturedImageBitmap for preview snapshot and fallback if user cancels crop (if crop cancel doesn't update bitmap for ocr)
     // TODO: Clear capturedImageBitmap at start of each action that might change it, then fallback to capturedImageBitmap if null
@@ -74,6 +80,7 @@ public class IngredientsScan extends AppCompatActivity {
         ocrTestButton = binding.ocrTestButton;
         cameraButton = binding.cameraButton;
 
+
         ocrResultText.setMovementMethod(new ScrollingMovementMethod());
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
@@ -84,7 +91,8 @@ public class IngredientsScan extends AppCompatActivity {
                 startCameraX(cameraProvider);
             } catch (Exception e) {
                 Log.e(TAG, "onCreate: " + e.getMessage());
-            }}, getExecutor());
+            }
+        }, getExecutor());
         cameraResultImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,13 +116,28 @@ public class IngredientsScan extends AppCompatActivity {
                 Toast.makeText(IngredientsScan.this, "Detect Text Button Clicked", Toast.LENGTH_LONG).show();
                 Log.d(TAG, "Running OcrApiClient.detectText");
                 Log.d(TAG, "TESTING~~~~~");
+                Log.d(TAG, "Test parsing OCR result text");
+                Log.d(TAG, "Please wait for result text...");
                 if (croppedImageBitmap != null) {
-                    String textResult = OcrApiClient.detectText(getApplicationContext(), croppedImageBitmap);
-                    Log.d(TAG, "onClick: OCR result: " + textResult);
-                    Log.d(TAG, "Test parsing OCR result text...");
-                    runOnUiThread(() -> {
-                        ocrResultText.setText(textResult);
-                    });
+                    Task<Text> textResult = OcrApiClient.detectText(croppedImageBitmap);
+                    textResult.addOnSuccessListener(new OnSuccessListener<Text>() {
+                                @Override
+                                public void onSuccess(Text visionText) {
+                                    Log.d(TAG, "onSuccess: visionText: " + visionText.getText());
+                                    runOnUiThread(() -> {
+                                        ocrResultText.setText(visionText.getText());
+                                    });
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e(TAG, "onFailure: " + e.getMessage());
+                                    Toast.makeText(IngredientsScan.this, "Error detecting text: view log ", Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+
                 } else {
                     Log.e(TAG, "onClick: imageBitmap is null");
                 }
@@ -225,7 +248,7 @@ public class IngredientsScan extends AppCompatActivity {
                         Toast.makeText(IngredientsScan.this, "Error taking photo", Toast.LENGTH_LONG).show();
                     }
                 }
-                );
+        );
     }
 
     private void startCropActivity(Uri imageUri) {

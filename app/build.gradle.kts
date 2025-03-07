@@ -46,29 +46,23 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
 
-    //Google
-    implementation(platform("com.google.cloud:libraries-bom-protobuf3:26.55.0"))
-    implementation("com.google.cloud:google-cloud-vision")
-    implementation("com.google.auth:google-auth-library-oauth2-http")
-
-    // gRPC dependencies
-    implementation("io.grpc:grpc-okhttp:1.42.1")
-    implementation("io.grpc:grpc-stub:1.42.1")
-    implementation("javax.annotation:javax.annotation-api:1.3.2")
+    // ML Kit OCR
+    implementation("com.google.mlkit:text-recognition:16.0.1")
 
     // Camerax
     implementation("androidx.camera:camera-core:1.4.1")
     implementation("androidx.camera:camera-camera2:1.4.1")
     implementation("androidx.camera:camera-lifecycle:1.4.1")
     implementation("androidx.camera:camera-view:1.4.1")
+    implementation("com.google.guava:guava:31.0.1-android")
     // Cropping library for OCR stuff
     implementation("com.github.yalantis:ucrop:2.2.8")
-
-
-    // tesseract
-    //implementation("cz.adaptech.tesseract4android:tesseract4android:4.8.0")
 
     // Testing
     testImplementation(libs.junit)
