@@ -18,13 +18,6 @@ public class Vital {
     private String measurement2;
     private String unit;
 
-//    private String heartRate_BPM;
-//    private String bloodPressure_Systolic;
-//    private String bloodPressure_Diastolic;
-//    private String bodyTemperature_C;
-//    private String bodyTemperature_F;
-//    private String weight_Kg;
-//    private String weight_lb;
 
     public Vital() {
     }

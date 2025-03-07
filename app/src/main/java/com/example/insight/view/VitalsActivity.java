@@ -17,6 +17,7 @@ import com.example.insight.viewmodel.VitalViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class VitalsActivity extends DrawerBaseActivity {
     public FirebaseAuth mAuth;
     public FirebaseUser user;
     private VitalsListFragment vitalsListFragment;
+    private VitalGraphFragment vitalGraphFragment;
     private VitalViewModel vitalViewModel;
     List<Vital> vitalsList = new ArrayList<>();
     Vital vital = new Vital();
@@ -58,6 +60,10 @@ public class VitalsActivity extends DrawerBaseActivity {
         // Initialize ViewModel
         vitalViewModel = new ViewModelProvider(this).get(VitalViewModel.class);
 
+        //get the vitals for the current month and current year
+        vitalViewModel.GetVitalsByMonthAndType(LocalDate.now().getMonthValue(),LocalDate.now().getYear(),vitalType);
+        vitalViewModel.GetVitalsByType(vitalType);
+
         //set the image and the title of the page according to the vital type
         binding.textViewTitle.setText(title);
         String imageName = image;
@@ -66,22 +72,32 @@ public class VitalsActivity extends DrawerBaseActivity {
 
         // Create an instance of the fragment
         vitalsListFragment = new VitalsListFragment();
+        vitalGraphFragment = new VitalGraphFragment();
 
         // Create a Bundle to hold the data
         Bundle bundle = new Bundle();
         bundle.putString("vitalType", vitalType); // Add data to the Bundle
         bundle.putString("title", title); // Add title to the Bundle
         bundle.putString("image", image); // Add image to the Bundle
+        bundle.putString("unit", unit); // Add image to the Bundle
 
         // Set the Bundle as arguments for the fragment
         vitalsListFragment.setArguments(bundle);
+        vitalGraphFragment.setArguments(bundle);
 
-        replaceFragment(vitalsListFragment); // Show vitals list by default
+        //replaceFragment(vitalsListFragment); // Show vitals list by default
+        replaceFragment(vitalGraphFragment); // Show vitals list by default
 
         binding.btnListByType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 replaceFragment(vitalsListFragment);
+            }
+        });
+        binding.btnTrends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replaceFragment(vitalGraphFragment);
             }
         });
 
@@ -100,15 +116,6 @@ public class VitalsActivity extends DrawerBaseActivity {
                 startActivity(intentObj);
             }
         });
-
-        // -------------------------------Get vital By Type --------------------------------------------
-//        binding.btnListByType.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                GetVitalsByTypeResults(vitalType);
-//            }
-//        });
 
     }
 
@@ -130,47 +137,4 @@ public class VitalsActivity extends DrawerBaseActivity {
         ft.commit();
     }
 
-
-    /** method to get a list of vitals at a selected date*/
-    private void GetVitalByDateResults(String searchDate){
-        vitalViewModel=new VitalViewModel();
-
-        vitalViewModel.GetVitalsByDate(searchDate);
-
-        // Observe favorite movies data
-        vitalViewModel.getVitalsData().observe(this, vitalsData -> {
-            if (vitalsData != null || !vitalsData.isEmpty()) {
-                vitalsList.clear();//to reset the current list
-                vitalsList.addAll(vitalsData);
-                //symptomsListAdapter.notifyDataSetChanged();
-
-                Log.d("MainActivity", "vitalsList count>> " + vitalsList.size());
-            }
-            else {
-                Log.d("MainActivity", "vitalsList is null or empty.");
-            }
-        });
-    }
-
-    /** method to get a list of vitals for the selected type*/
-    private void GetVitalsByTypeResults(String vitalType){
-        vitalViewModel=new VitalViewModel();
-
-        vitalViewModel.GetVitalsByType(vitalType);
-
-        // Observe favorite movies data
-        vitalViewModel.getVitalsData().observe(this, vitalsData -> {
-            if (vitalsData != null || !vitalsData.isEmpty()) {
-                vitalsList.clear();//to reset the current list
-                vitalsList.addAll(vitalsData);
-                //symptomsListAdapter.notifyDataSetChanged();
-
-                Log.d("MainActivity", "symptomList count>> " + vitalsList.size());
-            }
-            else {
-                Log.d("MainActivity", "symptomList is null or empty.");
-            }
-        });
-
-    }
 }

@@ -30,7 +30,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/edit_text_background"
             android:hint="search for records by date"
-            android:textColorHint="@color/liteGray"
+            android:textColorHint="@color/light_gray"
+            android:textColor="@color/black"
             android:inputType="date"
             android:padding="8dp"
             android:textSize="13sp"
@@ -50,7 +51,7 @@
             app:layout_constraintHorizontal_bias="0.146"
             app:layout_constraintStart_toEndOf="@+id/searchTextDate"
             app:layout_constraintTop_toTopOf="parent"
-            />
+            android:background="@android:color/transparent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

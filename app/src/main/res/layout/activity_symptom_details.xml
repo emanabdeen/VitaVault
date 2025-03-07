@@ -69,7 +69,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_background"
                 android:inputType="date"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/errorDate"
@@ -108,7 +109,8 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/edit_text_background"
                         android:inputType="time"
-                        android:padding="8dp" />
+                        android:padding="8dp"
+                        android:textColor="@color/black"/>
 
                     <TextView
                         android:id="@+id/errorTimeStart"
@@ -142,7 +144,8 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/edit_text_background"
                         android:inputType="time"
-                        android:padding="8dp" />
+                        android:padding="8dp"
+                        android:textColor="@color/black"/>
 
                     <TextView
                         android:id="@+id/errorTimeEnd"
@@ -253,8 +256,9 @@
                     android:inputType="textMultiLine"
                     android:textSize="16sp"
                     android:hint="add your notes"
-                    android:textColorHint="@color/liteGray"
-                    android:background="@drawable/edit_text_background"/>
+                    android:textColorHint="@color/light_gray"
+                    android:background="@drawable/edit_text_background"
+                    android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/errorGeneral"

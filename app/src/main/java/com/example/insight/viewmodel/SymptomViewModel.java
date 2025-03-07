@@ -157,7 +157,8 @@ public class SymptomViewModel extends ViewModel {
 
         // Create a query to find documents that match the specified criteria
         Query query = symptomsRef
-                .whereEqualTo("recordDate", searchDateStr);
+                .whereEqualTo("recordDate", searchDateStr)
+                .orderBy("recordDate", Query.Direction.DESCENDING);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -233,7 +234,8 @@ public class SymptomViewModel extends ViewModel {
         // Create a query to find documents that match the specified criteria
         Query query = symptomsRef
                 .whereEqualTo("recordDate", searchDateStr)
-                .whereEqualTo("symptomName", symptomType);
+                .whereEqualTo("symptomName", symptomType)
+                .orderBy("recordDate", Query.Direction.DESCENDING);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -380,7 +382,8 @@ public class SymptomViewModel extends ViewModel {
 
         // Create a query to find documents that match the specified criteria
         Query query = symptomsRef
-                .whereEqualTo("symptomName", symptomType);
+                .whereEqualTo("symptomName", symptomType)
+                .orderBy("recordDate", Query.Direction.DESCENDING);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {

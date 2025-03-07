@@ -1,0 +1,29 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Shadow -->
+
+    <item
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp"
+        android:bottom="0dp">
+        <bitmap
+            android:src="@drawable/glow_white"
+            android:gravity="fill" />
+        <corners android:radius="25dp" /> <!-- Corner radius -->
+    </item>
+
+    <item
+        android:left="20dp"
+        android:right="20dp"
+        android:top="20dp"
+        android:bottom="25dp">
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/colorSurface" /> <!-- Shadow color (black with 50% opacity) -->
+            <corners android:radius="25dp" /> <!-- Adjust corner radius if needed -->
+        </shape>
+    </item>
+    <!-- Background (Matches Theme) -->
+
+
+</layer-list>
+<!--    "?attr/colorSurface"-->

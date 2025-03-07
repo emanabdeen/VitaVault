@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.insight.model.Symptom;
 import com.example.insight.model.Vital;
+import com.example.insight.model.VitalRecord;
 import com.example.insight.utility.DateValidator;
 import com.example.insight.utility.StringHandler;
 import com.example.insight.utility.TimeValidator;
@@ -50,6 +51,10 @@ public class VitalViewModel extends ViewModel {
     private final MutableLiveData<Vital> selectedVitalData = new MutableLiveData<>();
     Vital selectedVital = new Vital();
 
+    //set the LiveData for VitalRecords
+    private final MutableLiveData<List<VitalRecord>> vitalRecordsData = new MutableLiveData<>();
+    List<VitalRecord> vitalRecordsList = new ArrayList<>();
+
     //set the liveData for searchResultMessageData
     private final MutableLiveData<String> searchResultMessageData = new MutableLiveData<>();
     String searchResultMessage = "";
@@ -58,6 +63,7 @@ public class VitalViewModel extends ViewModel {
     public VitalViewModel() {
         vitalsData.setValue(vitalsList);
         selectedVitalData.setValue(selectedVital);
+        vitalRecordsData.setValue(vitalRecordsList);
         searchResultMessageData.setValue(searchResultMessage);
     }
 
@@ -70,6 +76,10 @@ public class VitalViewModel extends ViewModel {
     }
     public LiveData<String> getSearchResultMessageData() {
         return searchResultMessageData;
+    }
+
+    public LiveData<List<VitalRecord>> getVitalRecordsData() {
+        return vitalRecordsData;
     }
 
     public void AddVital(Vital vital){
@@ -125,7 +135,8 @@ public class VitalViewModel extends ViewModel {
 
         // Create a query to find documents that match the specified criteria
         Query query = vitalsRef
-                .whereEqualTo("recordDate", recordDateStr);
+                .whereEqualTo("recordDate", recordDateStr)
+                .orderBy("recordDate", Query.Direction.DESCENDING);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -594,6 +605,95 @@ public class VitalViewModel extends ViewModel {
                 .addOnFailureListener(e -> {
                     Log.e("Error", "Error deleting vital: " + e.getMessage());
                     //searchResultMessageData.postValue("Error deleting vital.");
+                });
+    }
+
+    public void GetVitalsByMonthAndType(int month, int year, String vitalType) {
+        // Reference to the user's vitals collection
+        CollectionReference vitalsRef = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .collection("vitals");
+
+        // Calculate the start and end dates of the specified month
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        // Convert the dates to strings for the query
+        String startDateStr = DateValidator.LocalDateToString(startDate);
+        String endDateStr = DateValidator.LocalDateToString(endDate);
+
+        // Create a query to find documents that have a recordDate within the specified month
+        Query query = vitalsRef
+                .whereEqualTo("vitalType", vitalType)
+                .whereGreaterThanOrEqualTo("recordDate", startDateStr)
+                .whereLessThanOrEqualTo("recordDate", endDateStr)
+                .orderBy("recordDate", Query.Direction.ASCENDING);
+
+        query.get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<VitalRecord> vitalRecordsList = new ArrayList<>();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        Log.d(TAG, "----------------------Get Vitals By Month--------------------------------");
+
+                        // Retrieve the documents from the query result
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            Log.d(TAG, "Document ID: " + document.getId());
+                            Log.d(TAG, "vital Type: " + document.get("vitalType"));
+                            Log.d(TAG, "unit: " + document.get("unit"));
+                            Log.d(TAG, "measurement1: " + document.get("measurement1"));
+                            Log.d(TAG, "measurement2: " + document.get("measurement2"));
+                            Log.d(TAG, "record Time: " + document.get("recordTime"));
+                            Log.d(TAG, "record Date: " + document.get("recordDate"));
+                            Log.d(TAG, "--------------------------------------------");
+
+                            try {
+                                String vitalTypeStr = StringHandler.defaultIfNull(document.get("vitalType"));
+                                String measurement1 = StringHandler.defaultIfNull(document.get("measurement1"));
+                                String measurement2 = StringHandler.defaultIfNull(document.get("measurement2"));
+                                String unitStr = StringHandler.defaultIfNull(document.get("unit"));
+                                String recordTimeStr = StringHandler.defaultIfNull(document.get("recordTime"));
+                                String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
+
+                                LocalTime recordTime = TimeValidator.StringToLocalTime(recordTimeStr);//convert from string format HH:mm
+                                LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr); //convert from string format yyyy-MM-dd
+
+                                // Create Vital object with the retrieved data
+                                Vital vital = new Vital(recordDate, recordTime, vitalTypeStr, unitStr);
+                                vital.setVitalId(document.getId());
+                                vital.setMeasurement1(measurement1);
+                                vital.setMeasurement2(measurement2);
+
+                                // Convert Vital to VitalRecord
+                                int dayOfMonth = recordDate.getDayOfMonth();
+                                Float measure1 = measurement1.isEmpty() ? null : Float.parseFloat(measurement1);
+                                Float measure2 = measurement2.isEmpty() ? null : Float.parseFloat(measurement2);
+
+                                VitalRecord vitalRecord = new VitalRecord(dayOfMonth, measure1, measure2);
+                                vitalRecordsList.add(vitalRecord);
+
+                            } catch (DateTimeParseException e) {
+                                Log.e("Error", "Error parsing time: " + e.getMessage());
+                            } catch (NumberFormatException e) {
+                                Log.e("Error", "Error parsing measurement: " + e.getMessage());
+                            }
+                        }
+                        Log.d(TAG, "----------------------vitalRecords count>> " + vitalRecordsList.size()); // number of vital records in the list
+
+                        searchResultMessageData.postValue("");
+                        vitalRecordsData.postValue(vitalRecordsList);
+
+
+                    } else {
+                        Log.d(TAG, "No vitals found for the specified month.");
+                        searchResultMessageData.postValue("No vital Records found ...");
+                        vitalRecordsData.postValue(vitalRecordsList);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error retrieving documents: " + e.getMessage());
+                    // Handle failure
+                    vitalRecordsData.postValue(null);// Handle failure
                 });
     }
 

@@ -41,6 +41,8 @@ android {
     }
 }
 
+
+
 dependencies {
 
     implementation(libs.appcompat)
@@ -53,4 +55,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.okhttp)
+    //implementation (libs.eazegraph)//implementation ("com.github.blackfizz:eazegraph:1.2.2@aar")
+    //implementation (libs.library)//implementation ("com.nineoldandroids:library:2.4.0")
+    implementation (libs.mpandroidchart) //implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
