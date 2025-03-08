@@ -45,6 +45,9 @@
         <activity
             android:name=".view.VitalsActivity"
             android:exported="false" />
+        <activity android:name=".view.MedicationsActivity" />
+        <activity android:name=".view.MedicationDetails" />
+
         <activity
             android:name=".view.DashboardActivity"
             android:exported="true">
