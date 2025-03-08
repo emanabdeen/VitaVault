@@ -5,33 +5,48 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insight.R;
 import com.example.insight.model.DietaryRestrictionIngredient;
+import com.example.insight.utility.CommonRestrictedIngredients;
+import com.example.insight.utility.RestrictedIngredientsCategory;
 import com.example.insight.view.DietaryRestrictionCustomIngredientsViewHolder;
 import com.example.insight.view.DietaryRestrictionsPredefinedItemViewHolder;
 import com.example.insight.view.ItemClickListener;
 import com.example.insight.view.MultipleRecyclerViewItemClickListener;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class DietaryRestrictionPredefinedItemAdapter extends RecyclerView.Adapter<DietaryRestrictionsPredefinedItemViewHolder> {
 
     Context context;
     List<DietaryRestrictionIngredient> ingredientsList = new ArrayList<>();
+   // List<DietaryRestrictionIngredient> selectedIngredientsList = new ArrayList<>();
+
     MultipleRecyclerViewItemClickListener clickListener;
     private String recyclerViewId;
+    Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> restrictionsMap;
 
     public DietaryRestrictionPredefinedItemAdapter(Context context, List<DietaryRestrictionIngredient> ingredientsList, MultipleRecyclerViewItemClickListener clickListener, String recyclerViewId) {
         this.context = context;
         this.ingredientsList = ingredientsList;
         this.clickListener = clickListener;
         this.recyclerViewId = recyclerViewId;
-
+    }
+   public DietaryRestrictionPredefinedItemAdapter(Context context,  Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> ingredients, MultipleRecyclerViewItemClickListener clickListener) {
+        this.context = context;
+        this.restrictionsMap = ingredients;
+        this.clickListener = clickListener;
+        this.recyclerViewId = recyclerViewId;
     }
 
 
@@ -46,13 +61,13 @@ public class DietaryRestrictionPredefinedItemAdapter extends RecyclerView.Adapte
 
     @Override
     public void onBindViewHolder(@NonNull DietaryRestrictionsPredefinedItemViewHolder holder, int position) {
+
+    //bindIngredientLists(holder);
+
         DietaryRestrictionIngredient ingredient = ingredientsList.get(position);
         holder.ingredientCheckBox.setText(ingredient.getIngredientName());
 
         holder.itemView.setClickable(true);
-
-
-
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,11 +77,95 @@ public class DietaryRestrictionPredefinedItemAdapter extends RecyclerView.Adapte
         });
     }
 
-    // Call the listener with the position and RecyclerView ID
-
 
     @Override
     public int getItemCount() {
         return ingredientsList.size();
     }
+
+    public void updateIngredientList(List<DietaryRestrictionIngredient> selectedIngredients) {
+        //this.ingredientsList.clear();
+//        this.ingredientsList.addAll(ingredients);
+
+
+        for (DietaryRestrictionIngredient selectedIngredient : selectedIngredients) {
+
+            Log.e("DIETARY",selectedIngredient.getIngredientName());
+            if(ingredientsList.stream().anyMatch(i -> i.getIngredientName() != null &&
+                                                    selectedIngredient.getIngredientName() != null &&
+                    i.getIngredientName().toLowerCase().contains(selectedIngredient.getIngredientName().toLowerCase()))) {
+
+
+                Log.e("DIETARYMAIN", selectedIngredient.getIngredientName());
+
+
+            }else{
+                Log.e("DIETARYMAIN", "NO MATCH"+selectedIngredient.getIngredientName());
+            }
+        }
+//
+        notifyDataSetChanged();
+    }
+
+
+    private void bindIngredientLists(@NonNull DietaryRestrictionsPredefinedItemViewHolder holder){
+
+        int i = 0;
+
+        for (Map.Entry<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> entry : restrictionsMap.entrySet()) {
+
+            try {
+
+                RestrictedIngredientsCategory ingredientsCategory = entry.getKey();
+                List<CommonRestrictedIngredients> commonRestrictedIngredientsList = entry.getValue();
+
+
+                //dynamically fills each category label
+                String fieldName = "group" + (i + 1);
+
+                Field field = holder.getClass().getDeclaredField(fieldName);
+
+               // Log("DIET VH",field)
+
+                field.setAccessible(true);
+
+                //sets group name
+                TextView textView = (TextView) field.get(holder);
+                textView.setText(ingredientsCategory.getCategoryDescription());
+
+
+                //parse Enum to Bean
+                List<DietaryRestrictionIngredient> ingredientListBean = new ArrayList<>();
+
+                for (CommonRestrictedIngredients ingredient : commonRestrictedIngredientsList) {
+                    DietaryRestrictionIngredient newIngredient = new DietaryRestrictionIngredient();
+                    newIngredient.setIngredientName(ingredient.getIngredientDescription());
+                    newIngredient.setIngredientCategory(ingredientsCategory.getCategoryDescription());
+                    ingredientListBean.add(newIngredient);
+                }
+
+                String recyclerName = "groupList" + (i + 1);
+
+                //dynamically sets the adapter for each one of the recyclerViews
+
+                Field recyclerView = holder.getClass().getDeclaredField(recyclerName);
+                recyclerView.setAccessible(true);
+
+                RecyclerView recycler = (RecyclerView) recyclerView.get(holder);
+
+
+
+
+            } catch (NoSuchFieldException e) {
+                Log.e("DietaryMain", e.getMessage());
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            i++;
+
+
+        }
+    }
+
+
 }
