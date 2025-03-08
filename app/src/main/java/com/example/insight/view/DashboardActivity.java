@@ -40,12 +40,13 @@ public class DashboardActivity extends DrawerBaseActivity {
         setContentView(binding.getRoot());
         allocateActivityTitle("Dashboard");
 
-//        // Disable the back icon for this activity
-//        setShowBackIcon(false);
+        //// Disable the back icon for this activity
+        //setShowBackIcon(false);
 
         // Hide the back button for this activity
         ImageButton backButton = toolbar.findViewById(R.id.back_button);
         backButton.setVisibility(View.GONE);
+
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -66,7 +67,7 @@ public class DashboardActivity extends DrawerBaseActivity {
         binding.cardSymptoms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DashboardActivity.this, MainActivity.class));
+                startActivity(new Intent(DashboardActivity.this, SymptomsMainActivity.class));
             }
         });
     }

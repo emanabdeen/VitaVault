@@ -1,12 +1,10 @@
 package com.example.insight.view;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,21 +13,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.insight.R;
-import com.example.insight.adaoter.VitalsListAdapter;
+import com.example.insight.adapter.VitalsListAdapter;
 import com.example.insight.databinding.FragmentVitalsListBinding;
 import com.example.insight.model.Vital;
 import com.example.insight.utility.DateValidator;
-import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.VitalViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +39,8 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
     String searchDateStr;
     Bundle bundle;
     String searchCriteria;
+    String title;
+    String image;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -67,15 +63,14 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
         if (bundle != null) {
             // Get the data from the Bundle
             vitalType = bundle.getString("vitalType");
-
+            title = bundle.getString("title");
+            image = bundle.getString("image");
         }
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(requireActivity()).get(VitalViewModel.class);
-        viewModel.GetVitalsByType(FirebaseAuth.getInstance().getCurrentUser().getUid());
-
         //by default show all vital by type
-        viewModel.GetVitalsByType(vitalType);
+        //viewModel.GetVitalsByType(vitalType);
         searchCriteria = "type";
 
         // Setup RecyclerView
@@ -115,7 +110,7 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
                 //if there is a date inserted, validate it before sending the request
                 boolean isDateValid = DateValidator.isValidDate(searchDateStr);
                 if (isDateValid){
-                    viewModel.GetSymptomsByDateAndType(searchDateStr, vitalType);
+                    viewModel.GetVitalsByDateAndType(searchDateStr, vitalType);
                     searchCriteria = "date";
                 }else{
                     Toast.makeText(requireContext(), "Please enter a valid date", Toast.LENGTH_LONG).show();
@@ -123,6 +118,8 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
 
             }
         });
+
+
     }
 
     @Override
@@ -147,9 +144,13 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             String vitalID = vitalList.get(pos).getVitalId();
 
             //navigate to vitalDetail Page
-//            Intent intentObj = new Intent(requireContext(), VitalDetail.class);
-//            intentObj.putExtra("vitalID", vitalID);
-//            startActivity(intentObj);
+            Intent intentObj = new Intent(requireContext(), VitalDetails.class);
+            intentObj.putExtra("vitalID", vitalID);
+            intentObj.putExtra("vitalType","");
+            intentObj.putExtra("unit","");
+            intentObj.putExtra("title", title);
+            intentObj.putExtra("image", image);
+            startActivity(intentObj);
         }
     }
 

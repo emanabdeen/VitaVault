@@ -35,7 +35,6 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         FrameLayout container = drawerLayout.findViewById(R.id.activityContainer);
         container.addView(view);
         super.setContentView(drawerLayout);
-
         //set up the toolbar
         toolbar =drawerLayout.findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -53,6 +52,7 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         backButton.setOnClickListener(v -> onBackPressed());
 
         // Set up the NavigationView
+
         NavigationView navigationView = drawerLayout.findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -70,7 +70,7 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
             startActivity(new Intent(this,DashboardActivity.class));
             overridePendingTransition(0,0);
         } else if (id == R.id.nav_symptoms) {
-            startActivity(new Intent(this,SymptomActivity.class));
+            startActivity(new Intent(this,SymptomsMainActivity.class));
             overridePendingTransition(0,0);
         } else if (id == R.id.nav_vitals) {
             startActivity(new Intent(this,VitalsMainActivity.class));
@@ -80,7 +80,11 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
             // Handle Reports navigation
         } else if (id == R.id.nav_dietary) {
             // Handle Dietary Restrictions navigation
-        } else if (id == R.id.nav_logout) {
+        } else if (id == R.id.nav_account) {
+            startActivity(new Intent(this,ManageAccount.class));
+            overridePendingTransition(0,0);
+        }
+        else if (id == R.id.nav_logout) {
             FirebaseAuth.getInstance().signOut();
             finish();
             startActivity(new Intent(DrawerBaseActivity.this, Login.class));

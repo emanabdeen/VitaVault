@@ -1,10 +1,12 @@
 package com.example.insight.model;
 
+import com.example.insight.utility.DateValidator;
 import com.example.insight.utility.Unites;
 import com.example.insight.utility.VitalsCategories;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class Vital {
 
@@ -16,13 +18,6 @@ public class Vital {
     private String measurement2;
     private String unit;
 
-//    private String heartRate_BPM;
-//    private String bloodPressure_Systolic;
-//    private String bloodPressure_Diastolic;
-//    private String bodyTemperature_C;
-//    private String bodyTemperature_F;
-//    private String weight_Kg;
-//    private String weight_lb;
 
     public Vital() {
     }
@@ -33,6 +28,8 @@ public class Vital {
         this.vitalType = vitalType;
         this.unit = unit;
     }
+
+
 
     public Vital(String vitalType, String unit) {
         this.recordDate = LocalDate .now(); // Sets to current date
@@ -54,12 +51,33 @@ public class Vital {
         return recordTime;
     }
 
+    public String getRecordTimeStr() {
+        String recordTimeStr;
+        if (recordDate != null) {
+            recordTimeStr = recordDate.format(DateTimeFormatter.ofPattern("HH:mm"));
+        } else {
+            recordTimeStr="";
+        }
+        return recordTimeStr;
+    }
+
     public void setRecordTime(LocalTime recordTime) {
         this.recordTime = recordTime;
     }
 
     public LocalDate getRecordDate() {
         return recordDate;
+    }
+
+    public String getRecordDateStr() {
+        String recordDateStr;
+        if (recordDate != null) {
+            recordDateStr = DateValidator.LocalDateToString(recordDate);
+        } else {
+            recordDateStr="";
+        }
+
+        return recordDateStr;
     }
 
     public void setRecordDate(LocalDate recordDate) {

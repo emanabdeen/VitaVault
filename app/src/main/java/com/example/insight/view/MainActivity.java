@@ -3,20 +3,14 @@ package com.example.insight.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import com.example.insight.R;
 import com.example.insight.databinding.ActivityMainBinding;
 
 import com.example.insight.model.Symptom;
+import com.example.insight.utility.DateValidator;
 import com.example.insight.utility.SymptomsCategories;
 import com.example.insight.viewmodel.SymptomViewModel;
 import com.example.insight.utility.LoginRegisterHelper;
@@ -91,20 +85,20 @@ public class MainActivity extends DrawerBaseActivity {
                 Symptom newSymptom1 = new Symptom(symptomsCategory, "moderate"); // initialize symptom object with current date and time
                 AddSymptom(newSymptom1);// add newSymptom1 to Firestore
 
-                Symptom newSymptom2 = new Symptom(symptomsCategory, "moderate","Headache with dizziness"); // initialize symptom object with current date and time
-                AddSymptom(newSymptom2);// add newSymptom2 to Firestore
-
-                // Create a cough symptom with a custom date and time
-                LocalDate customDate = LocalDate.of(2024, 1, 15);
-                LocalTime customStart = LocalTime.of(12, 30);
-                LocalTime customEnd = LocalTime.of(13, 15);
-
-                Symptom newSymptom3 = new Symptom(customDate, customStart, customEnd,symptomsCategory, "moderate","Headache with dizziness");
-                //AddSymptom(newSymptom3); // add newSymptom3 to Firestore
-
-                symptomsCategory = SymptomsCategories.COUGHING.toString();
-                newSymptom3 = new Symptom(customDate, customStart, customEnd,symptomsCategory, "mild","some notes here");
-                //AddSymptom(newSymptom3); // add newSymptom3 to Firestore
+//                Symptom newSymptom2 = new Symptom(symptomsCategory, "moderate","Headache with dizziness"); // initialize symptom object with current date and time
+//                AddSymptom(newSymptom2);// add newSymptom2 to Firestore
+//
+//                // Create a cough symptom with a custom date and time
+//                LocalDate customDate = LocalDate.of(2024, 1, 15);
+//                LocalTime customStart = LocalTime.of(12, 30);
+//                LocalTime customEnd = LocalTime.of(13, 15);
+//
+//                Symptom newSymptom3 = new Symptom(customDate, customStart, customEnd,symptomsCategory, "moderate","Headache with dizziness");
+//                //AddSymptom(newSymptom3); // add newSymptom3 to Firestore
+//
+//                symptomsCategory = SymptomsCategories.COUGHING.toString();
+//                newSymptom3 = new Symptom(customDate, customStart, customEnd,symptomsCategory, "mild","some notes here");
+//                //AddSymptom(newSymptom3); // add newSymptom3 to Firestore
 
 
             }
@@ -176,7 +170,7 @@ public class MainActivity extends DrawerBaseActivity {
                 String symptomId = "6es7qyBgw6UshG9hIOwn";
                 GetSymptomsByIdResult(symptomId);
                 symptomViewModel=new SymptomViewModel();
-                symptomViewModel.deleteSymptom(symptomId);
+                symptomViewModel.DeleteSymptom(symptomId);
             }
         });
 
@@ -196,14 +190,14 @@ public class MainActivity extends DrawerBaseActivity {
         symptomViewModel=new SymptomViewModel();
         String uid = user.getUid(); // Get the logged-in user's unique ID
 
-        symptomViewModel.AddSymptom(uid, symptom);
+        symptomViewModel.AddSymptom(symptom);
     }
 
     /** method to get a list of symptoms at a selected date*/
     private void GetSymptomByDateResults(LocalDate searchDate){
         symptomViewModel=new SymptomViewModel();
 
-        symptomViewModel.GetSymptomsByDate(searchDate);
+        symptomViewModel.GetSymptomsByDate(DateValidator.LocalDateToString(searchDate));
 
         // Observe favorite movies data
         symptomViewModel.getSymptomsData().observe(this, symptomsData -> {
@@ -225,7 +219,7 @@ public class MainActivity extends DrawerBaseActivity {
         symptomViewModel=new SymptomViewModel();
 
         // Call the search method
-        symptomViewModel.GetSymptomsByDateRange(date1,date2);
+        symptomViewModel.GetSymptomsByDateRange(DateValidator.LocalDateToString(date1),DateValidator.LocalDateToString(date2));
 
         // Observe favorite movies data
         symptomViewModel.getSymptomsData().observe(this, symptomsData -> {

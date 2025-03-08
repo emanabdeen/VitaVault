@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/vitavault_page_background3"
     android:orientation="vertical"
-    tools:context=".view.AddVital">
+    tools:context=".view.VitalDetails">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -60,14 +60,14 @@
                 android:text="Date"
                 android:textStyle="bold" />
 
-            <!-- Date Picker -->
             <EditText
                 android:id="@+id/editTextDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_background"
                 android:inputType="date"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/errorDate"
@@ -79,7 +79,6 @@
                 android:textStyle="italic"
                 android:visibility="gone" />
 
-            <!-- Start Hour Label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -87,14 +86,14 @@
                 android:text="Time"
                 android:textStyle="bold" />
 
-            <!-- Start Hour -->
             <EditText
                 android:id="@+id/editTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_background"
                 android:inputType="time"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/errorTime"
@@ -123,7 +122,8 @@
                 android:background="@drawable/edit_text_background"
                 android:focusedByDefault="true"
                 android:inputType="numberDecimal"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/errorMeasure1"
@@ -151,7 +151,8 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_background"
                 android:inputType="number"
-                android:padding="8dp" />
+                android:padding="8dp"
+                android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/errorMeasure2"
@@ -185,18 +186,18 @@
                 android:text="@string/save"
                 android:textStyle="bold" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnBack"
-                android:layout_width="100dp"
-                android:layout_height="35dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/button_custom2"
-                android:drawableStart="@drawable/baseline_arrow_back"
-                android:padding="5dp"
-                android:text="@string/back"
-                android:textColor="@color/primary"
-                android:textSize="18sp" />
+<!--            <androidx.appcompat.widget.AppCompatButton-->
+<!--                android:id="@+id/btnBack"-->
+<!--                android:layout_width="100dp"-->
+<!--                android:layout_height="35dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:background="@drawable/button_custom2"-->
+<!--                android:drawableStart="@drawable/baseline_arrow_back"-->
+<!--                android:padding="5dp"-->
+<!--                android:text="@string/back"-->
+<!--                android:textColor="@color/primary"-->
+<!--                android:textSize="18sp" />-->
 
         </LinearLayout>
     </android.widget.ScrollView>

@@ -23,5 +23,7 @@ public class ModeActivity extends DrawerBaseActivity {
         setContentView(binding.getRoot());
         allocateActivityTitle("Mode");
 
+
+
     }
 }

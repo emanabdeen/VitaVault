@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.insight.R;
 import com.example.insight.databinding.ActivityVitalsBinding;
@@ -51,11 +52,15 @@ public class VitalsMainActivity extends DrawerBaseActivity {
             startActivity(new Intent(VitalsMainActivity.this, Login.class));
         }
 
+        // Initialize ViewModel
+        vitalViewModel = new ViewModelProvider(this).get(VitalViewModel.class);
+
         binding.cardTemperature.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intentObj = new Intent(getApplicationContext(), VitalsActivity.class);
-                intentObj.putExtra("vitalType",VitalsCategories.BodyTemperature.toString());// register status to the second page
+                vitalViewModel.GetVitalsByType(VitalsCategories.BodyTemperature.toString());
+                intentObj.putExtra("vitalType",VitalsCategories.BodyTemperature.toString());
                 intentObj.putExtra("unit", Unites.Celsius.toString());
                 intentObj.putExtra("title", "Body Temperature");
                 intentObj.putExtra("image", "@drawable/body_temperature");
@@ -67,7 +72,8 @@ public class VitalsMainActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
                 Intent intentObj = new Intent(getApplicationContext(), VitalsActivity.class);
-                intentObj.putExtra("vitalType",VitalsCategories.BloodPressure.toString());// register status to the second page
+                vitalViewModel.GetVitalsByType(VitalsCategories.BloodPressure.toString());
+                intentObj.putExtra("vitalType",VitalsCategories.BloodPressure.toString());
                 intentObj.putExtra("unit", Unites.mmHg.toString());
                 intentObj.putExtra("title", "Blood Pressure");
                 intentObj.putExtra("image", "@drawable/pressure");
@@ -78,7 +84,8 @@ public class VitalsMainActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
                 Intent intentObj = new Intent(getApplicationContext(), VitalsActivity.class);
-                intentObj.putExtra("vitalType",VitalsCategories.HeartRate.toString());// register status to the second page
+                vitalViewModel.GetVitalsByType(VitalsCategories.HeartRate.toString());
+                intentObj.putExtra("vitalType",VitalsCategories.HeartRate.toString());
                 intentObj.putExtra("unit", Unites.BPM.toString());
                 intentObj.putExtra("title", "Heart Rate");
                 intentObj.putExtra("image", "@drawable/heartbeat");
@@ -90,7 +97,8 @@ public class VitalsMainActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
                 Intent intentObj = new Intent(getApplicationContext(), VitalsActivity.class);
-                intentObj.putExtra("vitalType",VitalsCategories.Weight.toString());// register status to the second page
+                vitalViewModel.GetVitalsByType(VitalsCategories.Weight.toString());
+                intentObj.putExtra("vitalType",VitalsCategories.Weight.toString());
                 intentObj.putExtra("unit", Unites.Kilograms.toString());
                 intentObj.putExtra("title", "Weight");
                 intentObj.putExtra("image", "@drawable/weight_scale");
