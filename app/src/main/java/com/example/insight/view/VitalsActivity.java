@@ -36,6 +36,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,8 +143,8 @@ public class VitalsActivity extends DrawerBaseActivity {
 
                 //LocalDate searchDate = LocalDate.now(); // Example: today's date
                 LocalDate searchDate = LocalDate.of(2025, 2, 8);
-
-                GetVitalByDateResults(searchDate);
+                String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                GetVitalByDateResults(searchDateStr);
             }
         });
 
@@ -178,7 +179,7 @@ public class VitalsActivity extends DrawerBaseActivity {
 
 
     /** method to get a list of vitals at a selected date*/
-    private void GetVitalByDateResults(LocalDate searchDate){
+    private void GetVitalByDateResults(String searchDate){
         vitalViewModel=new VitalViewModel();
 
         vitalViewModel.GetVitalsByDate(searchDate);

@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -25,6 +27,7 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
 
     DrawerLayout drawerLayout;
     Toolbar toolbar;
+    private boolean showBackIcon = true; // Default to showing the back icon
 
     @Override
     public void setContentView(View view) {
@@ -32,15 +35,28 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         FrameLayout container = drawerLayout.findViewById(R.id.activityContainer);
         container.addView(view);
         super.setContentView(drawerLayout);
+
+        //set up the toolbar
         toolbar =drawerLayout.findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+//        // Enable the back icon in the Toolbar (built in toolbar)
+//        if (getSupportActionBar() != null) {
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Show the back icon
+//            getSupportActionBar().setDisplayShowHomeEnabled(true); // Ensure the icon is clickable
+//        }
+
+        // Find the back button in the custom Toolbar
+        ImageButton backButton = toolbar.findViewById(R.id.back_button);
+
+        // Handle back button click
+        backButton.setOnClickListener(v -> onBackPressed());
+
+        // Set up the NavigationView
         NavigationView navigationView = drawerLayout.findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,R.string.open, R.string.close);
-
 
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -73,11 +89,30 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Handle back icon click
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed(); // Call the back button behavior
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     // to set the title in the action bar
     protected void allocateActivityTitle(String titleString){
         if (getSupportActionBar() != null){
             getSupportActionBar().setTitle((titleString));
 
+        }
+    }
+
+    // Method to control the visibility of the back icon
+    public void setShowBackIcon(boolean showBackIcon) {
+        this.showBackIcon = showBackIcon;
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(showBackIcon);
+            getSupportActionBar().setDisplayShowHomeEnabled(showBackIcon);
         }
     }
 }
