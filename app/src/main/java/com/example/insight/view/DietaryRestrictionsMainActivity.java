@@ -5,35 +5,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.insight.R;
-import com.example.insight.adapter.DietaryRestrictionCustomIngredientAdapter;
-
 import com.example.insight.adapter.DietaryRestrictionPredefinedItemAdapter;
-import com.example.insight.databinding.ActivityDietaryRestrictionsAddCustomBinding;
 import com.example.insight.databinding.ActivityDietaryRestrictionsMainBinding;
 import com.example.insight.model.DietaryRestrictionIngredient;
 import com.example.insight.utility.CommonRestrictedIngredients;
 import com.example.insight.utility.RestrictedIngredientsCategory;
 import com.example.insight.viewmodel.dietaryRestrictionIngredientViewModel;
-import com.google.android.gms.common.internal.service.Common;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.rpc.context.AttributeContext;
-
-import org.w3c.dom.Text;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implements MultipleRecyclerViewItemClickListener {
@@ -43,8 +31,11 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
     FirebaseUser user;
     Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> restrictionsMap;
     private dietaryRestrictionIngredientViewModel viewModel;
+    private List<DietaryRestrictionIngredient> selectedIngredientList;
+    DietaryRestrictionPredefinedItemAdapter groupedIngredientsAdapter;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -54,6 +45,8 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+
+        selectedIngredientList = new ArrayList<>();
 
         if (user == null) {
             finish();
@@ -67,6 +60,9 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
         restrictionsMap = CommonRestrictedIngredients.GetAllIngredientsWithCategory();
 
         viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
+        viewModel.getPredefinedDietaryRestrictionIngredients();
+
+        groupedIngredientsAdapter = new DietaryRestrictionPredefinedItemAdapter(this, restrictionsMap,this);
 
 
         int i = 0;
@@ -99,6 +95,8 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
                     ingredientListBean.add(newIngredient);
                 }
 
+                viewModel.loadCategoryLiveData(ingredientsCategory.getCategoryDescription(),ingredientListBean);
+
 
                 String recyclerName = "groupList" + (i + 1);
 
@@ -109,10 +107,10 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
                 RecyclerView recycler = (RecyclerView) recyclerView.get(binding);
 
-                DietaryRestrictionPredefinedItemAdapter groupedIngredientsAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, recyclerView.getName());
-
-
+                groupedIngredientsAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, recyclerView.getName());
                 recycler.setAdapter(groupedIngredientsAdapter);
+
+
 
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
                 recycler.setLayoutManager(layoutManager);
@@ -124,6 +122,9 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
                 throw new RuntimeException(e);
             }
             i++;
+        }
+
+        fetchIngredientList();
 
             //// end of dynamically setting recycler views
 
@@ -136,7 +137,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
                 }
             });
 
-        }
+
 
     }
 
@@ -161,12 +162,38 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
             if (isChecked) {
                 viewModel.addDietaryRestrictionIngredient(selectedIngredient);
+                Log.e("DIET", selectedIngredient.getIngredientName());
             } else {
                 //viewModel.deleteDietaryRestrictionIngredient(selectedIngredient);
             }
 
+            fetchIngredientList();
+            //recreate();
+
         }
 
-
     }
+
+    private void fetchIngredientList(){
+
+        selectedIngredientList.clear();
+        viewModel.getPredefinedDietaryRestrictionIngredients();
+        viewModel.getPredefinedIngredientsData().observe(this, ingredientData -> {
+            if (ingredientData != null && !ingredientData.isEmpty()) {
+                selectedIngredientList = ingredientData;//to reset the current list
+
+               // groupedIngredientsAdapter.updateIngredientList(selectedIngredientList);
+
+
+                Log.d("DIETARYMAIN", "ingredientList count>> " + selectedIngredientList.size());
+            }
+            else {
+                Log.d("DIETARYMAIN", "ingredientList is null or empty.");
+            }
+        });
+    }
+
+
+
+
 }

@@ -29,13 +29,10 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
     FirebaseAuth mAuth;
     FirebaseUser user;
     DietaryRestrictionIngredient ingredient;
+    final String  customCategory = "custom";
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        fetchIngredientList();
-    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,13 +64,11 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
         binding.customIngredientList.setAdapter(ingredientAdapter);
 
 
-        fetchIngredientList();
 
         // Add new custom ingredient
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
                     try {
                         dietaryRestrictionIngredientViewModel viewModel = new dietaryRestrictionIngredientViewModel();
@@ -83,7 +78,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
 
                         if (!ingredientText.isEmpty()) {
 
-                            DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(ingredientText, "Custom");
+                            DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(ingredientText, customCategory);
 
 
                                 viewModel.addDietaryRestrictionIngredient(ingredient);
@@ -112,12 +107,14 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
                 finish();
             }
         });
-
-
-
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchIngredientList();
+    }
 
     private void showError(TextView errorView, String message, boolean isVisible) {
         if (isVisible) {
@@ -131,17 +128,21 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
 
     private void fetchIngredientList(){
 
-        viewModel.getAllDietaryRestrictionIngredients();
-        viewModel.getIngredientsData().observe(this, ingredientData -> {
-            if (ingredientData != null || !ingredientData.isEmpty()) {
-                ingredientList = ingredientData;//to reset the current list
+        ingredientList = new ArrayList<>();
+
+        viewModel.getCustomDietaryRestrictionIngredients();
+        viewModel.getCustomIngredientsData().observe(this, ingredientData -> {
+            if (ingredientData != null && !ingredientData.isEmpty()) {
+                ingredientList.clear();
+                ingredientList.addAll(ingredientData);//to reset the current list
 
                 ingredientAdapter.updateIngredientList(ingredientList);
 
-
-                Log.d("AddCustomIngredient", "ingredientList count>> " + ingredientList.size());
+                Log.d("AddCustomIngredient", "ingredientList count > " + ingredientList.size());
             }
             else {
+                ingredientList = new ArrayList<>();
+                ingredientAdapter.updateIngredientList(ingredientList);
                 Log.d("AddCustomIngredient", "ingredientList is null or empty.");
             }
         });
@@ -159,7 +160,6 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
         if (user == null) {
             Intent intentObj = new Intent(this, Login.class);
             startActivity(intentObj);
-            Log.d("tag", "Redirect user to login page");
 
         } else if (pos >= 0 && pos < ingredientList.size()) {
             String uid = user.getUid();
@@ -181,7 +181,6 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
     @Override
     public void OnClickDelete(View v, int pos) {
 
-
         if (user == null) {
             Intent intentObj = new Intent(this, Login.class);
             startActivity(intentObj);
@@ -190,13 +189,14 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
         } else if (pos >= 0 && pos < ingredientList.size()) {
             String uid = user.getUid();
             String ingredientId = ingredientList.get(pos).getIngredientId();
-            viewModel.deleteDietaryRestrictionIngredient(ingredientId); // ---------------Delete vital from Firestore DB
+            viewModel.deleteDietaryRestrictionIngredient(ingredientId);
 
-            Toast.makeText(this, "delete "+ingredientList.get(pos).getIngredientName(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, ingredientList.get(pos).getIngredientName()+ "deleted", Toast.LENGTH_LONG).show();
 
             //To refresh the recyclerview list
+            //viewModel.getCustomDietaryRestrictionIngredients();
+            fetchIngredientList();
 
-            viewModel.getAllDietaryRestrictionIngredients();
 
         }
 
