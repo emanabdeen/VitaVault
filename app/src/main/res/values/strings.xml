@@ -35,5 +35,6 @@
     <string name="BloodPressure">Blood Pressure</string>
     <string name="BodyTemperature">Body Temperature</string>
     <string name="Weight">Weight</string>
+    <string name="dietaryRestrictionsTitle">Dietary Restrictions</string>
 
 </resources>

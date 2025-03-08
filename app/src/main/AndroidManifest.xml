@@ -22,6 +22,15 @@
             android:name=".view.SymptomsMainActivity"
             android:exported="false" />
         <activity
+            android:name=".view.DietaryRestrictionsEditCustomActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.DietaryRestrictionsAddCustomActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.DietaryRestrictionsMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.VitalDetails"
             android:exported="false" />
         <activity

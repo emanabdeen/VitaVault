@@ -79,7 +79,8 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
 
             // Handle Reports navigation
         } else if (id == R.id.nav_dietary) {
-            // Handle Dietary Restrictions navigation
+            startActivity(new Intent(this, DietaryRestrictionsMainActivity.class));
+            overridePendingTransition(0,0);
         } else if (id == R.id.nav_account) {
             startActivity(new Intent(this,ManageAccount.class));
             overridePendingTransition(0,0);
