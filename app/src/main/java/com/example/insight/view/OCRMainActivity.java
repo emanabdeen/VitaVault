@@ -46,10 +46,11 @@ import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.Executor;
 
 public class OCRMainActivity extends AppCompatActivity {
-    private static final String TAG = "IngredientsScan";
+    private static final String TAG = "OCRMainActivity";
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
 
@@ -104,8 +105,8 @@ public class OCRMainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Toast.makeText(OCRMainActivity.this, "Parse Ingredients Button Clicked", Toast.LENGTH_LONG).show();
-                ArrayList<String> ingredientsList = ingredientUtils.splitIngredientList(ocrResultText.getText().toString());
-                Log.d(TAG, "Ingredients List: " + ingredientsList);
+                HashMap<String, ArrayList<String>> ingredientsListMap = ingredientUtils.splitIngredientList(ocrResultText.getText().toString());
+                Log.d(TAG, "Ingredients List: " + ingredientsListMap);
             }
         });
 
@@ -114,8 +115,6 @@ public class OCRMainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Toast.makeText(OCRMainActivity.this, "Detect Text Button Clicked", Toast.LENGTH_LONG).show();
                 Log.d(TAG, "Running OcrApiClient.detectText");
-                Log.d(TAG, "TESTING~~~~~");
-                Log.d(TAG, "Test parsing OCR result text");
                 Log.d(TAG, "Please wait for result text...");
                 if (croppedImageBitmap != null) {
                     Task<Text> textResult = OcrApiClient.detectText(croppedImageBitmap);

@@ -29,13 +29,15 @@ public class IngredientUtils {
         return this.ingredientList;
     }
 
-    public ArrayList<String> splitIngredientList(String inputText) {
+    public HashMap<String, ArrayList<String>> splitIngredientList(String inputText) {
         if (inputText == null || inputText.trim().isEmpty()) {
             Log.d(TAG,"InputText is null or empty: " + inputText);
             Log.e(TAG, "splitIngredientList: input text is null or empty");
-            return new ArrayList<String>(); // Return an empty list if the input is null or empty
+            return new HashMap<String, ArrayList<String>>(); // Return an empty list if the input is null or empty
         }
-        ArrayList<String> newIngredientsList = new ArrayList<String>();
+        ArrayList<String> ingredientsList = new ArrayList<String>();
+        ArrayList<String> mayContainList = new ArrayList<String>();
+        ArrayList<String> containsList = new ArrayList<String>();
         String trimmedLowerInputText = inputText.trim().toLowerCase();
         String ingredientsInputText = "";
         String mayContainInputText = "";
@@ -113,11 +115,31 @@ public class IngredientUtils {
         for (String ingredient : splitIngredientsInputText) {
             if (!ingredient.trim().isEmpty()) {
                 Log.d(TAG, "splitIngredientList: adding ingredient - " + ingredient);
-                newIngredientsList.add(ingredient);
+                ingredientsList.add(ingredient);
             } else {
                 Log.d(TAG, "splitIngredientList: ingredient is empty, skipping");
             }
         }
-        return newIngredientsList;
+        for (String ingredient : splitMayContainInputText) {
+            if (!ingredient.trim().isEmpty()) {
+                Log.d(TAG, "splitIngredientList: adding ingredient - " + ingredient);
+                mayContainList.add(ingredient);
+            } else {
+                Log.d(TAG, "splitIngredientList: ingredient is empty, skipping");
+            }
+        }
+        for (String ingredient : splitContainsInputText) {
+            if (!ingredient.trim().isEmpty()) {
+                Log.d(TAG, "splitIngredientList: adding ingredient - " + ingredient);
+                containsList.add(ingredient);
+            } else {
+                Log.d(TAG, "splitIngredientList: ingredient is empty, skipping");
+            }
+        }
+        HashMap<String, ArrayList<String>> ingredientsListMap = new HashMap<String, ArrayList<String>>();
+        ingredientsListMap.put("ingredients", ingredientsList);
+        ingredientsListMap.put("may_contain", mayContainList);
+        ingredientsListMap.put("contains", containsList);
+        return ingredientsListMap;
     }
 }
