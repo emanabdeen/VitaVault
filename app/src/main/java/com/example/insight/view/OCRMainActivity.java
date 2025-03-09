@@ -27,8 +27,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
-import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.LifecycleCameraController;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 
@@ -37,12 +37,9 @@ import com.example.insight.utility.ImageUtils;
 import com.example.insight.utility.IngredientUtils;
 import com.example.insight.utility.OcrApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import com.google.firebase.auth.AuthResult;
 import com.google.mlkit.vision.text.Text;
 import com.yalantis.ucrop.UCrop;
 
@@ -68,6 +65,9 @@ public class OCRMainActivity extends AppCompatActivity {
     // TODO: Stop camera in background when previewview not active/visible
     // TODO: Handle cancel of crop activity, fallback to previewview? or fallback to placeholder icon? or fallback to uncropped image with capturedBitmapImage and still trigger OCR?
     private Uri imageUri, croppedImageUri;
+    private ProcessCameraProvider cameraProvider;
+
+    private LifecycleCameraController cameraController;
 
 
     @Override
@@ -82,24 +82,20 @@ public class OCRMainActivity extends AppCompatActivity {
         parseIngredientsButton = binding.parseIngredientsButton;
         cameraButton = binding.cameraButton;
 
+        // Check camera permissions before trying to initialize camera
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "onCreate: Camera permission not granted, requesting camera permission");
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+        } else {
+            startCameraX();
+        }
 
         ocrResultText.setMovementMethod(new ScrollingMovementMethod());
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
 
-
-        cameraProviderFuture.addListener(() -> {
-            try {
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                startCameraX(cameraProvider);
-            } catch (Exception e) {
-                Log.e(TAG, "onCreate: " + e.getMessage());
-            }
-        }, getExecutor());
         cameraResultImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                cameraResultImageView.setVisibility(View.INVISIBLE);
-                previewView.setVisibility(View.VISIBLE);
+                startCameraX();
             }
         });
 
@@ -112,7 +108,6 @@ public class OCRMainActivity extends AppCompatActivity {
                             .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
                             .build());
                     Log.d(TAG, "onClick: OCR TEST - media picker launched");
-
                 } catch (Exception e) {
                     Log.e(TAG, "onClick: " + e.getMessage());
                 }
@@ -132,35 +127,28 @@ public class OCRMainActivity extends AppCompatActivity {
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ContextCompat.checkSelfPermission(
-                        getApplicationContext(), Manifest.permission.CAMERA) ==
-                        PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     // You can use the API that requires the permission.
                     Log.d(TAG, "OnClick: camera button clicked, trying to capture photo");
-                    capturePhotoFromPreview();
                     capturePhoto();
                 } else {
-                    // You can directly ask for the permission.
-                    // The registered ActivityResultCallback gets the result of this request.
-                    requestPermissionLauncher.launch(
-                            Manifest.permission.CAMERA);
+                    Log.d(TAG, "cameraButton.onclick(): Camera permission not granted, requesting camera permission");
+                    requestPermissionLauncher.launch(Manifest.permission.CAMERA);
                 }
             }
         });
     }
 
-    private void capturePhotoFromPreview() {
+
+    private void capturePhoto() {
         Bitmap imageBitmap = previewView.getBitmap();
         try {
-            Log.d(TAG, "onImageSaved: imageBitmap[0] is not null");
-
             new Thread(() -> {
                 runOnUiThread(() -> {
                     if (imageBitmap != null) {
-                        Log.d(TAG, "onImageSaved: imageBitmap[0] is not null, setting image view");
+                        Log.d(TAG, "capturePhoto: imageBitmap[0] is not null, setting image view");
                         cameraResultImageView.setImageBitmap(imageBitmap);
-                        cameraResultImageView.setVisibility(View.VISIBLE);
-                        previewView.setVisibility(View.INVISIBLE);
+                        showImageView();
                     }
                 });
             }).start();
@@ -168,15 +156,11 @@ public class OCRMainActivity extends AppCompatActivity {
             Log.e(TAG, "onClick: " + e.getMessage());
             Toast.makeText(OCRMainActivity.this, "Error taking photo", Toast.LENGTH_LONG).show();
         }
-        Log.d(TAG, "onImageSaved: image saved");
-    }
-
-    private void capturePhoto() {
         long timestamp = System.currentTimeMillis();
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, timestamp);
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
-        imageCapture.takePicture(
+        cameraController.takePicture(
                 new ImageCapture.OutputFileOptions.Builder(
                         getContentResolver(),
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -200,8 +184,8 @@ public class OCRMainActivity extends AppCompatActivity {
                                     if (imageBitmap[0] != null) {
                                         Log.d(TAG, "onImageSaved: imageBitmap[0] is not null, setting image view");
                                         cameraResultImageView.setImageBitmap(imageBitmap[0]);
-                                        cameraResultImageView.setVisibility(View.VISIBLE);
-                                        previewView.setVisibility(View.INVISIBLE);
+                                        showImageView();
+                                        Log.d(TAG, "Unbinding preview from cameraprovider");
                                     }
                                 });
                             }).start();
@@ -221,7 +205,6 @@ public class OCRMainActivity extends AppCompatActivity {
     }
 
     private void detectText(){
-        Toast.makeText(OCRMainActivity.this, "Detect Text Button Clicked", Toast.LENGTH_LONG).show();
         Log.d(TAG, "Running OcrApiClient.detectText");
         Log.d(TAG, "Please wait for result text...");
         if (croppedImageBitmap != null) {
@@ -271,43 +254,50 @@ public class OCRMainActivity extends AppCompatActivity {
                             Log.d(TAG, "onActivityResult: cropped image uri: " + croppedImageUri);
                             croppedImageBitmap = ImageUtils.loadBitmap(croppedImageUri.getPath());
                             cameraResultImageView.setImageURI(croppedImageUri);
-                            cameraResultImageView.setVisibility(View.VISIBLE);
-                            previewView.setVisibility(View.INVISIBLE);
+                            showImageView();
                             imageUri = croppedImageUri;
                             detectText();
+                            // Unbind camera controller to stop camera and save battery when not in use
+                            cameraController.unbind();
                         }
-                    }
-                    else if (o.getResultCode() == UCrop.RESULT_ERROR) {
+                    } else if (o.getResultCode() == UCrop.RESULT_ERROR) {
                         Log.e(TAG, "onActivityResult: UCrop error");
                     }
                 }
             }
     );
 
-    // Register the permissions callback, which handles the user's response to the
-    // system permissions dialog. Save the return value, an instance of
-    // ActivityResultLauncher, as an instance variable.
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     Log.d(TAG, "requestPermissionLauncher: permission granted");
-                    Toast.makeText(OCRMainActivity.this, "Camera permission granted, try capturing photo again", Toast.LENGTH_LONG).show();
+                    Toast.makeText(OCRMainActivity.this, "Camera permission granted, photos can be taken for OCR...", Toast.LENGTH_LONG).show();
+                    startCameraX();
                 } else {
                     Log.d(TAG, "checkPermissions: permission denied");
-                    // Explain to the user that the feature is unavailable because the
-                    // feature requires a permission that the user has denied. At the
-                    // same time, respect the user's decision. Don't link to system
-                    // settings in an effort to convince the user to change their
-                    // decision.
+                    Toast.makeText(OCRMainActivity.this, "Camera permission denied!\nEnable camera permission in app settings to take photos for OCR...", Toast.LENGTH_LONG).show();
+                    showImageView();
                 }
             });
 
-
+    // Hide imageView and show previewView
+    private void showCameraPreview() {
+        runOnUiThread(() -> {
+            cameraResultImageView.setVisibility(View.INVISIBLE);
+            previewView.setVisibility(View.VISIBLE);
+        });
+    }
+    // Hide previewView and show imageView
+    private void showImageView() {
+        runOnUiThread(() -> {
+            previewView.setVisibility(View.INVISIBLE);
+            cameraResultImageView.setVisibility(View.VISIBLE);
+        });
+    }
     // Registers a photo picker activity launcher in single-select mode.
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
-                // Callback is invoked after the user selects a media item or closes the
-                // photo picker.
+                // Callback is invoked after the user selects a media item or closes the photo picker.
                 if (uri != null) {
                     Log.d("PhotoPicker", "Selected URI: " + uri);
                     try {
@@ -324,8 +314,9 @@ public class OCRMainActivity extends AppCompatActivity {
                                     if (imageBitmap[0] != null) {
                                         Log.d(TAG, "onImageSaved: imageBitmap[0] is not null, setting image view");
                                         cameraResultImageView.setImageURI(uri);
-                                        cameraResultImageView.setVisibility(View.VISIBLE);
-                                        previewView.setVisibility(View.INVISIBLE);
+                                        showImageView();
+                                        // Unbind camera controller to stop camera and save battery when not in use
+                                        cameraController.unbind();
                                         detectText();
                                     }
                                 });
@@ -346,19 +337,12 @@ public class OCRMainActivity extends AppCompatActivity {
         return ContextCompat.getMainExecutor(this);
     }
 
-    private void startCameraX(ProcessCameraProvider cameraProvider) {
-        cameraProvider.unbindAll();
-        CameraSelector cameraSelector = new CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                .build();
-
-        Preview preview = new Preview.Builder().build();
-        imageCapture = new ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                .build();
-
-        preview.setSurfaceProvider(previewView.getSurfaceProvider());
-        cameraProvider.unbindAll();
-        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
+    private void startCameraX() {
+        // Initialize camera
+        showCameraPreview();
+        cameraController = new LifecycleCameraController(this.getBaseContext());
+        cameraController.bindToLifecycle(this);
+        cameraController.setCameraSelector(CameraSelector.DEFAULT_BACK_CAMERA);
+        previewView.setController(cameraController);
     }
 }
