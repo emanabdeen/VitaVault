@@ -32,15 +32,17 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
 
-import com.example.insight.databinding.ActivityIngredientsScanBinding;
+import com.example.insight.databinding.ActivityOcrMainBinding;
 import com.example.insight.utility.ImageUtils;
 import com.example.insight.utility.IngredientUtils;
 import com.example.insight.utility.OcrApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import com.google.firebase.auth.AuthResult;
 import com.google.mlkit.vision.text.Text;
 import com.yalantis.ucrop.UCrop;
 
@@ -54,30 +56,30 @@ public class OCRMainActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
 
-    private ActivityIngredientsScanBinding binding;
+    private ActivityOcrMainBinding binding;
     private IngredientUtils ingredientUtils;
-    private Button cameraButton, ocrTestButton, parseIngredientsButton, detectTextButton;
+    private Button cameraButton, parseIngredientsButton;
     private ImageCapture imageCapture;
     private ImageView cameraResultImageView;
     private EditText ocrResultText;
     private Bitmap capturedImageBitmap, croppedImageBitmap;
     // TODO: Use capturedImageBitmap for preview snapshot and fallback if user cancels crop (if crop cancel doesn't update bitmap for ocr)
     // TODO: Clear capturedImageBitmap at start of each action that might change it, then fallback to capturedImageBitmap if null
+    // TODO: Stop camera in background when previewview not active/visible
+    // TODO: Handle cancel of crop activity, fallback to previewview? or fallback to placeholder icon? or fallback to uncropped image with capturedBitmapImage and still trigger OCR?
     private Uri imageUri, croppedImageUri;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityIngredientsScanBinding.inflate(getLayoutInflater());
+        binding = ActivityOcrMainBinding.inflate(getLayoutInflater());
         this.setContentView(binding.getRoot());
         ingredientUtils = new IngredientUtils();
         previewView = binding.previewViewCameraX;
         cameraResultImageView = binding.imgViewCameraResult;
         ocrResultText = binding.ocrResultText;
         parseIngredientsButton = binding.parseIngredientsButton;
-        detectTextButton = binding.detectTextButton;
-        ocrTestButton = binding.ocrTestButton;
         cameraButton = binding.cameraButton;
 
 
@@ -101,44 +103,29 @@ public class OCRMainActivity extends AppCompatActivity {
             }
         });
 
+        previewView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    // Launch the photo picker and let the user choose only images.
+                    pickMedia.launch(new PickVisualMediaRequest.Builder()
+                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
+                    Log.d(TAG, "onClick: OCR TEST - media picker launched");
+
+                } catch (Exception e) {
+                    Log.e(TAG, "onClick: " + e.getMessage());
+                }
+            }
+        });
+
+
         parseIngredientsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(OCRMainActivity.this, "Parse Ingredients Button Clicked", Toast.LENGTH_LONG).show();
                 HashMap<String, ArrayList<String>> ingredientsListMap = ingredientUtils.splitIngredientList(ocrResultText.getText().toString());
                 Log.d(TAG, "Ingredients List: " + ingredientsListMap);
-            }
-        });
-
-        detectTextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(OCRMainActivity.this, "Detect Text Button Clicked", Toast.LENGTH_LONG).show();
-                Log.d(TAG, "Running OcrApiClient.detectText");
-                Log.d(TAG, "Please wait for result text...");
-                if (croppedImageBitmap != null) {
-                    Task<Text> textResult = OcrApiClient.detectText(croppedImageBitmap);
-                    textResult.addOnSuccessListener(new OnSuccessListener<Text>() {
-                                @Override
-                                public void onSuccess(Text visionText) {
-                                    Log.d(TAG, "onSuccess: visionText: " + visionText.getText());
-                                    runOnUiThread(() -> {
-                                        ocrResultText.setText(visionText.getText());
-                                    });
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.e(TAG, "onFailure: " + e.getMessage());
-                                    Toast.makeText(OCRMainActivity.this, "Error detecting text: view log ", Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-
-                } else {
-                    Log.e(TAG, "onClick: imageBitmap is null");
-                }
             }
         });
 
@@ -157,22 +144,6 @@ public class OCRMainActivity extends AppCompatActivity {
                     // The registered ActivityResultCallback gets the result of this request.
                     requestPermissionLauncher.launch(
                             Manifest.permission.CAMERA);
-                }
-            }
-        });
-
-        ocrTestButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    // Launch the photo picker and let the user choose only images.
-                    pickMedia.launch(new PickVisualMediaRequest.Builder()
-                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                            .build());
-                    Log.d(TAG, "onClick: OCR TEST - media picker launched");
-
-                } catch (Exception e) {
-                    Log.e(TAG, "onClick: " + e.getMessage());
                 }
             }
         });
@@ -249,6 +220,34 @@ public class OCRMainActivity extends AppCompatActivity {
         );
     }
 
+    private void detectText(){
+        Toast.makeText(OCRMainActivity.this, "Detect Text Button Clicked", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "Running OcrApiClient.detectText");
+        Log.d(TAG, "Please wait for result text...");
+        if (croppedImageBitmap != null) {
+            OcrApiClient.detectText(croppedImageBitmap)
+                    .addOnCompleteListener(new OnCompleteListener<Text>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Text> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "DetectText was successful: " + task.getResult().getText());
+                                runOnUiThread(() -> {
+                                    ocrResultText.setText(task.getResult().getText());
+                                });
+                            } else {
+                                Toast.makeText(OCRMainActivity.this, "Error detecting text: view log ", Toast.LENGTH_LONG).show();
+                                Log.d(TAG, "An error occurred while detecting text...");
+                                if (task.getException().getMessage() != null ) {
+                                    Log.e(TAG, "detectText exceltion: " + task.getException().getMessage());
+                                }
+                            }
+                        }
+                    });
+        } else {
+            Log.e(TAG, "detectText: imageBitmap is null");
+        }
+    }
+
     private void startCropActivity(Uri imageUri) {
         croppedImageUri = Uri.fromFile(new File(getCacheDir(), "cropped_image.jpg"));
         Log.d(TAG, "startCropActivity: cropped image uri: " + croppedImageUri);
@@ -275,6 +274,7 @@ public class OCRMainActivity extends AppCompatActivity {
                             cameraResultImageView.setVisibility(View.VISIBLE);
                             previewView.setVisibility(View.INVISIBLE);
                             imageUri = croppedImageUri;
+                            detectText();
                         }
                     }
                     else if (o.getResultCode() == UCrop.RESULT_ERROR) {
@@ -326,6 +326,7 @@ public class OCRMainActivity extends AppCompatActivity {
                                         cameraResultImageView.setImageURI(uri);
                                         cameraResultImageView.setVisibility(View.VISIBLE);
                                         previewView.setVisibility(View.INVISIBLE);
+                                        detectText();
                                     }
                                 });
                             }).start();
