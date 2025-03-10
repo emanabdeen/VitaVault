@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/txtMedicationName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="24dp"
+        android:text="Medication Name" />
+
+    <Button
+        android:id="@+id/btnTaken"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Taken"
+        android:layout_margin="10dp" />
+
+    <Button
+        android:id="@+id/btnMissed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Missed"
+        android:layout_margin="10dp" />
+
+</LinearLayout>

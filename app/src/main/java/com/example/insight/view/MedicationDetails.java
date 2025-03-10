@@ -14,11 +14,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.insight.databinding.ActivityMedicationDetailsBinding;
 import com.example.insight.model.Medication;
+import com.example.insight.utility.AlarmHelper;
 import com.example.insight.viewmodel.MedicationViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -172,6 +174,9 @@ public class MedicationDetails extends DrawerBaseActivity {
                 }
 
                 viewModel.addMedication(newMedication);
+
+                //setting alarm
+                setAlarmsForMedication(newMedication);
                 Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
                 finish();
             } else {
@@ -202,6 +207,9 @@ public class MedicationDetails extends DrawerBaseActivity {
                 }
 
                 viewModel.updateMedication(medication);
+
+                //setting alarm
+                setAlarmsForMedication(medication);
                 Toast.makeText(getApplicationContext(), "Updated Successfully", Toast.LENGTH_LONG).show();
                 finish();
             } else {
@@ -235,5 +243,55 @@ public class MedicationDetails extends DrawerBaseActivity {
             case "Sunday": return binding.checkSunday;
             default: return null;
         }
+    }
+
+    // Set alarms for each day and time
+    private void setAlarmsForMedication(Medication medication) {
+        HashMap<String, List<String>> reminderMap = medication.getReminderMap();
+
+        for (String day : reminderMap.keySet()) {
+            List<String> times = reminderMap.get(day);
+            for (String time : times) {
+                Calendar calendar = getNextAlarmTime(day, time);
+                int requestCode = generateUniqueRequestCode(medication.getMedicationId(), day, time);
+                AlarmHelper.setAlarm(this, requestCode, calendar, medication.getMedicationId(), medication.getName());
+            }
+        }
+    }
+
+    private Calendar getNextAlarmTime(String day, String time) {
+        Calendar calendar = Calendar.getInstance();
+        String[] timeParts = time.split(" ");
+        String[] hourMin = timeParts[0].split(":");
+        int hour = Integer.parseInt(hourMin[0]);
+        int minute = Integer.parseInt(hourMin[1]);
+        String amPm = timeParts[1];
+        if (amPm.equals("PM") && hour != 12) hour += 12;
+        if (amPm.equals("AM") && hour == 12) hour = 0;
+
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.DAY_OF_WEEK, getDayOfWeek(day));
+        if (calendar.before(Calendar.getInstance())) calendar.add(Calendar.WEEK_OF_YEAR, 1);
+        return calendar;
+    }
+
+    private int getDayOfWeek(String day) {
+        switch (day) {
+            case "Sunday": return Calendar.SUNDAY;
+            case "Monday": return Calendar.MONDAY;
+            case "Tuesday": return Calendar.TUESDAY;
+            case "Wednesday": return Calendar.WEDNESDAY;
+            case "Thursday": return Calendar.THURSDAY;
+            case "Friday": return Calendar.FRIDAY;
+            case "Saturday": return Calendar.SATURDAY;
+            default: return Calendar.MONDAY;
+        }
+    }
+
+    private int generateUniqueRequestCode(String medicationId, String day, String time) {
+        return (medicationId + day + time).hashCode();
     }
 }
