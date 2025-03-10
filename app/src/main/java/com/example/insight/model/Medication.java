@@ -19,6 +19,7 @@ public class Medication {
 
     public Medication() {
         this.medicationId = generateId();
+        this.reminderMap = new HashMap<>();
     }
 
     public Medication(String name, String dosage, String unit, boolean reminderEnabled) {

@@ -61,7 +61,7 @@ public class MedicationViewModel extends ViewModel {
         medicationData.put("name", medication.getName());
         medicationData.put("dosage", medication.getDosage());
         medicationData.put("unit", medication.getUnit());
-        medicationData.put("reminderTime", medication.getReminderMap()); // Default value
+        medicationData.put("reminderMap", medication.getReminderMap()); // Default value
         medicationData.put("reminderEnabled", medication.isReminderEnabled());
 
 

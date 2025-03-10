@@ -82,6 +82,11 @@ public class MedicationDetails extends DrawerBaseActivity {
                 for (Medication m : medications) {
                     if (m.getMedicationId().equals(medicationId)) {
                         medication = m;
+
+                        //debuging hashmap reminders
+                        Log.d("MedicationDebug", "Loaded medication: " + m.getName());
+                        Log.d("MedicationDebug", "Reminder Map: " + m.getReminderMap());
+
                         populateFields(m);
                         break;
                     }
