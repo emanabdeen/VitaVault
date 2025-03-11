@@ -145,7 +145,7 @@ public class IngredientScanViewModel extends ViewModel {
                 .document(uid)
                 .collection("dietaryRestrictions");
 
-        Query query = dietaryRestrictions.whereEqualTo("ingredientCategory", customCategory);
+        Query query = dietaryRestrictions;
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
 
@@ -159,15 +159,15 @@ public class IngredientScanViewModel extends ViewModel {
                         String category = document.getString("ingredientCategory");
                         String name = document.getString("ingredientName");
 
-                        Log.d("AddCustomIngredientdebug", "Document ID: " + document.getId());
-                        Log.d("AddCustomIngredientdebug", "Category: " + category);
-                        Log.d("AddCustomIngredientdebug", "name: " + name);
+                        Log.d(TAG, "Document ID: " + document.getId());
+                        Log.d(TAG, "Category: " + category);
+                        Log.d(TAG, "name: " + name);
 
                         // Create vital object with the retrieved data
                         DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(name,category);
                         ingredient.setIngredientId(document.getId());
 
-                        Log.d("AddCustomIngredientdebug", ingredient.getIngredientName());
+                        Log.d(TAG, ingredient.getIngredientName());
 
 
                         dietaryRestrictionIngredientsList.add(ingredient);
@@ -177,7 +177,7 @@ public class IngredientScanViewModel extends ViewModel {
                     future.complete(true);
 
                 }else{
-                    Log.e("debug","getting the list!! "+ String.valueOf(dietaryRestrictionIngredientsList.size()));
+                    Log.e(TAG,"getting the list!! "+ String.valueOf(dietaryRestrictionIngredientsList.size()));
                     dietaryRestrictionIngredientsData.postValue(dietaryRestrictionIngredientsList);
                     future.complete(false);
                 }
