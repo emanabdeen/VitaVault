@@ -27,9 +27,12 @@ public class MedicationViewModel extends ViewModel {
     private final FirebaseAuth auth = FirebaseAuth.getInstance();
     private final FirebaseUser currentUser = auth.getCurrentUser();
     private final String uid = currentUser != null ? currentUser.getUid() : null;
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     private final MutableLiveData<List<Medication>> medicationsData = new MutableLiveData<>();
     private List<Medication> medicationsList = new ArrayList<>();
+
+    private final MutableLiveData<Medication> medicationToDelete = new MutableLiveData<>();
 
     public MedicationViewModel() {
         medicationsData.setValue(medicationsList);
@@ -63,13 +66,14 @@ public class MedicationViewModel extends ViewModel {
         medicationData.put("unit", medication.getUnit());
         medicationData.put("reminderMap", medication.getReminderMap()); // Default value
         medicationData.put("reminderEnabled", medication.isReminderEnabled());
+        medicationData.put("repeatWeekly", medication.isRepeatWeekly());
 
 
         // Save to Firestore
         medicationsRef.document(medicationId).set(medicationData)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "Medication added successfully: " + medicationId);
-                    getMedications();
+                    getMedications(false);
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error adding medication", e);
@@ -79,13 +83,14 @@ public class MedicationViewModel extends ViewModel {
     /**
      * ✅ Retrieve Medications for the Current User
      */
-    public void getMedications() {
+    public void getMedications(boolean showLoading) {
         if (uid == null) {
             Log.e(TAG, "User not authenticated");
             return;
         }
 
-        medicationsData.postValue(null);
+        //medicationsData.postValue(null);
+        if (showLoading) isLoading.postValue(true);
         db.collection("users").document(uid).collection("medications")
                 .orderBy("name", Query.Direction.ASCENDING)
                 .get()
@@ -99,12 +104,14 @@ public class MedicationViewModel extends ViewModel {
                     }
                     medicationsData.postValue(medicationsList);
                     medicationsData.setValue(medicationsList);
+                    isLoading.postValue(false);
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error retrieving medications", e);
                 }).addOnCompleteListener(task -> {
                     // ✅ Hide progress bar when data fetching is done
                     medicationsData.postValue(medicationsList);
+                    isLoading.postValue(false);
                 });;
     }
 
@@ -161,8 +168,20 @@ public class MedicationViewModel extends ViewModel {
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "Medication deleted: " + medicationId);
-                        getMedications();
+                        getMedications(false);
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error deleting medication", e));
+    }
+
+    public LiveData<Medication> getMedicationToDelete() {
+        return medicationToDelete;
+    }
+
+    public void prepareToRemoveMedication(Medication medication) {
+        medicationToDelete.setValue(medication);
+    }
+
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
     }
 }

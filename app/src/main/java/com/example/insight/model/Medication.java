@@ -16,19 +16,21 @@ public class Medication {
     private String unit;
     private boolean reminderEnabled;
     private HashMap<String, List<String>> reminderMap;
+    private boolean repeatWeekly;
 
     public Medication() {
         this.medicationId = generateId();
         this.reminderMap = new HashMap<>();
     }
 
-    public Medication(String name, String dosage, String unit, boolean reminderEnabled) {
+    public Medication(String name, String dosage, String unit, boolean reminderEnabled, boolean repeatWeekly) {
         this.medicationId = generateId();
         this.name = name;
         this.dosage = dosage;
         this.unit = unit;
         this.reminderEnabled = reminderEnabled;
         this.reminderMap = new HashMap<>();
+        this.repeatWeekly = repeatWeekly;
     }
 
     // Generate Unique ID
@@ -72,6 +74,10 @@ public class Medication {
     public boolean isReminderEnabled() { return reminderEnabled; }
 
     public void setReminderEnabled(boolean reminderEnabled) { this.reminderEnabled = reminderEnabled; }
+
+    public boolean isRepeatWeekly() { return repeatWeekly; }
+
+    public void setRepeatWeekly(boolean repeatWeekly) { this.repeatWeekly = repeatWeekly; }
 
     // Method to add a reminder
     public void addReminder(String day, String time) {

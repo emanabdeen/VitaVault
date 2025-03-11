@@ -1,5 +1,7 @@
 package com.example.insight.view;
 
+import static com.example.insight.utility.AlarmHelper.cancelAllAlarmsForMedication;
+
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +18,8 @@ import com.example.insight.databinding.ActivityMedicationDetailsBinding;
 import com.example.insight.model.Medication;
 import com.example.insight.utility.AlarmHelper;
 import com.example.insight.viewmodel.MedicationViewModel;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -64,7 +68,7 @@ public class MedicationDetails extends DrawerBaseActivity {
         });
 
         // Time Picker Button
-        binding.btnPickTime.setOnClickListener(v -> showTimePickerDialog());
+        binding.btnPickTime.setOnClickListener(v -> showMaterialTimePickerDialog());
 
         // Handle Intent Data (Editing or Creating New)
         Intent intent = getIntent();
@@ -74,7 +78,7 @@ public class MedicationDetails extends DrawerBaseActivity {
             pageFunction = "editMedication";
             medicationId = intent.getStringExtra("medicationID");
 
-            viewModel.getMedications();
+            viewModel.getMedications(true);
             viewModel.getMedicationsData().observe(this, medications -> {
                 if (medications == null) {
                     Log.d("MedicationDetails", "Waiting for Firestore data...");
@@ -118,23 +122,48 @@ public class MedicationDetails extends DrawerBaseActivity {
         binding.spinnerUnit.setAdapter(adapter);
     }
 
-    private void showTimePickerDialog() {
-        TimePickerDialog timePicker = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+//    private void showTimePickerDialog() {
+//        TimePickerDialog timePicker = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+//            String amPm = (hourOfDay >= 12) ? "PM" : "AM";
+//            int hour = (hourOfDay > 12) ? hourOfDay - 12 : hourOfDay;
+//            if (hour == 0) hour = 12;
+//
+//            selectedTime = String.format("%02d:%02d %s", hour, minute, amPm);
+//            binding.textSelectedTime.setText("Selected time: " + selectedTime);
+//        }, 8, 0, false); // Default time: 08:00 AM
+//
+//        timePicker.show();
+//    }
+
+    private void showMaterialTimePickerDialog() {
+        MaterialTimePicker picker = new MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_12H) // or CLOCK_24H
+                .setHour(8) // default hour
+                .setMinute(0) // default minute
+                .setTitleText("Select Reminder Time")
+                .build();
+
+        picker.show(getSupportFragmentManager(), "tag"); // For activities, or getParentFragmentManager() if in Fragment
+
+        picker.addOnPositiveButtonClickListener(v -> {
+            int hourOfDay = picker.getHour();
+            int minute = picker.getMinute();
+
+            // Format AM/PM
             String amPm = (hourOfDay >= 12) ? "PM" : "AM";
             int hour = (hourOfDay > 12) ? hourOfDay - 12 : hourOfDay;
             if (hour == 0) hour = 12;
 
             selectedTime = String.format("%02d:%02d %s", hour, minute, amPm);
-            binding.textSelectedTime.setText("Selected time: " + selectedTime);
-        }, 8, 0, false); // Default time: 08:00 AM
-
-        timePicker.show();
+            binding.textSelectedTime.setText("Selected time: " + selectedTime); // Update UI
+        });
     }
 
     private void populateFields(Medication medication) {
         binding.editTextMedicationName.setText(medication.getName());
         binding.editTextDosage.setText(medication.getDosage());
         binding.switchReminder.setChecked(medication.isReminderEnabled());
+        binding.switchRepeating.setChecked(medication.isRepeatWeekly());
 
         // Set correct unit in spinner
         String unit = medication.getUnit();
@@ -166,9 +195,10 @@ public class MedicationDetails extends DrawerBaseActivity {
             String dosage = binding.editTextDosage.getText().toString();
             String unit = binding.spinnerUnit.getSelectedItem().toString();
             boolean reminderEnabled = binding.switchReminder.isChecked();
+            boolean repeatWeekly = binding.switchRepeating.isChecked();
 
             if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(dosage)) {
-                Medication newMedication = new Medication(name, dosage, unit, reminderEnabled);
+                Medication newMedication = new Medication(name, dosage, unit, reminderEnabled, repeatWeekly);
                 if (reminderEnabled) {
                     newMedication.setReminderMap(collectReminderTimes());
                 }
@@ -193,14 +223,18 @@ public class MedicationDetails extends DrawerBaseActivity {
             String dosage = binding.editTextDosage.getText().toString();
             String unit = binding.spinnerUnit.getSelectedItem().toString();
             boolean reminderEnabled = binding.switchReminder.isChecked();
+            boolean repeatWeekly = binding.switchRepeating.isChecked();
 
             if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(dosage)) {
                 medication.setName(name);
                 medication.setDosage(dosage);
                 medication.setUnit(unit);
                 medication.setReminderEnabled(reminderEnabled);
+                medication.setRepeatWeekly(repeatWeekly);
 
                 if (reminderEnabled) {
+                    // Cancel all alarms
+                    cancelAllAlarmsForMedication(this, medication);
                     medication.setReminderMap(collectReminderTimes());
                 } else {
                     medication.setReminderMap(new HashMap<>()); // Clear reminders if disabled
@@ -254,7 +288,7 @@ public class MedicationDetails extends DrawerBaseActivity {
             for (String time : times) {
                 Calendar calendar = getNextAlarmTime(day, time);
                 int requestCode = generateUniqueRequestCode(medication.getMedicationId(), day, time);
-                AlarmHelper.setAlarm(this, requestCode, calendar, medication.getMedicationId(), medication.getName());
+                AlarmHelper.setAlarm(this, requestCode, calendar, medication.getMedicationId(), medication.getName(), medication.isRepeatWeekly());
             }
         }
     }

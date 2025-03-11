@@ -21,7 +21,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="10dp"
-            android:src="@drawable/icon_medications"/>
+            android:src="@drawable/icon_medications" />
 
         <TextView
             android:id="@+id/textViewTitle"
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:textSize="22sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Scrollable Content -->
@@ -52,7 +52,7 @@
                 android:text="Medication Name"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
             <EditText
                 android:id="@+id/editTextMedicationName"
@@ -62,7 +62,7 @@
                 android:padding="12dp"
                 android:textSize="16sp"
                 android:textColor="@color/black"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="16dp" />
 
             <!-- Dosage -->
             <TextView
@@ -71,7 +71,7 @@
                 android:text="Dosage"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="8dp" />
 
             <EditText
                 android:id="@+id/editTextDosage"
@@ -81,8 +81,8 @@
                 android:padding="12dp"
                 android:textSize="16sp"
                 android:textColor="@color/black"
-                android:layout_marginBottom="12dp"
-                android:inputType="numberDecimal"/>
+                android:layout_marginBottom="16dp"
+                android:inputType="numberDecimal" />
 
             <!-- Unit Selection -->
             <TextView
@@ -91,7 +91,7 @@
                 android:text="Unit"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="8dp" />
 
             <Spinner
                 android:id="@+id/spinnerUnit"
@@ -99,7 +99,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/edit_text_background"
                 android:padding="12dp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="16dp" />
 
             <!-- Reminder Toggle -->
             <TextView
@@ -108,7 +108,7 @@
                 android:text="Enable Reminders"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="8dp" />
 
             <Switch
                 android:id="@+id/switchReminder"
@@ -116,7 +116,7 @@
                 android:layout_height="wrap_content"
                 android:text="Reminders"
                 android:textSize="16sp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="16dp" />
 
             <!-- Reminder Fields -->
             <LinearLayout
@@ -134,7 +134,16 @@
                     android:text="Select Reminder Days"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginBottom="8dp" />
+
+                <Switch
+                    android:id="@+id/switchRepeating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Repeat weekly?"
+                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -143,37 +152,11 @@
                     android:gravity="center"
                     android:padding="8dp">
 
-                    <CheckBox
-                        android:id="@+id/checkMonday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Mon"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkTuesday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tue"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkWednesday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Wed"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkThursday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Thu"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
+                    <!-- Days Row 1 -->
+                    <CheckBox android:id="@+id/checkMonday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mon" android:textSize="16sp" android:layout_marginEnd="12dp"/>
+                    <CheckBox android:id="@+id/checkTuesday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tue" android:textSize="16sp" android:layout_marginEnd="12dp"/>
+                    <CheckBox android:id="@+id/checkWednesday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Wed" android:textSize="16sp" android:layout_marginEnd="12dp"/>
+                    <CheckBox android:id="@+id/checkThursday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Thu" android:textSize="16sp" android:layout_marginEnd="12dp"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -181,31 +164,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center"
-                    android:padding="8dp">
+                    android:padding="8dp"
+                    android:layout_marginBottom="16dp">
 
-                    <CheckBox
-                        android:id="@+id/checkFriday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Fri"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkSaturday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sat"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkSunday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sun"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
+                    <!-- Days Row 2 -->
+                    <CheckBox android:id="@+id/checkFriday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fri" android:textSize="16sp" android:layout_marginEnd="12dp"/>
+                    <CheckBox android:id="@+id/checkSaturday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sat" android:textSize="16sp" android:layout_marginEnd="12dp"/>
+                    <CheckBox android:id="@+id/checkSunday" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sun" android:textSize="16sp" android:layout_marginEnd="12dp"/>
                 </LinearLayout>
 
                 <!-- Select Reminder Time -->
@@ -215,19 +180,18 @@
                     android:text="Select Reminder Time"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"/>
+                    android:layout_marginTop="8dp" />
 
                 <Button
                     android:id="@+id/btnPickTime"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:text="Pick Time"
+                    android:text="🕒 Pick Time"
                     android:textSize="16sp"
                     android:layout_gravity="center"
                     android:layout_marginTop="8dp"
                     android:paddingHorizontal="20dp"
-                    android:paddingVertical="8dp"/>
+                    android:paddingVertical="8dp" />
 
                 <TextView
                     android:id="@+id/textSelectedTime"
@@ -237,7 +201,7 @@
                     android:textSize="16sp"
                     android:textStyle="italic"
                     android:layout_gravity="center"
-                    android:layout_marginTop="5dp"/>
+                    android:layout_marginTop="5dp" />
             </LinearLayout>
 
             <!-- Save Button -->
@@ -250,7 +214,7 @@
                 android:textSize="18sp"
                 android:padding="12dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/button_secondary"/>
+                android:background="@drawable/button_secondary" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

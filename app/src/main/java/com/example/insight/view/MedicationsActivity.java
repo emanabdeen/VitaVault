@@ -1,5 +1,7 @@
 package com.example.insight.view;
 
+import static com.example.insight.utility.AlarmHelper.cancelAllAlarmsForMedication;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -49,25 +51,23 @@ public class MedicationsActivity extends DrawerBaseActivity {
         // Initialize ViewModel
         medicationViewModel = new ViewModelProvider(this).get(MedicationViewModel.class);
 
-        // Observe LiveData: Updates UI when medications are retrieved from Firestore
-        medicationViewModel.getMedicationsData().observe(this, new Observer<List<Medication>>() {
-            @Override
-            public void onChanged(List<Medication> medications) {
-                // Notify the list fragment to refresh its RecyclerView
-                medicationsListFragment.updateMedicationList(medications);
+        // ✅ Handle Deletion (alarm cancel + Firestore delete)
+        medicationViewModel.getMedicationToDelete().observe(this, medication -> {
+            if (medication != null) {
+                cancelAllAlarmsForMedication(this, medication);
+                medicationViewModel.removeMedication(medication.getMedicationId());
             }
         });
 
-        // Create and load the MedicationsListFragment by default
+        // Load Fragment
         medicationsListFragment = new MedicationsListFragment();
         replaceFragment(medicationsListFragment);
 
-        // Fetch medications from Firestore
-        medicationViewModel.getMedications();
+        // Fetch medications
+        medicationViewModel.getMedications(true); // You may decide to show loading here or not
 
         // Add Medication Button Click Listener
         binding.btnAddMedication.setOnClickListener(v -> {
-            // Navigate to "Add Medication" screen
             Intent intent = new Intent(MedicationsActivity.this, MedicationDetails.class);
             startActivity(intent);
         });
@@ -75,7 +75,7 @@ public class MedicationsActivity extends DrawerBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        medicationViewModel.getMedications(); // Fetch the latest data when returning
+        medicationViewModel.getMedications(false); // Fetch the latest data when returning
     }
 
     /**

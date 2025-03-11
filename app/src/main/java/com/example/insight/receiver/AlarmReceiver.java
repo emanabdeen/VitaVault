@@ -16,11 +16,13 @@ import android.util.Log;
 import androidx.core.app.NotificationCompat;
 
 import com.example.insight.R;
+import com.example.insight.utility.AlarmHelper;
 import com.example.insight.view.AlarmScreenActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,21 +51,28 @@ public class AlarmReceiver extends BroadcastReceiver {
         // ✅ If normal alarm trigger
         String medicationId = intent.getStringExtra("medicationId");
         String medicationName = intent.getStringExtra("medicationName");
+        boolean repeatWeekly = intent.getBooleanExtra("repeatWeekly", false);
 
         Log.d("AlarmReceiver", "🚨 AlarmReceiver triggered for: " + medicationName);
 
         // Play alarm sound
         playAlarmSound(context);
 
-        // Launch AlarmScreenActivity
-        Intent alarmIntent = new Intent(context, AlarmScreenActivity.class);
-        alarmIntent.putExtra("medicationId", medicationId);
-        alarmIntent.putExtra("medicationName", medicationName);
-        alarmIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        context.startActivity(alarmIntent);
+
 
         // Show persistent notification
         showPersistentNotification(context, medicationId, medicationName);
+
+        if (repeatWeekly) {
+            Calendar nextWeek = Calendar.getInstance();
+            nextWeek.setTimeInMillis(System.currentTimeMillis());
+            nextWeek.add(Calendar.WEEK_OF_YEAR, 1);
+
+            int requestCode = (medicationId + medicationName).hashCode(); // Same way as when set
+
+            AlarmHelper.setAlarm(context, requestCode, nextWeek, medicationId, medicationName, true);
+            Log.d("AlarmReceiver", "🔁 Repeating weekly alarm re-scheduled for next week.");
+        }
     }
 
     // ✅ Play alarm sound
@@ -99,6 +108,14 @@ public class AlarmReceiver extends BroadcastReceiver {
             notificationManager.createNotificationChannel(channel);
         }
 
+        Intent openAppIntent = new Intent(context, AlarmScreenActivity.class);
+        openAppIntent.putExtra("medicationId", medicationId);
+        openAppIntent.putExtra("medicationName", medicationName);
+        openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent openAppPendingIntent = PendingIntent.getActivity(
+                context, medicationId.hashCode(), openAppIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
         // ✅ DISMISS button action
         Intent stopIntent = new Intent(context, AlarmReceiver.class);
         stopIntent.setAction("STOP_ALARM");
@@ -108,13 +125,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         );
 
         // ✅ Tap notification to open AlarmScreenActivity
-        Intent openAppIntent = new Intent(context, AlarmScreenActivity.class);
-        openAppIntent.putExtra("medicationId", medicationId);
-        openAppIntent.putExtra("medicationName", medicationName);
-        openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent openAppPendingIntent = PendingIntent.getActivity(
-                context, medicationId.hashCode(), openAppIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
+
 
         // ✅ Build notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)

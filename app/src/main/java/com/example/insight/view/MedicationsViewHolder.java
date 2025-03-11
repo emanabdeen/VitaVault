@@ -14,11 +14,11 @@ public class MedicationsViewHolder extends RecyclerView.ViewHolder {
     private TextView medicationName;
     private TextView medicationDosage;
     private TextView medicationDate;
-    private ItemClickListener clickListener;
+    private EditItemClickListener clickListener;
     private ImageButton btnDelete;
     private ImageButton btnEdit;
 
-    public MedicationsViewHolder(@NonNull View itemView, ItemClickListener clickListener) {
+    public MedicationsViewHolder(@NonNull View itemView, EditItemClickListener clickListener) {
         super(itemView);
         medicationName = itemView.findViewById(R.id.medication_name_txt);
         medicationDosage = itemView.findViewById(R.id.medication_dosage_txt);
@@ -73,5 +73,13 @@ public class MedicationsViewHolder extends RecyclerView.ViewHolder {
 
     public void setMedicationDate(TextView medicationDate) {
         this.medicationDate = medicationDate;
+    }
+
+    public ImageButton getBtnEdit() {
+        return btnEdit;
+    }
+
+    public ImageButton getBtnDelete() {
+        return btnDelete;
     }
 }

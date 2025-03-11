@@ -81,6 +81,8 @@
             android:turnScreenOn="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
 
+        <activity android:name=".view.MedicationLogsActivity" />
+
         <receiver
             android:name=".receiver.AlarmReceiver"
             android:enabled="true"
