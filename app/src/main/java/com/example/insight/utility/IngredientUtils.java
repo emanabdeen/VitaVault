@@ -2,6 +2,9 @@ package com.example.insight.utility;
 
 import android.util.Log;
 
+import com.example.insight.model.DietaryRestrictionIngredient;
+import com.example.insight.model.OcrIngredient;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,27 +12,7 @@ import java.util.List;
 public class IngredientUtils {
     private static final String TAG = "IngredientUtils";
 
-    // List of ingredients
-    private ArrayList<String> ingredientList;
-
-    // Dictionary of ingredients matched
-    private HashMap<String, String> matchedIngredients;
-
-
-    public IngredientUtils() {
-        this.ingredientList = new ArrayList<String>();
-        this.matchedIngredients = new HashMap<String, String>();
-    }
-
-    public void addIngredient(String ingredient) {
-        this.ingredientList.add(ingredient);
-    }
-
-    public ArrayList<String> getIngredientList() {
-        return this.ingredientList;
-    }
-
-    public HashMap<String, ArrayList<String>> splitIngredientList(String inputText) {
+    public static HashMap<String, ArrayList<String>> splitIngredientList(String inputText) {
         if (inputText == null || inputText.trim().isEmpty()) {
             Log.d(TAG,"InputText is null or empty: " + inputText);
             Log.e(TAG, "splitIngredientList: input text is null or empty");
@@ -75,26 +58,25 @@ public class IngredientUtils {
                 Log.d(TAG, "Removed french ingredients string from contains string");
             }
         }
+        HashMap<String, String> sanitizationReplaceMap = new HashMap<>();
+        String emptyString = "";
+        sanitizationReplaceMap.put("ingredients", emptyString);
+        sanitizationReplaceMap.put("may contain", emptyString);
+        sanitizationReplaceMap.put("contains", emptyString);
+        sanitizationReplaceMap.put(":", emptyString);
+        sanitizationReplaceMap.put("|", emptyString);
+        sanitizationReplaceMap.put(";", emptyString);
+        sanitizationReplaceMap.put("(", emptyString);
+        sanitizationReplaceMap.put(")", emptyString);
+        sanitizationReplaceMap.put(".", ", ");
+        sanitizationReplaceMap.put("\n", " ");
 
         // Sanitize colons and semicolons
-        ingredientsInputText = ingredientsInputText.replace("ingredients", "");
-        ingredientsInputText = ingredientsInputText.replace(":", "");
-        ingredientsInputText = ingredientsInputText.replace(";", "");
-        ingredientsInputText = ingredientsInputText.replace(".", ",");
-        ingredientsInputText = ingredientsInputText.replace("\n", " ");
-
-        mayContainInputText = mayContainInputText.replace("may contain", "");
-        mayContainInputText = mayContainInputText.replace(":", "");
-        mayContainInputText = mayContainInputText.replace(";", "");
-        mayContainInputText = mayContainInputText.replace(".", ",");
-        mayContainInputText = mayContainInputText.replace("\n", " ");
-
-
-        containsInputText = containsInputText.replace("contains", "");
-        containsInputText = containsInputText.replace(":", "");
-        containsInputText = containsInputText.replace(";", "");
-        containsInputText = containsInputText.replace(".", ",");
-        containsInputText = containsInputText.replace("\n", "");
+        for (String key : sanitizationReplaceMap.keySet()) {
+            ingredientsInputText = ingredientsInputText.replace(key, sanitizationReplaceMap.get(key));
+            mayContainInputText = mayContainInputText.replace(key, sanitizationReplaceMap.get(key));
+            containsInputText = containsInputText.replace(key, sanitizationReplaceMap.get(key));
+        }
 
         Log.d(TAG, "Ingredients Input Text: " + ingredientsInputText);
         Log.d(TAG, "May Contain Input Text: " + mayContainInputText);
@@ -141,5 +123,81 @@ public class IngredientUtils {
         ingredientsListMap.put("may_contain", mayContainList);
         ingredientsListMap.put("contains", containsList);
         return ingredientsListMap;
+    }
+
+    public static HashMap<String, ArrayList<OcrIngredient>> parseIngredientsMapToOcrIngredients(HashMap<String, ArrayList<String>> ingredientsListMap) {
+        HashMap<String, ArrayList<OcrIngredient>> ocrIngredientsListMap = new HashMap<String, ArrayList<OcrIngredient>>();
+        ArrayList<OcrIngredient> ingredientsList = new ArrayList<OcrIngredient>();
+        ArrayList<OcrIngredient> mayContainList = new ArrayList<OcrIngredient>();
+        ArrayList<OcrIngredient> containsList = new ArrayList<OcrIngredient>();
+
+        for (String ingredient : ingredientsListMap.get("ingredients")) {
+            ingredientsList.add(new OcrIngredient(ingredient));
+        }
+        for (String ingredient : ingredientsListMap.get("may_contain")) {
+            mayContainList.add(new OcrIngredient(ingredient));
+        }
+        for (String ingredient : ingredientsListMap.get("contains")) {
+            containsList.add(new OcrIngredient(ingredient));
+        }
+
+        ocrIngredientsListMap.put("ingredients", ingredientsList);
+        ocrIngredientsListMap.put("may_contain", mayContainList);
+        ocrIngredientsListMap.put("contains", containsList);
+        return ocrIngredientsListMap;
+    }
+
+    private static ArrayList<String> getIngredientsListNames(ArrayList<OcrIngredient> ingredientsList){
+        ArrayList<String> ingredientsListNames = new ArrayList<String>();
+        for (OcrIngredient ingredient : ingredientsList) {
+            ingredientsListNames.add(ingredient.getIngredientName());
+        }
+        return ingredientsListNames;
+    }
+
+    public static ArrayList<OcrIngredient> getMatchedIngredients(HashMap<String, ArrayList<OcrIngredient>> ocrIngredientsListMap, List<DietaryRestrictionIngredient> dietaryRestrictionIngredientsList) {
+        ArrayList<OcrIngredient> matchedIngredientsList = new ArrayList<>();
+        ArrayList<String> ingredientsListNames = new ArrayList<>();
+        for(OcrIngredient ocrIngredient : ocrIngredientsListMap.get("ingredients")) {
+            for(DietaryRestrictionIngredient dietaryRestrictionIngredient : dietaryRestrictionIngredientsList) {
+                OcrIngredient scannedIngredient = ocrIngredient;
+                if(ocrIngredient.getIngredientName().toLowerCase().contains(dietaryRestrictionIngredient.getIngredientName().toLowerCase())) {
+                    scannedIngredient.setDietaryRestrictionFlagged(true);
+                    scannedIngredient.setIngredientMatchedCategory(dietaryRestrictionIngredient.getIngredientCategory());
+                }
+                if (!ingredientsListNames.contains(scannedIngredient.getIngredientName())) { // Only add ingredient to list if it wasn't already added
+                    matchedIngredientsList.add(scannedIngredient);
+                    ingredientsListNames.add(scannedIngredient.getIngredientName());
+                }
+            }
+        }
+        for(OcrIngredient ocrIngredient : ocrIngredientsListMap.get("may_contain")) {
+            for(DietaryRestrictionIngredient dietaryRestrictionIngredient : dietaryRestrictionIngredientsList) {
+                OcrIngredient scannedIngredient = ocrIngredient;
+                if(ocrIngredient.getIngredientName().toLowerCase().contains(dietaryRestrictionIngredient.getIngredientName().toLowerCase())) {
+                    scannedIngredient.setDietaryRestrictionFlagged(true);
+                    scannedIngredient.setIngredientMatchedCategory(dietaryRestrictionIngredient.getIngredientCategory());
+                }
+                if (!ingredientsListNames.contains(scannedIngredient.getIngredientName())) {
+                    matchedIngredientsList.add(scannedIngredient);
+                    ingredientsListNames.add(scannedIngredient.getIngredientName());
+                }
+
+            }
+        }
+        for(OcrIngredient ocrIngredient : ocrIngredientsListMap.get("contains")) {
+            for(DietaryRestrictionIngredient dietaryRestrictionIngredient : dietaryRestrictionIngredientsList) {
+                OcrIngredient scannedIngredient = ocrIngredient;
+                if(ocrIngredient.getIngredientName().toLowerCase().contains(dietaryRestrictionIngredient.getIngredientName().toLowerCase())) {
+                    scannedIngredient.setDietaryRestrictionFlagged(true);
+                    scannedIngredient.setIngredientMatchedCategory(dietaryRestrictionIngredient.getIngredientCategory());
+                }
+                if (!ingredientsListNames.contains(scannedIngredient.getIngredientName())) {
+                    matchedIngredientsList.add(scannedIngredient);
+                    ingredientsListNames.add(scannedIngredient.getIngredientName());
+                }
+            }
+        }
+        return matchedIngredientsList;
     }
 }

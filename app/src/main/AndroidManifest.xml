@@ -25,6 +25,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Insight"
         tools:targetApi="31">
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.android.fileprovider"
@@ -37,6 +38,9 @@
 
         <activity
             android:name=".view.OCRMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.OCRResultsActivity"
             android:exported="false" />
         <activity
             android:name=".view.SymptomDetails"
@@ -79,7 +83,6 @@
             android:exported="false" />
         <activity android:name=".view.MedicationsActivity" />
         <activity android:name=".view.MedicationDetails" />
-
         <activity
             android:name=".view.DashboardActivity"
             android:exported="true">
@@ -87,6 +90,7 @@
             <!-- to set this page as a first page -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
