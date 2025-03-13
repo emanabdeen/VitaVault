@@ -36,5 +36,22 @@
     <string name="BodyTemperature">Body Temperature</string>
     <string name="Weight">Weight</string>
     <string name="dietaryRestrictionsTitle">Dietary Restrictions</string>
+    <string name="SearchSymptoms">Search Symptoms</string>
+    <string name="ExportData">Export Data</string>
+
+    <string-array name="gender_array">
+        <item>Select option</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+    <string-array name="age_array">
+        <item>Select option</item>
+        <item>18-24</item>
+        <item>25-34</item>
+        <item>35-44</item>
+        <item>45-54</item>
+        <item>55-64</item>
+        <item>65+</item>
+    </string-array>
 
 </resources>
