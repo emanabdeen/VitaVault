@@ -6,21 +6,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.insight.databinding.ActivityLoginBinding;
-import com.example.insight.databinding.ActivityMainBinding;
+import com.example.insight.R;
 import com.example.insight.databinding.ActivityManageAccountBinding;
 import com.example.insight.utility.LoginRegisterHelper;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.util.concurrent.CompletableFuture;
 
 public class ManageAccount extends DrawerBaseActivity {
 
@@ -84,5 +76,11 @@ public class ManageAccount extends DrawerBaseActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

@@ -44,36 +44,7 @@ public class MainActivity extends DrawerBaseActivity {
         setContentView(binding.getRoot());
         allocateActivityTitle("Symptoms");
 
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
 
-        if (user == null) {
-            finish();
-            startActivity(new Intent(MainActivity.this, Login.class));
-        }
-        btn = binding.button;
-        manageAccount = binding.manageAccount;
-
-        manageAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, ManageAccount.class));
-            }
-        });
-
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mAuth = FirebaseAuth.getInstance();
-                if (user != null) {
-                    mAuth.signOut();
-                    finish();
-                    startActivity(new Intent(MainActivity.this, Login.class));
-                } else {
-                    Toast.makeText(getApplicationContext(), "You aren't logged in yet!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
 
     }

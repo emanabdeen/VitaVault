@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/vitavault_page_background3"
     android:orientation="vertical"
-    tools:context=".view.VitalDetails">
+    tools:context=".view.MyProfileActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,7 +20,8 @@
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:background="@drawable/glow_white"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:src="@drawable/icon_account"/>
 
         <TextView
             android:id="@+id/textViewTitle"
@@ -40,33 +41,58 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="50dp"
-            android:paddingEnd="50dp"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
             android:paddingTop="20dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Email"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/TextEmail"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background"
-                android:inputType="textEmailAddress"
-                android:padding="8dp"
-                android:textColor="@color/black"
-                android:focusable="false"
-                android:clickable="false"/>
+                android:orientation="horizontal"
+                android:layout_gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="1">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Email"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/txtEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="User email"
+                        android:layout_marginTop="5dp"
+                        android:textSize="20sp"
+                        android:textStyle="italic"
+                        android:fontFamily="sans-serif-condensed-medium"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnChangePassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Change Password"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:layout_gravity="bottom"/>
+
+
+            </LinearLayout>
+
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="User Name"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone"/>
 
             <EditText
                 android:id="@+id/editUserName"
@@ -75,7 +101,8 @@
                 android:background="@drawable/edit_text_background"
                 android:inputType="text"
                 android:padding="8dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/errorUserName"
@@ -91,49 +118,50 @@
                 android:id="@+id/lblGender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:text="Gender (optional)"
                 android:textStyle="bold" />
 
             <Spinner
-                android:id="@+id/drpGender"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background"
+                android:id="@+id/spinnerGender"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:background="@drawable/dropdown_background"
                 android:padding="8dp"
-                android:spinnerMode="dropdown" />
+                android:spinnerMode="dropdown"
+                style="@style/CustomSpinnerStyle"/>
 
             <TextView
                 android:id="@+id/lblAge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:text="Age (optional)"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <Spinner
-                android:id="@+id/drptAge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:id="@+id/spinnerAge"
+                android:layout_width="200dp"
+                android:layout_height="50dp"
+                android:background="@drawable/dropdown_background"
                 android:padding="8dp"
-                android:spinnerMode="dropdown" />
+                android:spinnerMode="dropdown"
+                style="@style/CustomSpinnerStyle" />
 
-            <Button
-                android:id="@+id/btnChangePassword"
+           <!-- <Button
+                android:id="@+id/btnChangePassword2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_marginTop="30dp"
                 android:text="Change Password"
                 android:textAllCaps="false"
-                android:textColor="@color/white" />
+                android:textColor="@color/white" />-->
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSave"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="90dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:background="@drawable/button_secondary"
                 android:text="@string/save"
                 android:textStyle="bold" />

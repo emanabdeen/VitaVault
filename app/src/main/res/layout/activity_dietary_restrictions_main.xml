@@ -26,16 +26,9 @@
             android:layout_height="70dp"
             android:padding="10dp"
             android:layout_gravity="center"
-            android:background="@drawable/icon_dietary"/>
+            android:background="@drawable/glow_white"
+            android:src="@drawable/icon_dietary"/>
 
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:text="@string/dietaryRestrictionsTitle"/>
     </LinearLayout>
 
 

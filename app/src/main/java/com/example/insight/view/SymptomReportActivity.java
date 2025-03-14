@@ -58,11 +58,6 @@ public class SymptomReportActivity extends DrawerBaseActivity {
 
     ActivitySymptomReportBinding binding;
     private SymptomViewModel symptomViewModel;
-    private TextInputEditText startDateInput, endDateInput;
-    private Button searchButton;
-    private Button exportButton;
-    private TableLayout symptomTable;
-    private Spinner symptomTypeSpinner;
     private String selectedType = "";
 
 
@@ -73,30 +68,20 @@ public class SymptomReportActivity extends DrawerBaseActivity {
         setContentView(binding.getRoot());
         allocateActivityTitle("Report");
 
-        //setContentView(R.layout.activity_symptom_report);
-
         // Initialize ViewModel
         symptomViewModel = new ViewModelProvider(this).get(SymptomViewModel.class);
 
-        // Initialize Views
-        startDateInput = findViewById(R.id.startDateInput);
-        endDateInput = findViewById(R.id.endDateInput);
-        searchButton = findViewById(R.id.searchButton);
-        symptomTable = findViewById(R.id.symptomTable);
-        exportButton = findViewById(R.id.exportButton);
-        symptomTypeSpinner = findViewById(R.id.symptomTypeSpinner);
-
         // Set up date pickers for start and end date inputs
-        startDateInput.setOnClickListener(new View.OnClickListener() {
+        binding.startDateInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDatePicker(startDateInput);
+                showDatePicker(binding.startDateInput);
             }
         });
-        endDateInput.setOnClickListener(new View.OnClickListener() {
+        binding.endDateInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDatePicker(endDateInput);
+                showDatePicker(binding.endDateInput);
             }
         });
 
@@ -108,17 +93,17 @@ public class SymptomReportActivity extends DrawerBaseActivity {
         );
         //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Dropdown layout
         adapter.setDropDownViewResource(R.layout.custom_spinner_item); // Dropdown layout
-        symptomTypeSpinner.setAdapter(adapter);
+        binding.symptomTypeSpinner.setAdapter(adapter);
 
-        // Set a default selection (All Symptoms)
-        symptomTypeSpinner.setSelection(0);
+        // Set a default selection (All Symptoms) first item
+        binding.symptomTypeSpinner.setSelection(0);
 
         // Handle Spinner item selection
-        symptomTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.symptomTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String xx = parent.getItemAtPosition(position).toString().toLowerCase(Locale.ROOT);
-                if (xx.equals("all symptoms")) {
+                String s = parent.getItemAtPosition(position).toString().toLowerCase(Locale.ROOT);
+                if (s.equals("all symptoms")) {
                     selectedType = "";
                 } else {
                     selectedType = parent.getItemAtPosition(position).toString();
@@ -133,29 +118,15 @@ public class SymptomReportActivity extends DrawerBaseActivity {
         });
 
         // Set up the search button click listener
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        binding.searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 searchSymptomsByDateRange(selectedType);
-
-                /*// Get selected dates from input fields
-                String startDateStr = startDateInput.getText().toString();
-                String endDateStr = endDateInput.getText().toString();
-
-                //if no dates are selected, get all symptoms
-                if (startDateStr.isEmpty() && endDateStr.isEmpty()) {
-                    clearTable();
-                    symptomViewModel.GetAllSymptoms();
-                }else{
-                    //if dates are selected
-                    searchSymptomsByDateRange(selectedType);
-                }*/
             }
         });
 
         // Set up the export button click listener
-        exportButton.setOnClickListener(new View.OnClickListener() {
+        binding.exportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 exportTableToPdf();
@@ -200,8 +171,8 @@ public class SymptomReportActivity extends DrawerBaseActivity {
 
     private void searchSymptomsByDateRange(String symptomType) {
         // Get selected dates from input fields
-        String startDateStr = startDateInput.getText().toString();
-        String endDateStr = endDateInput.getText().toString();
+        String startDateStr = binding.startDateInput.getText().toString();
+        String endDateStr = binding.endDateInput.getText().toString();
 
         //if no dates are selected, get all symptoms
         if (startDateStr.isEmpty() && endDateStr.isEmpty()) {
@@ -280,7 +251,7 @@ public class SymptomReportActivity extends DrawerBaseActivity {
             textView.setEllipsize(TextUtils.TruncateAt.END);
 
             // Center header text and specific columns 2, 3, 4, 5 (0-based index)
-            if (symptomTable.getChildCount() == 0) { // Check if it's the header row
+            if (binding.symptomTable.getChildCount() == 0) { // Check if it's the header row
                 textView.setGravity(Gravity.CENTER);
                 textView.setTypeface(null, Typeface.BOLD);
                 textView.setBackgroundColor(getResources().getColor(R.color.accent_light)); // Header background color
@@ -293,7 +264,7 @@ public class SymptomReportActivity extends DrawerBaseActivity {
 
             row.addView(textView);
         }
-        symptomTable.addView(row);
+        binding.symptomTable.addView(row);
     }
 
     private void exportTableToPdf() {
@@ -392,8 +363,8 @@ public class SymptomReportActivity extends DrawerBaseActivity {
         startY += 10; // Add spacing between header and rows
 
         // Draw the table rows
-        for (int i = 1; i < symptomTable.getChildCount(); i++) {
-            TableRow row = (TableRow) symptomTable.getChildAt(i);
+        for (int i = 1; i < binding.symptomTable.getChildCount(); i++) {
+            TableRow row = (TableRow) binding.symptomTable.getChildAt(i);
             String[] rowData = new String[row.getChildCount()];
             for (int j = 0; j < row.getChildCount(); j++) {
                 TextView textView = (TextView) row.getChildAt(j);
@@ -500,7 +471,7 @@ public class SymptomReportActivity extends DrawerBaseActivity {
     }
 
     private void clearTable() {
-        symptomTable.removeAllViews();
+        binding.symptomTable.removeAllViews();
     }
 
 }
