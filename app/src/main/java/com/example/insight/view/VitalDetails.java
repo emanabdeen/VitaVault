@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.insight.databinding.ActivityVitalDetailsBinding;
 import com.example.insight.model.Vital;
 import com.example.insight.utility.DateValidator;
+import com.example.insight.utility.StringHandler;
 import com.example.insight.utility.TimeValidator;
 import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.VitalViewModel;
@@ -83,8 +84,8 @@ public class VitalDetails extends DrawerBaseActivity {
                     unit = vital.getUnit();
 
                     //add the retrieved vital data into the input fields
-                    binding.editTextDate.setText(selectedVitalData.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-                    binding.editTime.setText(selectedVitalData.getRecordTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+                    binding.editTextDate.setText(DateValidator.LocalDateToString(selectedVitalData.getRecordDate()));
+                    binding.editTime.setText(TimeValidator.LocalTimeToString(selectedVitalData.getRecordTime()));
                     binding.editTextMeasure1.setText(selectedVitalData.getMeasurement1());
 
                     //if the vital is not blood pressure, hide measure2 and put the measurement label = unit
@@ -109,8 +110,8 @@ public class VitalDetails extends DrawerBaseActivity {
             unit = intentObject.getStringExtra("unit");
 
             //put initial values for current time and date
-            binding.editTextDate.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-            binding.editTime.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+            binding.editTextDate.setText(DateValidator.LocalDateToString(LocalDate.now()));
+            binding.editTime.setText(TimeValidator.LocalTimeToString(LocalTime.now()));
 
             //if the vital is not blood pressure, hide measure2 and put the measurement label = unit
             if (!Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
@@ -137,7 +138,7 @@ public class VitalDetails extends DrawerBaseActivity {
                     if (pageFunction.equals("editVital")){
                         EditVital();
                     }
-                    finish();
+
                 }catch (Exception e) {
                     Log.e("error", "try-catch error: "+ e.getMessage());
                 }
@@ -164,14 +165,14 @@ public class VitalDetails extends DrawerBaseActivity {
                 showError(binding.errorGeneral, "", false);
 
                 // Handle date error
-                showError(binding.errorDate, "Invalid Date (e.g., 15-05-2025)", !isDateValid);
+                showError(binding.errorDate, "Invalid Date (e.g., 2025-05-15)", !isDateValid);
 
                 // Handle time error
                 showError(binding.errorTime, "Invalid Time (e.g., 14:30)", !isTimeValid);
 
                 if (isDateValid && isTimeValid) {
-                    LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                    LocalTime recordTime = LocalTime.parse(recordTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+                    LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+                    LocalTime recordTime = TimeValidator.StringToLocalTime(recordTimeStr);
 
                     if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
                         if (!TextUtils.isEmpty(recordMeasure2)) {
@@ -184,6 +185,7 @@ public class VitalDetails extends DrawerBaseActivity {
                             //add the record to firestore
                             vitalViewModel.AddVital(newVital);
                             Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
+                            finish();
 
                         } else {
                             // Handle missing field error
@@ -200,6 +202,7 @@ public class VitalDetails extends DrawerBaseActivity {
                         //add the record to firestore
                         vitalViewModel.AddVital(newVital);
                         Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
+                        finish();
 
                     } else {
                         Log.d("Activity", "Could not define the vital type");
@@ -224,7 +227,7 @@ public class VitalDetails extends DrawerBaseActivity {
             String recordDateStr = binding.editTextDate.getText().toString();
             String recordTimeStr = binding.editTime.getText().toString();
             String recordMeasure1 = binding.editTextMeasure1.getText().toString();
-            String recordMeasure2 = binding.editTextMeasure2.getText().toString();
+            String recordMeasure2 = StringHandler.defaultIfNull(binding.editTextMeasure2.getText());
 
             if (!TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStr) && !TextUtils.isEmpty(recordMeasure1)) {
                 boolean isDateValid = DateValidator.isValidDate(recordDateStr);
@@ -232,14 +235,14 @@ public class VitalDetails extends DrawerBaseActivity {
                 showError(binding.errorGeneral, "", false);
 
                 // Handle date error
-                showError(binding.errorDate, "Invalid Date (e.g., 15-05-2025)", !isDateValid);
+                showError(binding.errorDate, "Invalid Date (e.g., 2025-05-15)", !isDateValid);
 
                 // Handle time error
                 showError(binding.errorTime, "Invalid Time (e.g., 14:30)", !isTimeValid);
 
                 if (isDateValid && isTimeValid) {
-                    LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                    LocalTime recordTime = LocalTime.parse(recordTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+                    LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+                    LocalTime recordTime = TimeValidator.StringToLocalTime(recordTimeStr);
 
                     if (Objects.equals(vitalType, VitalsCategories.BloodPressure.toString())) {
                         if (!TextUtils.isEmpty(recordMeasure2)) {
@@ -254,6 +257,7 @@ public class VitalDetails extends DrawerBaseActivity {
                             //add the record to firestore
                             vitalViewModel.UpdateVital(updatedVital);
                             Toast.makeText(getApplicationContext(), "Updated Successfully", Toast.LENGTH_LONG).show();
+                            finish();
 
                         } else {
                             // Handle missing field error
@@ -271,6 +275,7 @@ public class VitalDetails extends DrawerBaseActivity {
                         //add the record to firestore
                         vitalViewModel.UpdateVital(updatedVital);
                         Toast.makeText(getApplicationContext(), "Updated Successfully", Toast.LENGTH_LONG).show();
+                        finish();
 
                     } else {
                         Log.d("Activity", "Could not define the vital type");

@@ -58,7 +58,6 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,R.string.open, R.string.close);
 
-
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
@@ -71,20 +70,22 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
             startActivity(new Intent(this,DashboardActivity.class));
             overridePendingTransition(0,0);
         } else if (id == R.id.nav_symptoms) {
-            startActivity(new Intent(this,MainActivity.class));
+            startActivity(new Intent(this,SymptomsMainActivity.class));
             overridePendingTransition(0,0);
         } else if (id == R.id.nav_vitals) {
             startActivity(new Intent(this,VitalsMainActivity.class));
             overridePendingTransition(0,0);
         } else if (id == R.id.nav_reports) {
+            // TODO: Handle Reports navigation
 
-            // Handle Reports navigation
         } else if (id == R.id.nav_dietary) {
-            // Handle Dietary Restrictions navigation
+            startActivity(new Intent(this, DietaryRestrictionsMainActivity.class));
+            overridePendingTransition(0,0);
         } else if (id == R.id.nav_account) {
-            startActivity(new Intent(this,ManageAccount.class));
+            startActivity(new Intent(this,MyProfileActivity.class));
             overridePendingTransition(0,0);
         }
+        // TODO: Add OCR drawer
         else if (id == R.id.nav_logout) {
             FirebaseAuth.getInstance().signOut();
             finish();

@@ -124,6 +124,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
             i++;
         }
 
+
         fetchIngredientList();
 
           binding.btnSave.setOnClickListener(new View.OnClickListener() {
@@ -134,7 +135,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
           });
 
 
-
+            //// end of dynamically setting recycler views
 
 
             binding.btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -145,9 +146,8 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
                 }
             });
 
+        }
 
-
-    }
 
 
     @Override

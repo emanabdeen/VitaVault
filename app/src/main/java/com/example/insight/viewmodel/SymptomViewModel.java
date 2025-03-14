@@ -8,6 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.insight.model.Symptom;
+import com.example.insight.utility.DateValidator;
+import com.example.insight.utility.StringHandler;
+import com.example.insight.utility.TimeValidator;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -21,12 +24,12 @@ import com.google.firebase.firestore.Query;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -80,36 +83,32 @@ public class SymptomViewModel extends ViewModel {
     }
 
 
-    public CompletableFuture<Boolean> AddSymptom(String uid, Symptom symptom){
+    public CompletableFuture<Boolean> AddSymptom(Symptom symptom){
         CompletableFuture<Boolean> symptomAdded = new CompletableFuture<>();
-        // Extract details from LocalDate
-        LocalDate recordDate = (symptom.getRecordDate() != null) ? symptom.getRecordDate() : LocalDate.now();
-
-        int dayOfMonth = recordDate.getDayOfMonth();
-        String monthName = recordDate.getMonth().name(); // e.g., "JANUARY"
-        int monthNumber = recordDate.getMonthValue(); // e.g., 1 for January
-        int year = recordDate.getYear();
-
-        String recordDateStr = symptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        String startTimeStr = symptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-        String endTimeStr = symptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"));
-        String symptomName = symptom.getSymptomName();
-        String symptomLevel = symptom.getSymptomLevel();
-        String symptomDescription = symptom.getSymptomDescription();
-
 
         // Create a map to hold the details of the document under the symptoms collection
         Map<String, Object> symptomDetails = new HashMap<>();
-//        symptomDetails.put("dayOfMonth", dayOfMonth);
-//        symptomDetails.put("monthName", monthName);
-//        symptomDetails.put("monthValue", monthNumber);
-//        symptomDetails.put("year", year);
-        symptomDetails.put("recordDate", recordDateStr);
-        symptomDetails.put("startTime", startTimeStr);
-        symptomDetails.put("endTime", endTimeStr);
-        symptomDetails.put("symptomName", symptomName);
-        symptomDetails.put("symptomLevel", symptomLevel);
-        symptomDetails.put("symptomDescription", symptomDescription);
+        try {
+            //LocalDate recordDate = (symptom.getRecordDate() != null) ? symptom.getRecordDate() : LocalDate.now();
+            LocalDate recordDate = symptom.getRecordDate();
+
+            String recordDateStr = DateValidator.LocalDateToString(symptom.getRecordDate());
+            String startTimeStr = TimeValidator.LocalTimeToString(symptom.getStartTime());
+            String endTimeStr = StringHandler.defaultIfNull(TimeValidator.LocalTimeToString(symptom.getEndTime().orElse(null))); // because endTime is optional, so it may have value null. Because it is an optional object so to get it you have to use this expression symptom.getEndTime().orElse(null)
+            String symptomName = symptom.getSymptomName();
+            String symptomLevel = symptom.getSymptomLevel();
+            String symptomDescription = symptom.getSymptomDescription();
+
+            symptomDetails.put("recordDate", recordDateStr);
+            symptomDetails.put("startTime", startTimeStr);
+            symptomDetails.put("endTime", endTimeStr);
+            symptomDetails.put("symptomName", symptomName);
+            symptomDetails.put("symptomLevel", symptomLevel);
+            symptomDetails.put("symptomDescription", symptomDescription);
+
+        }catch(Exception e) {
+            Log.e("Error", "Error mapping data: " + e.getMessage());
+        }
 
         try {
             final String[] generatedId = new String[1];// = addedDocRef.getId(); //get the iD of the created document
@@ -146,9 +145,9 @@ public class SymptomViewModel extends ViewModel {
         return symptomAdded; //update the symptomslist livedata?
     }
 
-    public void GetSymptomsByDate(LocalDate searchDate) {
+    public void GetSymptomsByDate(String searchDateStr) {
 
-        String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate searchDate = DateValidator.StringToLocalDate(searchDateStr);
 
         // Reference to the user's symptoms collection
         CollectionReference symptomsRef = db
@@ -158,7 +157,8 @@ public class SymptomViewModel extends ViewModel {
 
         // Create a query to find documents that match the specified criteria
         Query query = symptomsRef
-                .whereEqualTo("recordDate", searchDateStr);
+                .whereEqualTo("recordDate", searchDateStr)
+                .orderBy("recordDate", Query.Direction.DESCENDING);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -169,29 +169,38 @@ public class SymptomViewModel extends ViewModel {
                         // Retrieve the documents from the query result
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                             Log.d(TAG, "Document ID: " + document.getId());
-                            Log.d(TAG, "Symptom Name: " + document.getString("symptomName"));
-                            Log.d(TAG, "Symptom Level: " + document.getString("symptomLevel"));
-                            Log.d(TAG, "Record Date: " + document.getString("recordDate"));
-                            Log.d(TAG, "Start Time: " + document.getString("startTime"));
-                            Log.d(TAG, "End Time: " + document.getString("endTime"));
-                            Log.d(TAG, "Description: " + document.getString("symptomDescription"));
+                            Log.d(TAG, "Symptom Name: " + document.get("symptomName"));
+                            Log.d(TAG, "Symptom Level: " + document.get("symptomLevel"));
+                            Log.d(TAG, "Record Date: " + document.get("recordDate"));
+                            Log.d(TAG, "Start Time: " + document.get("startTime"));
+                            Log.d(TAG, "End Time: " + document.get("endTime"));
+                            Log.d(TAG, "Description: " + document.get("symptomDescription"));
                             Log.d(TAG, "--------------------------------------------");
 
                             try {
-                                String symptomName = document.getString("symptomName");
-                                String symptomLevel = document.getString("symptomLevel");
-                                String symptomDescription = document.getString("symptomDescription");
-                                String startTimeStr = document.getString("startTime");
-                                String endTimeStr = document.getString("endTime");
+                                String symptomName = StringHandler.defaultIfNull(document.get("symptomName"));
+                                String symptomLevel = StringHandler.defaultIfNull(document.get("symptomLevel"));
+                                String symptomDescription = StringHandler.defaultIfNull(document.get("symptomDescription"));
+                                String startTimeStr = StringHandler.defaultIfNull(document.get("startTime"));
+                                String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
 
-                                LocalTime startTime = LocalTime.parse(startTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-                                LocalTime endTime = LocalTime.parse(endTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+                                LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
 
-                                // Create symptom object with the retrieved data
-                                Symptom symptom = new Symptom(searchDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                                symptom.setSymptomId(document.getId());
+                                if (endTimeStr.isEmpty()){
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(searchDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
 
-                                symptomsList.add(symptom);
+                                }else{
+                                    LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(searchDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+                                }
+
                             } catch (DateTimeParseException e) {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
                             }
@@ -212,9 +221,9 @@ public class SymptomViewModel extends ViewModel {
 
     }
 
-    public void GetSymptomsByDateAndType(LocalDate searchDate, String symptomType) {
+    public void GetSymptomsByDateAndType(String searchDateStr, String symptomType) {
 
-        String searchDateStr = searchDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        LocalDate searchDate = DateValidator.StringToLocalDate(searchDateStr);
 
         // Reference to the user's symptoms collection
         CollectionReference symptomsRef = db
@@ -225,7 +234,8 @@ public class SymptomViewModel extends ViewModel {
         // Create a query to find documents that match the specified criteria
         Query query = symptomsRef
                 .whereEqualTo("recordDate", searchDateStr)
-                .whereEqualTo("symptomName", symptomType);
+                .whereEqualTo("symptomName", symptomType)
+                .orderBy("recordDate", Query.Direction.DESCENDING);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -236,29 +246,37 @@ public class SymptomViewModel extends ViewModel {
                         // Retrieve the documents from the query result
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                             Log.d("debug", "Document ID: " + document.getId());
-                            Log.d("debug", "Symptom Name: " + document.getString("symptomName"));
-                            Log.d("debug", "Symptom Level: " + document.getString("symptomLevel"));
-                            Log.d("debug", "Record Date: " + document.getString("recordDate"));
-                            Log.d("debug", "Start Time: " + document.getString("startTime"));
-                            Log.d("debug", "End Time: " + document.getString("endTime"));
-                            Log.d("debug", "Description: " + document.getString("symptomDescription"));
+                            Log.d("debug", "Symptom Name: " + document.get("symptomName"));
+                            Log.d("debug", "Symptom Level: " + document.get("symptomLevel"));
+                            Log.d("debug", "Record Date: " + document.get("recordDate"));
+                            Log.d("debug", "Start Time: " + document.get("startTime"));
+                            Log.d("debug", "End Time: " + document.get("endTime"));
+                            Log.d("debug", "Description: " + document.get("symptomDescription"));
                             Log.d("debug", "--------------------------------------------");
 
                             try {
-                                String symptomName = document.getString("symptomName");
-                                String symptomLevel = document.getString("symptomLevel");
-                                String symptomDescription = document.getString("symptomDescription");
-                                String startTimeStr = document.getString("startTime");
-                                String endTimeStr = document.getString("endTime");
+                                String symptomName = StringHandler.defaultIfNull(document.get("symptomName"));
+                                String symptomLevel = StringHandler.defaultIfNull(document.get("symptomLevel"));
+                                String symptomDescription = StringHandler.defaultIfNull(document.get("symptomDescription"));
+                                String startTimeStr = StringHandler.defaultIfNull(document.get("startTime"));
+                                String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
 
-                                LocalTime startTime = LocalTime.parse(startTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-                                LocalTime endTime = LocalTime.parse(endTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
+                                LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
+                                if (endTimeStr.isEmpty()){
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(searchDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
 
-                                // Create symptom object with the retrieved data
-                                Symptom symptom = new Symptom(searchDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                                symptom.setSymptomId(document.getId());
+                                }else{
+                                    LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
 
-                                symptomsList.add(symptom);
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(searchDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+                                }
+
                             } catch (DateTimeParseException e) {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
                             }
@@ -268,7 +286,7 @@ public class SymptomViewModel extends ViewModel {
                         searchResultMessageData.postValue("");
                         symptomsData.postValue(symptomsList);
                     } else {
-                        searchResultMessageData.postValue("No symptoms found matching your search.");
+                        searchResultMessageData.postValue("No symptoms found....");
                         symptomsData.postValue(symptomsList);
                     }
                 })
@@ -278,11 +296,7 @@ public class SymptomViewModel extends ViewModel {
                 });
     }
 
-    public void GetSymptomsByDateRange(LocalDate date1, LocalDate date2) {
-
-        // Format LocalDate to String for comparison (same format as used in AddSymptom method)
-        String startDateStr = date1.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        String endDateStr = date2.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+    public void GetSymptomsByDateRange(String startDateStr, String endDateStr) {
 
         // Reference to the user's symptoms collection
         CollectionReference symptomsRef = db
@@ -305,31 +319,39 @@ public class SymptomViewModel extends ViewModel {
                         // Retrieve the documents from the query result
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                             Log.d("debug", "Document ID: " + document.getId());
-                            Log.d("debug", "Symptom Name: " + document.getString("symptomName"));
-                            Log.d("debug", "Symptom Level: " + document.getString("symptomLevel"));
-                            Log.d("debug", "Record Date: " + document.getString("recordDate"));
-                            Log.d("debug", "Start Time: " + document.getString("startTime"));
-                            Log.d("debug", "End Time: " + document.getString("endTime"));
-                            Log.d("debug", "Description: " + document.getString("symptomDescription"));
+                            Log.d("debug", "Symptom Name: " + document.get("symptomName"));
+                            Log.d("debug", "Symptom Level: " + document.get("symptomLevel"));
+                            Log.d("debug", "Record Date: " + document.get("recordDate"));
+                            Log.d("debug", "Start Time: " + document.get("startTime"));
+                            Log.d("debug", "End Time: " + document.get("endTime"));
+                            Log.d("debug", "Description: " + document.get("symptomDescription"));
                             Log.d("debug", "--------------------------------------------");
 
                             try {
-                                String symptomName = document.getString("symptomName");
-                                String symptomLevel = document.getString("symptomLevel");
-                                String symptomDescription = document.getString("symptomDescription");
-                                String startTimeStr = document.getString("startTime");
-                                String endTimeStr = document.getString("endTime");
-                                String recordDateStr = document.getString("recordDate");
+                                String symptomName = StringHandler.defaultIfNull(document.get("symptomName"));
+                                String symptomLevel = StringHandler.defaultIfNull(document.get("symptomLevel"));
+                                String symptomDescription = StringHandler.defaultIfNull(document.get("symptomDescription"));
+                                String startTimeStr = StringHandler.defaultIfNull(document.get("startTime"));
+                                String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
+                                String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
 
-                                LocalTime startTime = LocalTime.parse(startTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-                                LocalTime endTime = LocalTime.parse(endTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-                                LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                                LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+                                LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
 
-                                // Create symptom object with the retrieved data
-                                Symptom symptom = new Symptom(recordDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                                symptom.setSymptomId(document.getId());
+                                if (endTimeStr.isEmpty()){
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
 
-                                symptomsList.add(symptom);
+                                }else{
+                                    LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+                                }
 
                             } catch (DateTimeParseException e) {
                                 Log.e("Error", "Error parsing time: " + e.getMessage());
@@ -340,7 +362,7 @@ public class SymptomViewModel extends ViewModel {
                         searchResultMessageData.postValue("");
                         symptomsData.postValue(symptomsList);
                     } else {
-                        searchResultMessageData.postValue("No symptoms found matching your search.");
+                        searchResultMessageData.postValue("No symptoms found...");
                         symptomsData.postValue(symptomsList);
                     }
                 })
@@ -360,7 +382,8 @@ public class SymptomViewModel extends ViewModel {
 
         // Create a query to find documents that match the specified criteria
         Query query = symptomsRef
-                .whereEqualTo("symptomName", symptomType);
+                .whereEqualTo("symptomName", symptomType)
+                .orderBy("recordDate", Query.Direction.DESCENDING);
 
         query.get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -371,31 +394,39 @@ public class SymptomViewModel extends ViewModel {
                         // Retrieve the documents from the query result
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                             Log.d("debug", "Document ID: " + document.getId());
-                            Log.d("debug", "Symptom Name: " + document.getString("symptomName"));
-                            Log.d("debug", "Symptom Level: " + document.getString("symptomLevel"));
-                            Log.d("debug", "Record Date: " + document.getString("recordDate"));
-                            Log.d("debug", "Start Time: " + document.getString("startTime"));
-                            Log.d("debug", "End Time: " + document.getString("endTime"));
-                            Log.d("debug", "Description: " + document.getString("symptomDescription"));
+                            Log.d("debug", "Symptom Name: " + document.get("symptomName"));
+                            Log.d("debug", "Symptom Level: " + document.get("symptomLevel"));
+                            Log.d("debug", "Record Date: " + document.get("recordDate"));
+                            Log.d("debug", "Start Time: " + document.get("startTime"));
+                            Log.d("debug", "End Time: " + document.get("endTime"));
+                            Log.d("debug", "Description: " + document.get("symptomDescription"));
                             Log.d("debug", "--------------------------------------------");
 
                             try {
-                                String symptomName = document.getString("symptomName");
-                                String symptomLevel = document.getString("symptomLevel");
-                                String symptomDescription = document.getString("symptomDescription");
-                                String startTimeStr = document.getString("startTime");
-                                String endTimeStr = document.getString("endTime");
-                                String recordDateStr = document.getString("recordDate");
+                                String symptomName = StringHandler.defaultIfNull(document.get("symptomName"));
+                                String symptomLevel = StringHandler.defaultIfNull(document.get("symptomLevel"));
+                                String symptomDescription = StringHandler.defaultIfNull(document.get("symptomDescription"));
+                                String startTimeStr = StringHandler.defaultIfNull(document.get("startTime"));
+                                String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
+                                String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
 
-                                LocalTime startTime = LocalTime.parse(startTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-                                LocalTime endTime = LocalTime.parse(endTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-                                LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                                LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+                                LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
 
-                                // Create symptom object with the retrieved data
-                                Symptom symptom = new Symptom(recordDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                                symptom.setSymptomId(document.getId());
+                                if (endTimeStr.isEmpty()){
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
 
-                                symptomsList.add(symptom);
+                                }else{
+                                    LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+                                }
 
                             } catch (DateTimeParseException e) {
                                 Log.e(TAG, "Error parsing time: " + e.getMessage());
@@ -407,7 +438,7 @@ public class SymptomViewModel extends ViewModel {
                         symptomsData.postValue(symptomsList);
                         symptomsRetrieved.complete(true);
                     } else {
-                        searchResultMessageData.postValue("No symptoms found matching your search.");
+                        searchResultMessageData.postValue("No symptoms found...");
                         symptomsData.postValue(symptomsList);
                         symptomsRetrieved.complete(false);
                     }
@@ -450,20 +481,28 @@ public class SymptomViewModel extends ViewModel {
                         Log.d("debug", "--------------------------------------------");
 
                         try {
-                            String symptomName = document.get("symptomName").toString();
-                            String symptomLevel = document.get("symptomLevel").toString();
-                            String symptomDescription = document.get("symptomDescription").toString();
-                            String startTimeStr = document.get("startTime").toString();
-                            String endTimeStr = document.get("endTime").toString();
-                            String recordDateStr = document.get("recordDate").toString();
+                            String symptomName = StringHandler.defaultIfNull(document.get("symptomName"));
+                            String symptomLevel = StringHandler.defaultIfNull(document.get("symptomLevel"));
+                            String symptomDescription = StringHandler.defaultIfNull(document.get("symptomDescription"));
+                            String startTimeStr = StringHandler.defaultIfNull(document.get("startTime"));
+                            String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
+                            String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
 
-                            LocalTime startTime = LocalTime.parse(startTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-                            LocalTime endTime = LocalTime.parse(endTimeStr, DateTimeFormatter.ofPattern("HH:mm"));
-                            LocalDate recordDate = LocalDate.parse(recordDateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                            LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+                            LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
 
-                            //create symptom object with the retrieved data
-                            selectedSymptom = new Symptom(recordDate, startTime, endTime, symptomName, symptomLevel, symptomDescription);
-                            selectedSymptom.setSymptomId(symptomId);
+                            if (endTimeStr.isEmpty()){
+                                // Create symptom object with the retrieved data
+                                selectedSymptom = new Symptom(recordDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                selectedSymptom.setSymptomId(symptomId);
+
+                            }else{
+                                LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+
+                                // Create symptom object with the retrieved data
+                                selectedSymptom = new Symptom(recordDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                selectedSymptom.setSymptomId(symptomId);
+                            }
 
                         } catch (DateTimeParseException e) {
                             Log.e("Error", "Error parsing time: " + e.getMessage());
@@ -501,13 +540,20 @@ public class SymptomViewModel extends ViewModel {
         // Document reference for the specific symptom to be updated
         DocumentReference docRef = symptomsRef.document(updatedSymptom.getSymptomId());
 
+        String symptomName = updatedSymptom.getSymptomName();
+        String symptomLevel = updatedSymptom.getSymptomLevel();
+        String symptomDescription = updatedSymptom.getSymptomDescription();
+        String recordDateStr = DateValidator.LocalDateToString(updatedSymptom.getRecordDate());
+        String startTimeStr = TimeValidator.LocalTimeToString(updatedSymptom.getStartTime());
+        String endTimeStr = StringHandler.defaultIfNull(TimeValidator.LocalTimeToString(updatedSymptom.getEndTime().orElse(null))); // because endTime is optional, so it may have value null. Because it is an optional object so to get it you have to use this expression symptom.getEndTime().orElse(null)
+
         Map<String, Object> updatedData = new HashMap<>();
-        updatedData.put("symptomName", updatedSymptom.getSymptomName());
-        updatedData.put("symptomLevel", updatedSymptom.getSymptomLevel());
-        updatedData.put("symptomDescription", updatedSymptom.getSymptomDescription());
-        updatedData.put("startTime", updatedSymptom.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-        updatedData.put("endTime", updatedSymptom.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")));
-        updatedData.put("recordDate", updatedSymptom.getRecordDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        updatedData.put("symptomName", symptomName);
+        updatedData.put("symptomLevel", symptomLevel);
+        updatedData.put("symptomDescription", symptomDescription);
+        updatedData.put("startTime", startTimeStr);
+        updatedData.put("endTime", endTimeStr);
+        updatedData.put("recordDate", recordDateStr);
 
         // Update the document in Firestore
         docRef.update(updatedData)
@@ -524,7 +570,7 @@ public class SymptomViewModel extends ViewModel {
                 });
     }
 
-    public void deleteSymptom(String symptomId) {
+    public void DeleteSymptom(String symptomId) {
         // Reference to the specific symptom document
         DocumentReference docRef = FirebaseFirestore.getInstance()
                 .collection("users")
@@ -536,11 +582,11 @@ public class SymptomViewModel extends ViewModel {
         docRef.delete()
                 .addOnSuccessListener(aVoid -> {
                     Log.d("debug", "Symptom deleted successfully.");
-                    searchResultMessageData.postValue("Symptom deleted successfully.");
+                    //searchResultMessageData.postValue("Symptom deleted successfully.");
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Error", "Error deleting symptom: " + e.getMessage());
-                    searchResultMessageData.postValue("Error deleting symptom.");
+                    //searchResultMessageData.postValue("Error deleting symptom.");
                 });
     }
 

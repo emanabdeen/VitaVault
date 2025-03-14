@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ChartTheme">
+        <attr name="graphLine1" format="color" />
+        <attr name="graphLine2" format="color" />
+        <attr name="chartTextColor" format="color" /> <!-- Text color for axes and labels -->
+        <attr name="chartAxisColor" format="color" /> <!-- Line color for axes -->
+        <attr name="gridColor" format="color" /> <!-- Line color for axes -->
+    </declare-styleable>
+</resources>

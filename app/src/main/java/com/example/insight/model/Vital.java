@@ -1,5 +1,6 @@
 package com.example.insight.model;
 
+import com.example.insight.utility.DateValidator;
 import com.example.insight.utility.Unites;
 import com.example.insight.utility.VitalsCategories;
 
@@ -17,13 +18,6 @@ public class Vital {
     private String measurement2;
     private String unit;
 
-//    private String heartRate_BPM;
-//    private String bloodPressure_Systolic;
-//    private String bloodPressure_Diastolic;
-//    private String bodyTemperature_C;
-//    private String bodyTemperature_F;
-//    private String weight_Kg;
-//    private String weight_lb;
 
     public Vital() {
     }
@@ -78,7 +72,7 @@ public class Vital {
     public String getRecordDateStr() {
         String recordDateStr;
         if (recordDate != null) {
-            recordDateStr = recordDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+            recordDateStr = DateValidator.LocalDateToString(recordDate);
         } else {
             recordDateStr="";
         }

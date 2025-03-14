@@ -31,7 +31,6 @@
             android:text="Group"
             android:textSize="25sp"
             android:paddingTop="10dp"
-
             android:textColor="@color/accent"
             android:textStyle="bold">
 
@@ -51,7 +50,7 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/liteGray"
+        android:background="@color/light_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"

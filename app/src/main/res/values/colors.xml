@@ -3,7 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="accent_light">#C8963B</color>
-    <color name="liteGray">#898787</color>
+    <color name="light_gray">#898787</color>
     <color name="error">#FB4E30</color>
 
 
@@ -16,13 +16,22 @@
     <color name="icon">#E6E3CF</color>
     <color name="divider">#BDBDBD</color>
 
-    <color name="primary2">#2C5641</color>
-    <color name="primary2_dark">#213F30</color>
-    <color name="primary2_light">#458464</color> 2C5641
+    <color name="graphLine2">#2C5641</color>
+    <color name="graphLine1">#D17B0F</color>
+    <color name="graphLine_dark">#213F30</color>
+    <color name="graphLine_light">#458464</color> 2C5641
+    <color name="gridColor">#54000000</color> <!-- Semi-transparent black for light theme -->
+    <color name="gridColor_dark">#62FFFFFF</color> <!-- Semi-transparent white for dark theme -->
+
+    <color name="Test">#B79C27B0</color> <!-- Semi-transparent black for light theme -->
+
+
 
     <color name="shadow_color_light">#80C12121</color>
 
     <color name="background_light">#F8F9FA</color>
+
+
 
 
 

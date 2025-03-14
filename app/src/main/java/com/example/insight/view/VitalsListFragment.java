@@ -65,7 +65,6 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             vitalType = bundle.getString("vitalType");
             title = bundle.getString("title");
             image = bundle.getString("image");
-
         }
 
         // Initialize ViewModel

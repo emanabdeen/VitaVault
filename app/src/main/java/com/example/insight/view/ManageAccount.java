@@ -76,6 +76,7 @@ public class ManageAccount extends DrawerBaseActivity {
                                                 result = "An error occurred, please try again or contact support.";
                                             }
                                             Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+                                            finish();
                                         });
                     } catch (InterruptedException e) {
                         Log.e("MainActivity", "Change password encountered an error: " + e.getMessage());

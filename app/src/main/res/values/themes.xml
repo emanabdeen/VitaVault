@@ -25,6 +25,13 @@
         <item name="android:windowSplashScreenBackground">@color/white</item>
         <item name="android:windowSplashScreenAnimationDuration">2000</item>
 
+        <!-- graphs -->
+        <item name="graphLine1">@color/graphLine1</item>
+        <item name="graphLine2">@color/graphLine2</item>
+        <item name="chartTextColor">@android:color/black</item> <!-- Black text in light mode -->
+        <item name="chartAxisColor">@android:color/black</item> <!-- Black lines in light mode -->
+        <item name="gridColor">@color/gridColor</item> <!-- Semi-transparent black for light theme -->
+
     </style>
 
     <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">

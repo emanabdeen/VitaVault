@@ -3,6 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+
+    <uses-feature android:name="android.hardware.camera" />
+
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+    </queries>
 
     <application
         android:allowBackup="true"
@@ -15,6 +26,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Insight"
         tools:targetApi="31">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.android.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <activity
+            android:name=".view.OCRMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.MyProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.SymptomReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.SymptomDetails"
+            android:exported="false" />
+        <activity
+            android:name=".view.SymptomsMainActivity"
+            android:exported="false" />
         <activity
             android:name=".view.DietaryRestrictionsEditCustomActivity"
             android:exported="false" />
@@ -48,6 +84,9 @@
         <activity
             android:name=".view.VitalsActivity"
             android:exported="false" />
+        <activity android:name=".view.MedicationsActivity" />
+        <activity android:name=".view.MedicationDetails" />
+
         <activity
             android:name=".view.DashboardActivity"
             android:exported="true">
@@ -55,10 +94,12 @@
             <!-- to set this page as a first page -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:theme="@style/Theme.Insight" />
         <activity
             android:name=".view.Login"
             android:exported="true"

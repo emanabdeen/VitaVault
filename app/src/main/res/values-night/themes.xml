@@ -12,6 +12,21 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
 
+
+
+        <!-- Set custom splash screen icon (replace with your image) -->
+        <!--  <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>-->
+        <item name="android:windowSplashScreenBrandingImage">@drawable/vitavault_whight_splash_250</item>
+        <item name="android:windowSplashScreenBackground">@color/black</item>
+        <item name="android:windowSplashScreenAnimationDuration">2000</item>
+
+        <!-- graphs -->
+        <item name="graphLine1">@color/graphLine1</item>
+        <item name="graphLine2">@color/graphLine2</item>
+        <item name="chartTextColor">@android:color/white</item> <!-- White text in dark mode -->
+        <item name="chartAxisColor">@android:color/white</item> <!-- White lines in dark mode -->
+        <item name="gridColor">@color/gridColor_dark</item> <!-- Semi-transparent white for dark theme -->
+
     </style>
 
     <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">

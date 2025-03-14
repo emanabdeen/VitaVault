@@ -4,6 +4,10 @@ public enum SymptomsCategories {
     HEADACHE("Headache"),
     COUGHING("Coughing"),
     NAUSEA("Nausea"),
+    RASH("Rash"),
+    CHEST_PAIN("Chest Pain"),
+    SORE_THROAT("Sore Throat"),
+    JOIN_PAIN("Join Pain"),
     OTHER("Other");
 
     private final String symptomCategory;
