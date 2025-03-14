@@ -12,9 +12,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +40,7 @@ public class MedicationViewModel extends ViewModel {
     }
 
     /**
-     * ✅ Add a Medication to Firestore
+     * ✅ Add a Medication to FireStore
      */
     public void addMedication(Medication medication) {
         if (uid == null) {
@@ -69,7 +66,7 @@ public class MedicationViewModel extends ViewModel {
         medicationData.put("repeatWeekly", medication.isRepeatWeekly());
 
 
-        // Save to Firestore
+        // Save to FireStore
         medicationsRef.document(medicationId).set(medicationData)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "Medication added successfully: " + medicationId);
@@ -112,7 +109,7 @@ public class MedicationViewModel extends ViewModel {
                     // ✅ Hide progress bar when data fetching is done
                     medicationsData.postValue(medicationsList);
                     isLoading.postValue(false);
-                });;
+                });
     }
 
     public void updateMedication(Medication medication) {
@@ -131,29 +128,6 @@ public class MedicationViewModel extends ViewModel {
                 .addOnFailureListener(e -> Log.e(TAG, "Error updating medication", e));
     }
 
-
-    /**
-     * ✅ Log When a Medication is Taken
-     */
-    public void logMedicationTaken(String medicationId) {
-        if (uid == null) {
-            Log.e(TAG, "User not authenticated");
-            return;
-        }
-
-        DocumentReference medicationRef = db.collection("users").document(uid).collection("medications").document(medicationId);
-        CollectionReference logsRef = medicationRef.collection("medication_logs");
-
-        String logId = logsRef.document().getId();
-        Map<String, Object> logData = new HashMap<>();
-        logData.put("logId", logId);
-        logData.put("takenAt", LocalDate.now().format(DateTimeFormatter.ISO_DATE) + " " + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
-        logData.put("confirmation", true);
-
-        logsRef.document(logId).set(logData)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Medication log added"))
-                .addOnFailureListener(e -> Log.e(TAG, "Error logging medication", e));
-    }
 
     /**
      * ✅ Delete a Medication
