@@ -82,7 +82,6 @@ public class SymptomViewModel extends ViewModel {
         return searchResultMessageData;
     }
 
-
     public CompletableFuture<Boolean> AddSymptom(Symptom symptom){
         CompletableFuture<Boolean> symptomAdded = new CompletableFuture<>();
 
@@ -296,7 +295,7 @@ public class SymptomViewModel extends ViewModel {
                 });
     }
 
-    public void GetSymptomsByDateRange(String startDateStr, String endDateStr) {
+    public void GetSymptomsByDateRange(String startDateStr, String endDateStr, String symptomType) {
 
         // Reference to the user's symptoms collection
         CollectionReference symptomsRef = db
@@ -304,10 +303,34 @@ public class SymptomViewModel extends ViewModel {
                 .document(uid)
                 .collection("symptoms");
 
-        // Create a query to find documents that match the specified criteria
+        Query query = symptomsRef;
+
+        if(startDateStr.isEmpty()&& !endDateStr.isEmpty()){
+            query = symptomsRef
+                    .whereLessThanOrEqualTo("recordDate", endDateStr);
+        }
+        else if(endDateStr.isEmpty() && !startDateStr.isEmpty()){
+            query = symptomsRef
+                    .whereGreaterThanOrEqualTo("recordDate", startDateStr);
+        }
+        else if(!endDateStr.isEmpty() && !startDateStr.isEmpty()){
+            query = symptomsRef
+                    .whereGreaterThanOrEqualTo("recordDate", startDateStr)
+                    .whereLessThanOrEqualTo("recordDate", endDateStr);
+        }
+
+        // Add symptom type filter if provided
+        if (symptomType != null && !symptomType.isEmpty()) {
+            query = query.whereEqualTo("symptomName", symptomType);
+        }
+
+        // Sort by recordDate in descending order
+        query = query.orderBy("recordDate", Query.Direction.DESCENDING);
+
+        /*// Create a query to find documents that match the specified criteria
         Query query = symptomsRef
                 .whereGreaterThanOrEqualTo("recordDate", startDateStr)
-                .whereLessThanOrEqualTo("recordDate", endDateStr);
+                .whereLessThanOrEqualTo("recordDate", endDateStr);*/
 
 
         query.get()
@@ -362,7 +385,7 @@ public class SymptomViewModel extends ViewModel {
                         searchResultMessageData.postValue("");
                         symptomsData.postValue(symptomsList);
                     } else {
-                        searchResultMessageData.postValue("No symptoms found...");
+                        searchResultMessageData.postValue("No symptoms found for the selected date range.");
                         symptomsData.postValue(symptomsList);
                     }
                 })
@@ -590,7 +613,83 @@ public class SymptomViewModel extends ViewModel {
                 });
     }
 
+    public CompletableFuture<Boolean> GetAllSymptoms() {
+        CompletableFuture<Boolean> symptomsRetrieved = new CompletableFuture<>();
+        // Reference to the user's symptoms collection
+        CollectionReference symptomsRef = db
+                .collection("users")
+                .document(uid)
+                .collection("symptoms");
 
+        // Create a query to find documents that match the specified criteria
+        Query query = symptomsRef
+                .orderBy("recordDate", Query.Direction.DESCENDING);
+
+        query.get()
+                .addOnSuccessListener(querySnapshot -> {
+                    symptomsList = new ArrayList<>();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        Log.d("debug", "----------------------Get All Symptoms--------------------------------" );
+
+                        // Retrieve the documents from the query result
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            Log.d("debug", "Document ID: " + document.getId());
+                            Log.d("debug", "Symptom Name: " + document.get("symptomName"));
+                            Log.d("debug", "Symptom Level: " + document.get("symptomLevel"));
+                            Log.d("debug", "Record Date: " + document.get("recordDate"));
+                            Log.d("debug", "Start Time: " + document.get("startTime"));
+                            Log.d("debug", "End Time: " + document.get("endTime"));
+                            Log.d("debug", "Description: " + document.get("symptomDescription"));
+                            Log.d("debug", "--------------------------------------------");
+
+                            try {
+                                String symptomName = StringHandler.defaultIfNull(document.get("symptomName"));
+                                String symptomLevel = StringHandler.defaultIfNull(document.get("symptomLevel"));
+                                String symptomDescription = StringHandler.defaultIfNull(document.get("symptomDescription"));
+                                String startTimeStr = StringHandler.defaultIfNull(document.get("startTime"));
+                                String endTimeStr = StringHandler.defaultIfNull(document.get("endTime"));
+                                String recordDateStr = StringHandler.defaultIfNull(document.get("recordDate"));
+
+                                LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+                                LocalTime startTime = TimeValidator.StringToLocalTime(startTimeStr);
+
+                                if (endTimeStr.isEmpty()){
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.empty(), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+
+                                }else{
+                                    LocalTime endTime = TimeValidator.StringToLocalTime(endTimeStr);
+
+                                    // Create symptom object with the retrieved data
+                                    Symptom symptom = new Symptom(recordDate, startTime, Optional.ofNullable(endTime), symptomName, symptomLevel, symptomDescription);
+                                    symptom.setSymptomId(document.getId());
+                                    symptomsList.add(symptom);
+                                }
+
+                            } catch (DateTimeParseException e) {
+                                Log.e(TAG, "Error parsing time: " + e.getMessage());
+                            }
+                        }
+                        Log.d(TAG, "----------------------symptomList count>> " + symptomsList.size()); // number of symptoms in the list
+
+                        searchResultMessageData.postValue("");
+                        symptomsData.postValue(symptomsList);
+                        symptomsRetrieved.complete(true);
+                    } else {
+                        searchResultMessageData.postValue("No symptoms found...");
+                        symptomsData.postValue(symptomsList);
+                        symptomsRetrieved.complete(false);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error retrieving documents: " + e.getMessage());
+                    symptomsData.postValue(null);// Handle failure
+                    symptomsRetrieved.complete(false);
+                });
+        return symptomsRetrieved;
+    }
 
 
 }

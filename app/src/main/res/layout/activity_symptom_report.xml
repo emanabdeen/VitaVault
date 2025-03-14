@@ -9,73 +9,109 @@
     android:padding="16dp"
     tools:context=".view.SymptomReportActivity">
 
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-            android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="100dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingBottom="10dp">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/startDateInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="false"
-                android:hint="From"
-                android:inputType="none"
-                android:textSize="14sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/endDateInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="false"
-                android:hint="To"
-                android:inputType="none"
-                android:textSize="14sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:layout_marginBottom="10dp">
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="120dp"
+        android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/searchButton"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:text="@string/SearchSymptoms"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:layout_marginBottom="5dp"/>
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/exportButton"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="@string/ExportData"
-            android:textAllCaps="false"
-            android:background="@drawable/button_custom2"/>
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/startDateInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="From"
+                    android:inputType="none"
+                    android:textSize="14sp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/endDateInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:hint="To"
+                    android:inputType="none"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/symptomTypeSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="55dp"
+
+                    android:layout_weight="1"
+                    android:background="@drawable/dropdown_background"
+                    android:padding="8dp"
+                    android:spinnerMode="dropdown"
+                    style="@style/CustomSpinnerStyle" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/searchButton"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/SearchSymptoms"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
     </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/exportButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:background="@drawable/button_custom2"
+        android:text="@string/ExportData"
+        android:textAllCaps="false"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/txtMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:textStyle="italic"
+        android:visibility="gone"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -89,13 +125,16 @@
                 android:id="@+id/symptomTable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/table_border"
-                android:divider="@drawable/table_border"
+
                 android:padding="8dp"
                 android:showDividers="middle"
                 android:shrinkColumns="false"
-                android:stretchColumns="false" />
+                android:stretchColumns="false"
+                android:visibility="gone"/>
         </HorizontalScrollView>
     </ScrollView>
 
 </LinearLayout>
+<!--
+    android:background="@drawable/table_border"
+    android:divider="@drawable/table_border"-->
