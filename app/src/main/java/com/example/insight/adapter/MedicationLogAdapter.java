@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insight.R;
@@ -37,6 +38,16 @@ public class MedicationLogAdapter extends RecyclerView.Adapter<MedicationLogAdap
         holder.dosage.setText("Dosage: " + log.getDosage());
         holder.status.setText("Status: " + log.getStatus());
         holder.timestamp.setText("Time: " + log.getTimestamp());
+
+        // Set text color based on status
+        String status = log.getStatus();
+        if (status.equalsIgnoreCase("dismissed")) {
+            holder.status.setTextColor(ContextCompat.getColor(context, R.color.accent));
+        } else if (status.equalsIgnoreCase("taken")) {
+            holder.status.setTextColor(ContextCompat.getColor(context, R.color.graphLine_light));
+        } else if (status.equalsIgnoreCase("missed")) {
+            holder.status.setTextColor(ContextCompat.getColor(context, R.color.error));
+        }
     }
 
     @Override

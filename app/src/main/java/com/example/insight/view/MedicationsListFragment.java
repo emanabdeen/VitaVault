@@ -2,22 +2,20 @@ package com.example.insight.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import com.example.insight.adapter.MedicationsListAdapter;
 import com.example.insight.databinding.FragmentMedicationsListBinding;
 import com.example.insight.model.Medication;
 import com.example.insight.viewmodel.MedicationViewModel;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +23,13 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
 
     private FragmentMedicationsListBinding binding;
     private MedicationViewModel viewModel;
-    private List<Medication> medicationList = new ArrayList<>();
+    // Keep a full copy of medications for filtering
+    private List<Medication> allMedications = new ArrayList<>();
+    // List shown in the adapter (possibly filtered)
+    private List<Medication> currentMedications = new ArrayList<>();
     private MedicationsListAdapter medicationsListAdapter;
 
-    // Internal flags for loading and data
     private boolean isLoading = false;
-    private List<Medication> currentMedications = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -51,44 +50,101 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerView.setAdapter(medicationsListAdapter);
 
-        // ✅ Observe loading state
+        // Observe loading state
         viewModel.getIsLoading().observe(getViewLifecycleOwner(), loading -> {
             isLoading = loading;
-            updateUIState(); // Always re-evaluate UI when loading state changes
+            updateUIState();
         });
 
-        // ✅ Observe medication list
+        // Observe medication data; store a full copy for filtering
         viewModel.getMedicationsData().observe(getViewLifecycleOwner(), medications -> {
-            currentMedications = medications != null ? medications : new ArrayList<>();
+            allMedications = (medications != null) ? new ArrayList<>(medications) : new ArrayList<>();
+            currentMedications = new ArrayList<>(allMedications);
             medicationsListAdapter.updateData(currentMedications);
-            updateUIState(); // Always re-evaluate UI when data changes
+            updateUIState();
         });
 
-        // ✅ Initial fetch (with loading spinner)
-        viewModel.getMedications(true); // 'true' to show loading bar on first load
+        // Initial fetch with loading indicator
+        viewModel.getMedications(true);
 
-        // ✅ Search functionality
+        // Search functionality: when search icon is clicked
         binding.iconSearch.setOnClickListener(v -> {
             String searchQuery = binding.searchText.getText().toString().trim();
             filterMedications(searchQuery);
         });
+
+        // Listen for text changes to show/hide the clear filter button.
+        binding.searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { /* No op */ }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // If text exists, show the clear button; if not, hide it and restore full list.
+                if (s.length() > 0) {
+                    binding.textClear.setVisibility(View.VISIBLE);
+                } else {
+                    binding.textClear.setVisibility(View.INVISIBLE);
+                    resetMedicationList();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { /* No op */ }
+        });
+
+// Clear button: clear the text and reset the list when tapped.
+        binding.textClear.setOnClickListener(v -> {
+            binding.searchText.setText("");
+            resetMedicationList();
+        });
+
     }
 
-    // ✅ Combined UI state update for loading/data/empty
+    // Reset the displayed list to the full medication list.
+    private void resetMedicationList() {
+        currentMedications = new ArrayList<>(allMedications);
+        medicationsListAdapter.updateData(currentMedications);
+        medicationsListAdapter.notifyDataSetChanged();
+        updateUIState();
+    }
+
+
+    // Filter medications based on query (using the full list).
+    private void filterMedications(String query) {
+        List<Medication> filteredList = new ArrayList<>();
+        for (Medication medication : allMedications) {
+            if (medication.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(medication);
+            }
+        }
+        currentMedications = filteredList;
+        medicationsListAdapter.updateData(filteredList);
+        medicationsListAdapter.notifyDataSetChanged();
+
+        // Show empty message if no matches.
+        if (filteredList.isEmpty()) {
+            binding.recyclerView.setVisibility(View.GONE);
+            binding.emptyMessage.setVisibility(View.VISIBLE);
+            binding.emptyMessage.setText("No medications match your search.");
+        } else {
+            binding.recyclerView.setVisibility(View.VISIBLE);
+            binding.emptyMessage.setVisibility(View.GONE);
+        }
+    }
+
+    // Update UI elements based on loading state and data availability.
     private void updateUIState() {
         if (isLoading) {
-            // Show loading spinner
             binding.progressBar.setVisibility(View.VISIBLE);
             binding.recyclerView.setVisibility(View.GONE);
             binding.emptyMessage.setVisibility(View.GONE);
         } else {
             binding.progressBar.setVisibility(View.GONE);
             if (!currentMedications.isEmpty()) {
-                // Show list when data exists
                 binding.recyclerView.setVisibility(View.VISIBLE);
                 binding.emptyMessage.setVisibility(View.GONE);
             } else {
-                // Show empty message when no data
                 binding.recyclerView.setVisibility(View.GONE);
                 binding.emptyMessage.setVisibility(View.VISIBLE);
                 binding.emptyMessage.setText("No medications found.");
@@ -96,10 +152,8 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
         }
     }
 
-    // ✅ Handle item click (navigate to logs)
     @Override
     public void OnClickItem(View v, int pos) {
-        // ✅ Go to Logs Page
         if (currentMedications != null && pos < currentMedications.size()) {
             String medicationId = currentMedications.get(pos).getMedicationId();
             String medicationName = currentMedications.get(pos).getName();
@@ -107,14 +161,12 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
             Intent intent = new Intent(requireContext(), MedicationLogsActivity.class);
             intent.putExtra("medicationID", medicationId);
             intent.putExtra("medicationName", medicationName);
-            Log.d("MedicationLogsActivity", "Sent medicationId: " + medicationId);
             startActivity(intent);
         }
     }
 
     @Override
     public void OnClickEdit(View v, int pos) {
-        // Open Edit
         if (currentMedications != null && pos < currentMedications.size()) {
             String medicationId = currentMedications.get(pos).getMedicationId();
             Intent intent = new Intent(requireContext(), MedicationDetails.class);
@@ -125,42 +177,15 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
 
     @Override
     public void OnClickDelete(View v, int pos) {
-        // Handle delete
         if (currentMedications != null && pos < currentMedications.size()) {
             Medication medication = currentMedications.get(pos);
             viewModel.prepareToRemoveMedication(medication);
         }
     }
 
-    // ✅ Called by Activity to refresh list dynamically (optional)
-    public void updateMedicationList(List<Medication> medications) {
-        if (medications != null) {
-            currentMedications = medications;
-            medicationsListAdapter.updateData(medications);
-            medicationsListAdapter.notifyDataSetChanged();
-            updateUIState(); // Re-evaluate UI when updated
-        }
+    public void clearFilter() {
+        // Clear the filter EditText
+        binding.searchText.setText("");
     }
 
-    // ✅ Search filter
-    private void filterMedications(String query) {
-        List<Medication> filteredList = new ArrayList<>();
-        for (Medication medication : currentMedications) {
-            if (medication.getName().toLowerCase().contains(query.toLowerCase())) {
-                filteredList.add(medication);
-            }
-        }
-
-        medicationsListAdapter.updateData(filteredList);
-
-        // Show appropriate UI for filtered results
-        if (filteredList.isEmpty()) {
-            binding.recyclerView.setVisibility(View.GONE);
-            binding.emptyMessage.setVisibility(View.VISIBLE);
-            binding.emptyMessage.setText("No medications match your search.");
-        } else {
-            binding.recyclerView.setVisibility(View.VISIBLE);
-            binding.emptyMessage.setVisibility(View.GONE);
-        }
-    }
 }

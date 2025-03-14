@@ -1,5 +1,6 @@
 package com.example.insight.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -17,33 +18,36 @@ import java.util.Map;
 public class AlarmScreenActivity extends AppCompatActivity {
 
     private ActivityAlarmScreenBinding binding;
-    private String medicationId, medicationName;
+    private String medicationId, medicationName, dosage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAlarmScreenBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot()); // ✅ Set the view from binding
+        setContentView(binding.getRoot()); // Set the view from binding
 
         // Get passed data
         medicationId = getIntent().getStringExtra("medicationId");
         medicationName = getIntent().getStringExtra("medicationName");
+        dosage = getIntent().getStringExtra("dosage");
 
         // Set medication name
-        binding.txtMedicationName.setText("Time to take: " + medicationName);
+        binding.txtMedicationName.setText(medicationName);
+        binding.txtMedicationDosage.setText(dosage);
 
         // Set button click listeners
         binding.btnTaken.setOnClickListener(v -> logMedication("Taken"));
         binding.btnMissed.setOnClickListener(v -> logMedication("Missed"));
     }
 
-    // ✅ Method to log medication as Taken or Missed
+    // Method to log medication as Taken or Missed
     private void logMedication(String status) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> log = new HashMap<>();
         log.put("medicationId", medicationId);
         log.put("status", status);
         log.put("timestamp", FieldValue.serverTimestamp());
+        log.put("dosage", dosage);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
@@ -56,14 +60,17 @@ public class AlarmScreenActivity extends AppCompatActivity {
                     //stop alarm
                     AlarmReceiver.stopAlarm(this);
 
-                    finish(); // Close the screen after logging
+                    Intent intent = new Intent(this, DashboardActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to log", Toast.LENGTH_SHORT).show();
                 });
     }
 
-    // ✅ Optionally prevent back button to force choice
+    // Optionally prevent back button to force choice
     @Override
     public void onBackPressed() {
         // Disabled to ensure user makes a choice

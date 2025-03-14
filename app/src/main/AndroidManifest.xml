@@ -78,8 +78,7 @@
         <activity android:name=".view.AlarmScreenActivity"
             android:exported="true"
             android:showWhenLocked="true"
-            android:turnScreenOn="true"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+            android:turnScreenOn="true" />
 
         <activity android:name=".view.MedicationLogsActivity" />
 

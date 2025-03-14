@@ -41,6 +41,22 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0"/>
 
+        <!-- Clear button as a TextView -->
+        <TextView
+            android:id="@+id/textClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear"
+            android:textColor="@color/accent"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:visibility="invisible"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/searchText" />
+
         <ImageButton
             android:id="@+id/iconSearch"
             android:layout_width="wrap_content"
@@ -49,7 +65,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.146"
-            app:layout_constraintStart_toEndOf="@+id/searchTextDate"
+            app:layout_constraintStart_toEndOf="@+id/textClear"
             app:layout_constraintTop_toTopOf="parent"
             android:background="@android:color/transparent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>

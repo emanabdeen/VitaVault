@@ -122,19 +122,6 @@ public class MedicationDetails extends DrawerBaseActivity {
         binding.spinnerUnit.setAdapter(adapter);
     }
 
-//    private void showTimePickerDialog() {
-//        TimePickerDialog timePicker = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-//            String amPm = (hourOfDay >= 12) ? "PM" : "AM";
-//            int hour = (hourOfDay > 12) ? hourOfDay - 12 : hourOfDay;
-//            if (hour == 0) hour = 12;
-//
-//            selectedTime = String.format("%02d:%02d %s", hour, minute, amPm);
-//            binding.textSelectedTime.setText("Selected time: " + selectedTime);
-//        }, 8, 0, false); // Default time: 08:00 AM
-//
-//        timePicker.show();
-//    }
-
     private void showMaterialTimePickerDialog() {
         MaterialTimePicker picker = new MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_12H) // or CLOCK_24H
@@ -208,6 +195,7 @@ public class MedicationDetails extends DrawerBaseActivity {
                 //setting alarm
                 setAlarmsForMedication(newMedication);
                 Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
+                setResult(RESULT_OK);
                 finish();
             } else {
                 Toast.makeText(getApplicationContext(), "One or more fields are empty.", Toast.LENGTH_LONG).show();
@@ -232,9 +220,10 @@ public class MedicationDetails extends DrawerBaseActivity {
                 medication.setReminderEnabled(reminderEnabled);
                 medication.setRepeatWeekly(repeatWeekly);
 
+                // Cancel all alarms
+                cancelAllAlarmsForMedication(this, medication);
+
                 if (reminderEnabled) {
-                    // Cancel all alarms
-                    cancelAllAlarmsForMedication(this, medication);
                     medication.setReminderMap(collectReminderTimes());
                 } else {
                     medication.setReminderMap(new HashMap<>()); // Clear reminders if disabled
@@ -245,6 +234,7 @@ public class MedicationDetails extends DrawerBaseActivity {
                 //setting alarm
                 setAlarmsForMedication(medication);
                 Toast.makeText(getApplicationContext(), "Updated Successfully", Toast.LENGTH_LONG).show();
+                setResult(RESULT_OK);
                 finish();
             } else {
                 Toast.makeText(getApplicationContext(), "One or more fields are empty.", Toast.LENGTH_LONG).show();
@@ -288,7 +278,8 @@ public class MedicationDetails extends DrawerBaseActivity {
             for (String time : times) {
                 Calendar calendar = getNextAlarmTime(day, time);
                 int requestCode = generateUniqueRequestCode(medication.getMedicationId(), day, time);
-                AlarmHelper.setAlarm(this, requestCode, calendar, medication.getMedicationId(), medication.getName(), medication.isRepeatWeekly());
+                String dosageText = medication.getDosage() + " " + medication.getUnit();
+                AlarmHelper.setAlarm(this, requestCode, calendar, medication.getMedicationId(), medication.getName(), medication.isRepeatWeekly(), dosageText);
             }
         }
     }

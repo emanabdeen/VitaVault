@@ -15,13 +15,14 @@ import java.util.List;
 
 public class AlarmHelper {
 
-    public static void setAlarm(Context context, int requestCode, Calendar calendar, String medicationId, String medicationName, boolean repeatWeekly) {
+    public static void setAlarm(Context context, int requestCode, Calendar calendar, String medicationId, String medicationName, boolean repeatWeekly, String dosage) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
 
         intent.putExtra("medicationId", medicationId);
         intent.putExtra("medicationName", medicationName);
         intent.putExtra("repeatWeekly", repeatWeekly); // Pass it along to the receiver
+        intent.putExtra("dosage", dosage);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE

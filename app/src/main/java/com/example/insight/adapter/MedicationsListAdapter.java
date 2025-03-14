@@ -42,13 +42,13 @@ public class MedicationsListAdapter extends RecyclerView.Adapter<MedicationsView
         holder.getMedicationName().setText(item.getName());
         holder.getMedicationDosage().setText(item.getDosage() + " " + item.getUnit());
 
-        // ✅ Main card click -> open Logs
+        // Main card click -> open Logs
         holder.itemView.setOnClickListener(v -> clickListener.OnClickItem(v, position));
 
-        // ✅ Edit button click -> open MedicationDetails
+        // Edit button click -> open MedicationDetails
         holder.getBtnEdit().setOnClickListener(v -> clickListener.OnClickEdit(v, position));
 
-        // ✅ Delete button click
+        // Delete button click
         holder.getBtnDelete().setOnClickListener(v -> clickListener.OnClickDelete(v, position));
     }
 
@@ -57,7 +57,7 @@ public class MedicationsListAdapter extends RecyclerView.Adapter<MedicationsView
         return medications != null ? medications.size() : 0;
     }
 
-    // ✅ Clean way to update dataset
+    // Clean way to update dataset
     public void updateData(List<Medication> newMedications) {
         this.medications = newMedications;
         notifyDataSetChanged();

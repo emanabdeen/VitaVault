@@ -35,23 +35,25 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
-        // ✅ If user presses "DISMISS" button
+        String medicationId = intent.getStringExtra("medicationId");
+        String dosage = intent.getStringExtra("dosage");
+
+        // If user presses "DISMISS" button
         if ("STOP_ALARM".equals(action)) {
             Log.d("AlarmReceiver", "🚨 DISMISS clicked in notification");
 
             // Log "Dismissed" in Firestore
-            String medicationId = intent.getStringExtra("medicationId");
-            logMedicationDismissed(context, medicationId);
+            logMedicationDismissed(context, medicationId, dosage);
 
             // Stop alarm sound and remove notification
             stopAlarm(context);
             return; // Stop further execution
         }
 
-        // ✅ If normal alarm trigger
-        String medicationId = intent.getStringExtra("medicationId");
+        // If normal alarm trigger
         String medicationName = intent.getStringExtra("medicationName");
         boolean repeatWeekly = intent.getBooleanExtra("repeatWeekly", false);
+
 
         Log.d("AlarmReceiver", "🚨 AlarmReceiver triggered for: " + medicationName);
 
@@ -61,7 +63,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
 
         // Show persistent notification
-        showPersistentNotification(context, medicationId, medicationName);
+        showPersistentNotification(context, medicationId, medicationName, dosage);
 
         if (repeatWeekly) {
             Calendar nextWeek = Calendar.getInstance();
@@ -70,12 +72,12 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             int requestCode = (medicationId + medicationName).hashCode(); // Same way as when set
 
-            AlarmHelper.setAlarm(context, requestCode, nextWeek, medicationId, medicationName, true);
+            AlarmHelper.setAlarm(context, requestCode, nextWeek, medicationId, medicationName, true, dosage);
             Log.d("AlarmReceiver", "🔁 Repeating weekly alarm re-scheduled for next week.");
         }
     }
 
-    // ✅ Play alarm sound
+    // Play alarm sound
     private void playAlarmSound(Context context) {
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         if (alarmUri == null) {
@@ -91,8 +93,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    // ✅ Show notification with "DISMISS" button
-    private void showPersistentNotification(Context context, String medicationId, String medicationName) {
+    // Show notification with "DISMISS" button
+    private void showPersistentNotification(Context context, String medicationId, String medicationName, String dosage) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Create Notification Channel (Android 8+)
@@ -110,50 +112,51 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Intent openAppIntent = new Intent(context, AlarmScreenActivity.class);
         openAppIntent.putExtra("medicationId", medicationId);
+        openAppIntent.putExtra("dosage", dosage);
         openAppIntent.putExtra("medicationName", medicationName);
         openAppIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent openAppPendingIntent = PendingIntent.getActivity(
                 context, medicationId.hashCode(), openAppIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        // ✅ DISMISS button action
+        // DISMISS button action
         Intent stopIntent = new Intent(context, AlarmReceiver.class);
         stopIntent.setAction("STOP_ALARM");
-        stopIntent.putExtra("medicationId", medicationId); // Pass medication ID for logging
+        stopIntent.putExtra("medicationId", medicationId);
+        stopIntent.putExtra("dosage", dosage);
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(
                 context, medicationId.hashCode(), stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        // ✅ Tap notification to open AlarmScreenActivity
 
-
-        // ✅ Build notification
+        // Build notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_alarm) // Ensure white transparent icon
+                .setSmallIcon(R.drawable.icon_medications) // Ensure white transparent icon
                 .setContentTitle("💊 Medication Reminder")
                 .setContentText("Time to take: " + medicationName + ". Tap DISMISS to cancel.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setAutoCancel(false)
                 .setOngoing(true)
-                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "DISMISS", stopPendingIntent) // ✅ Button renamed
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, "DISMISS", stopPendingIntent) // Button renamed
                 .setContentIntent(openAppPendingIntent)
                 .setFullScreenIntent(openAppPendingIntent, true); // Optional heads-up popup
 
-        // ✅ Show notification
+        // Show notification
         Log.d("AlarmReceiver", "🚀 Ready to show notification...");
         notificationManager.notify(NOTIFICATION_ID, builder.build());
         Log.d("AlarmReceiver", "✅ Notification displayed!");
     }
 
-    // ✅ Log Dismiss action to Firestore
-    private void logMedicationDismissed(Context context, String medicationId) {
+    // Log Dismiss action to FireStore
+    private void logMedicationDismissed(Context context, String medicationId, String dosage) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> log = new HashMap<>();
         log.put("medicationId", medicationId);
         log.put("status", "Dismissed"); // Status for dismiss
         log.put("timestamp", FieldValue.serverTimestamp());
+        log.put("dosage", dosage);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
@@ -164,7 +167,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .addOnFailureListener(e -> Log.e("AlarmReceiver", "❌ Failed to log dismissal", e));
     }
 
-    // ✅ Stop alarm sound and remove notification
+    // Stop alarm sound and remove notification
     public static void stopAlarm(Context context) {
         if (ringtone != null && ringtone.isPlaying()) {
             ringtone.stop();

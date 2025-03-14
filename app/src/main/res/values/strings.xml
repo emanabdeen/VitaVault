@@ -35,5 +35,9 @@
     <string name="BloodPressure">Blood Pressure</string>
     <string name="BodyTemperature">Body Temperature</string>
     <string name="Weight">Weight</string>
+    <string name="taken">taken</string>
+    <string name="missed">missed</string>
+    <string name="medication_reminder">Medication Reminder</string>
+    <string name="medication_icon">medication icon</string>
 
 </resources>

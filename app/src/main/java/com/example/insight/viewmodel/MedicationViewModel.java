@@ -12,6 +12,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.WriteBatch;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +42,7 @@ public class MedicationViewModel extends ViewModel {
     }
 
     /**
-     * ✅ Add a Medication to FireStore
+     * Add a Medication to FireStore
      */
     public void addMedication(Medication medication) {
         if (uid == null) {
@@ -78,7 +80,7 @@ public class MedicationViewModel extends ViewModel {
     }
 
     /**
-     * ✅ Retrieve Medications for the Current User
+     * Retrieve Medications for the Current User
      */
     public void getMedications(boolean showLoading) {
         if (uid == null) {
@@ -106,7 +108,7 @@ public class MedicationViewModel extends ViewModel {
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error retrieving medications", e);
                 }).addOnCompleteListener(task -> {
-                    // ✅ Hide progress bar when data fetching is done
+                    // Hide progress bar when data fetching is done
                     medicationsData.postValue(medicationsList);
                     isLoading.postValue(false);
                 });
@@ -130,22 +132,53 @@ public class MedicationViewModel extends ViewModel {
 
 
     /**
-     * ✅ Delete a Medication
+     * Delete a Medication
      */
+//    public void removeMedication(String medicationId) {
+//        if (uid == null) {
+//            Log.e(TAG, "User not authenticated");
+//            return;
+//        }
+//
+//        db.collection("users").document(uid).collection("medications").document(medicationId)
+//                .delete()
+//                .addOnSuccessListener(aVoid -> {
+//                    Log.d(TAG, "Medication deleted: " + medicationId);
+//                        getMedications(false);
+//                })
+//                .addOnFailureListener(e -> Log.e(TAG, "Error deleting medication", e));
+//    }
+
     public void removeMedication(String medicationId) {
         if (uid == null) {
             Log.e(TAG, "User not authenticated");
             return;
         }
 
-        db.collection("users").document(uid).collection("medications").document(medicationId)
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Medication deleted: " + medicationId);
-                        getMedications(false);
+        DocumentReference medicationDoc = db.collection("users").document(uid)
+                .collection("medications").document(medicationId);
+
+        // First, fetch and delete all log documents
+        medicationDoc.collection("logs")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    WriteBatch batch = db.batch();
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        batch.delete(doc.getReference());
+                    }
+                    batch.commit().addOnSuccessListener(aVoid -> {
+                        // Now delete the medication document
+                        medicationDoc.delete()
+                                .addOnSuccessListener(aVoid1 -> {
+                                    Log.d(TAG, "Medication and its logs deleted: " + medicationId);
+                                    getMedications(false);
+                                })
+                                .addOnFailureListener(e -> Log.e(TAG, "Error deleting medication", e));
+                    }).addOnFailureListener(e -> Log.e(TAG, "Error deleting logs", e));
                 })
-                .addOnFailureListener(e -> Log.e(TAG, "Error deleting medication", e));
+                .addOnFailureListener(e -> Log.e(TAG, "Error retrieving logs", e));
     }
+
 
     public LiveData<Medication> getMedicationToDelete() {
         return medicationToDelete;
