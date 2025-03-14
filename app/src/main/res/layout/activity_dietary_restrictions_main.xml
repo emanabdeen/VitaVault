@@ -58,9 +58,10 @@
         app:layout_constraintVertical_bias="0.165" />
 
     <android.widget.ScrollView
+        android:id="@+id/scrollable"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="20dp"
+        android:layout_marginBottom="100dp"
         android:layout_marginTop="160dp">
     <!-- Vertical LinearLayout with margin between CardViews -->
 
@@ -70,9 +71,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnSave"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnAdd"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         >
 
         <TextView
@@ -226,10 +229,25 @@
             app:layout_constraintBottom_toBottomOf="parent"
             />
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </android.widget.ScrollView>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="30dp"
+        android:background="@drawable/button_secondary"
+        android:text="@string/save"
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/scrollable"
+        />
 
 
 
