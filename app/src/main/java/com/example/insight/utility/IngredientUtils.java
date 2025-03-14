@@ -6,6 +6,7 @@ import com.example.insight.model.DietaryRestrictionIngredient;
 import com.example.insight.model.OcrIngredient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class IngredientUtils {
         sanitizationReplaceMap.put(":", emptyString);
         sanitizationReplaceMap.put("|", emptyString);
         sanitizationReplaceMap.put(";", emptyString);
-        sanitizationReplaceMap.put("(", emptyString);
+        sanitizationReplaceMap.put("(", ", ");
         sanitizationReplaceMap.put(")", emptyString);
         sanitizationReplaceMap.put(".", ", ");
         sanitizationReplaceMap.put("\n", " ");
@@ -147,17 +148,19 @@ public class IngredientUtils {
         return ocrIngredientsListMap;
     }
 
-    private static ArrayList<String> getIngredientsListNames(ArrayList<OcrIngredient> ingredientsList){
-        ArrayList<String> ingredientsListNames = new ArrayList<String>();
-        for (OcrIngredient ingredient : ingredientsList) {
-            ingredientsListNames.add(ingredient.getIngredientName());
-        }
-        return ingredientsListNames;
-    }
+//    private void sortMatchedIngredients(ArrayList<OcrIngredient> matchedIngredientsList) {
+//        Collections.sort(matchedIngredientsList, new Comparator<OcrIngredient>() {
+//            @Override
+//            public int compare(OcrIngredient o1, OcrIngredient o2) {
+//
+//            }
+//        });
+//    }
 
     public static ArrayList<OcrIngredient> getMatchedIngredients(HashMap<String, ArrayList<OcrIngredient>> ocrIngredientsListMap, List<DietaryRestrictionIngredient> dietaryRestrictionIngredientsList) {
         ArrayList<OcrIngredient> matchedIngredientsList = new ArrayList<>();
         ArrayList<String> ingredientsListNames = new ArrayList<>();
+        ArrayList<String> flaggedIngredientsList = new ArrayList<>();
         for(OcrIngredient ocrIngredient : ocrIngredientsListMap.get("ingredients")) {
             for(DietaryRestrictionIngredient dietaryRestrictionIngredient : dietaryRestrictionIngredientsList) {
                 OcrIngredient scannedIngredient = ocrIngredient;
@@ -167,7 +170,13 @@ public class IngredientUtils {
                 }
                 if (!ingredientsListNames.contains(scannedIngredient.getIngredientName())) { // Only add ingredient to list if it wasn't already added
                     matchedIngredientsList.add(scannedIngredient);
-                    ingredientsListNames.add(scannedIngredient.getIngredientName());
+                    if (scannedIngredient.isDietaryRestrictionFlagged()) {
+                        flaggedIngredientsList.add(scannedIngredient.getIngredientName());
+                        ingredientsListNames.add(scannedIngredient.getIngredientName());
+                    }
+                    else {
+                        ingredientsListNames.add(scannedIngredient.getIngredientName());
+                    }
                 }
             }
         }
@@ -180,7 +189,13 @@ public class IngredientUtils {
                 }
                 if (!ingredientsListNames.contains(scannedIngredient.getIngredientName())) {
                     matchedIngredientsList.add(scannedIngredient);
-                    ingredientsListNames.add(scannedIngredient.getIngredientName());
+                    if (scannedIngredient.isDietaryRestrictionFlagged()) {
+                        flaggedIngredientsList.add(scannedIngredient.getIngredientName());
+                        ingredientsListNames.add(scannedIngredient.getIngredientName());
+                    }
+                    else {
+                        ingredientsListNames.add(scannedIngredient.getIngredientName());
+                    }
                 }
 
             }
@@ -194,10 +209,19 @@ public class IngredientUtils {
                 }
                 if (!ingredientsListNames.contains(scannedIngredient.getIngredientName())) {
                     matchedIngredientsList.add(scannedIngredient);
-                    ingredientsListNames.add(scannedIngredient.getIngredientName());
+                    if (scannedIngredient.isDietaryRestrictionFlagged()) {
+                        flaggedIngredientsList.add(scannedIngredient.getIngredientName());
+                        ingredientsListNames.add(scannedIngredient.getIngredientName());
+                    }
+                    else {
+                        ingredientsListNames.add(scannedIngredient.getIngredientName());
+                    }
                 }
             }
         }
+        matchedIngredientsList.sort((o1, o2) -> Boolean.compare(o1.isDietaryRestrictionFlagged(), o2.isDietaryRestrictionFlagged()));
+        Collections.reverse(matchedIngredientsList);
+
         return matchedIngredientsList;
     }
 }

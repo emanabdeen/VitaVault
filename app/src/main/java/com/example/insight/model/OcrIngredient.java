@@ -1,12 +1,10 @@
 package com.example.insight.model;
 
-import com.example.insight.utility.RestrictedIngredientsCategory;
-
 import java.io.Serializable;
 
 import javax.annotation.Nullable;
 
-public class OcrIngredient implements Serializable {
+public class OcrIngredient implements Serializable, Comparable<OcrIngredient> {
     private String ingredientName;
 
     private Boolean dietaryRestrictionFlagged = false;
@@ -26,13 +24,23 @@ public class OcrIngredient implements Serializable {
     }
 
     @Override
+    public int compareTo(OcrIngredient ocrIngredient) {
+        int matchedFlagCompare = 0;
+        if (dietaryRestrictionFlagged && ocrIngredient.isDietaryRestrictionFlagged()) {
+            matchedFlagCompare = ingredientName.compareTo(ocrIngredient.getIngredientName());
+        } else {
+            matchedFlagCompare =  dietaryRestrictionFlagged.compareTo(ocrIngredient.isDietaryRestrictionFlagged());
+        }
+        return matchedFlagCompare;
+    }
+
+    @Override
     public String toString() {
         return "OcrIngredient{" +
                 "ingredientName= " + ingredientName +
                 ", dietaryRestrictionFlagged= " + dietaryRestrictionFlagged +
                 ", matchedCategory= " + matchedCategory;
     }
-
 
     // Getters and setters
     public String getIngredientMatchedCategory() {
@@ -53,7 +61,7 @@ public class OcrIngredient implements Serializable {
         this.ingredientName = ingredientName;
     }
 
-    public Boolean getDietaryRestrictionFlagged() {
+    public Boolean isDietaryRestrictionFlagged() {
         return dietaryRestrictionFlagged;
     }
     public void setDietaryRestrictionFlagged(Boolean matchedDietaryRestriction) {

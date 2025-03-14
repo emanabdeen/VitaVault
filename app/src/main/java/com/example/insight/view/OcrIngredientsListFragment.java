@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,20 +14,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.insight.R;
 import com.example.insight.databinding.FragmentOcringredientListBinding;
 import com.example.insight.adapter.OcrIngredientListAdapter;
-import com.example.insight.model.Medication;
+import com.example.insight.model.DietaryRestrictionIngredient;
 import com.example.insight.model.OcrIngredient;
+import com.example.insight.viewmodel.DietaryRestrictionIngredientViewModel;
 import com.example.insight.viewmodel.IngredientScanViewModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class OcrIngredientsListFragment extends Fragment implements ItemClickListener {
     private static final String TAG = "OcrIngredientsListFragment";
     private FragmentOcringredientListBinding binding;
-    private IngredientScanViewModel viewModel;
+    private IngredientScanViewModel ingredientScanViewModel;
+    private DietaryRestrictionIngredientViewModel dietaryRestrictionsViewModel;
     private List<OcrIngredient> matchedIngredientsList;
     private OcrIngredientListAdapter ocrIngredientListAdapter;
 
@@ -40,8 +44,9 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize ViewModel
-        viewModel = new ViewModelProvider(requireActivity()).get(IngredientScanViewModel.class);
+        // Initialize ViewModels
+        ingredientScanViewModel = new ViewModelProvider(requireActivity()).get(IngredientScanViewModel.class);
+        dietaryRestrictionsViewModel = new ViewModelProvider(requireActivity()).get(DietaryRestrictionIngredientViewModel.class);
 
         // Setup RecyclerView
         ocrIngredientListAdapter = new OcrIngredientListAdapter(requireContext(), new ArrayList<>());
@@ -50,7 +55,7 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
         binding.ocrIngredientRecyclerView.setAdapter(ocrIngredientListAdapter);
 
         // Observe LiveData for scanned ingredients List
-        viewModel.getMatchedIngredientsData().observe(getViewLifecycleOwner(), matchedIngredients -> {
+        ingredientScanViewModel.getMatchedIngredientsData().observe(getViewLifecycleOwner(), matchedIngredients -> {
             if (matchedIngredients == null) {
                 // Show progress bar while loading
                 binding.progressBar.setVisibility(View.VISIBLE);
@@ -75,7 +80,18 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
 
     @Override
     public void OnClickItem(View v, int pos) {
+        // add ingredient to custom ingredients from list
+        DietaryRestrictionIngredient newCustomIngredient = new DietaryRestrictionIngredient();
+        newCustomIngredient.setIngredientName(matchedIngredientsList.get(pos).getIngredientName());
+        newCustomIngredient.setIngredientCategory("custom");
 
+        dietaryRestrictionsViewModel.addDietaryRestrictionIngredient(newCustomIngredient);
+        Log.d(TAG, "added new custom ingredient from ocr scan result list" + newCustomIngredient.getIngredientName());
+
+        // Change icon to checkmark to show that ingredient has been added
+        ImageButton btnAdd = binding.ocrIngredientRecyclerView.findViewHolderForAdapterPosition(pos).itemView.findViewById(R.id.btnAdd);
+        btnAdd.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        btnAdd.setImageResource(R.drawable.check_mark);
     }
 
     @Override

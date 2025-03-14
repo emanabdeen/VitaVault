@@ -85,7 +85,7 @@ public class IngredientScanViewModel extends ViewModel {
             }
             if (result) {
                 ocrIngredientsRetrieved[0] = true;
-                Log.d(TAG, "scanIngredientsForMatches: OCR ingredients retrieved: " + ocrIngredientsList);
+                Log.d(TAG, "scanIngredientsForMatches: OCR ingredients retrieved: " + ocrIngredientsList.toString());
                 ocrIngredientListFuture.complete(true);
             }
         });
@@ -95,7 +95,7 @@ public class IngredientScanViewModel extends ViewModel {
             }
             if (result) {
                 dietaryRestrictionsRetrieved[0] = true;
-                Log.d(TAG, "scanIngredientsForMatches: dietary restrictions retrieved: " + dietaryRestrictionIngredientsList);
+                Log.d(TAG, "scanIngredientsForMatches: dietary restrictions retrieved: " + dietaryRestrictionIngredientsList.toString());
                 restrictedIngredientListFuture.complete(true);
             }
         });
@@ -107,7 +107,7 @@ public class IngredientScanViewModel extends ViewModel {
             else {
                 Log.d(TAG, "Both lists retrieved, running comparison logic");
                 matchedIngredientsList = IngredientUtils.getMatchedIngredients(ocrIngredientsList, dietaryRestrictionIngredientsList);
-                Log.d(TAG, matchedIngredientsList.toString());
+                matchedIngredientsList.forEach(ingredient -> Log.d(TAG, "Matched ingredient: " + ingredient.toString()));
                 matchedIngredientsData.postValue(matchedIngredientsList);
                 future.complete(true);
             }
@@ -123,7 +123,7 @@ public class IngredientScanViewModel extends ViewModel {
             HashMap<String, ArrayList<String>> ingredientsListMap = (HashMap<String, ArrayList<String>>) ocrScanIntent.getSerializableExtra("ocrIngredients");
             if (ingredientsListMap != null) {
                 ocrIngredientsList = IngredientUtils.parseIngredientsMapToOcrIngredients(ingredientsListMap);
-                Log.d(TAG, "getOcrIngredients: ocrIngredientsList: " + ocrIngredientsList);
+                Log.d(TAG, "ingredients retrievevd from intent: " + ocrIngredientsList);
                 setOcrIngredientsData(ocrIngredientsList);
                 future.complete(true);
             }
@@ -172,7 +172,7 @@ public class IngredientScanViewModel extends ViewModel {
 
                         dietaryRestrictionIngredientsList.add(ingredient);
                     }
-                    Log.d(TAG, "custom dietary restrictions retrieved - dietaryRestrictionIngredientsList: " + dietaryRestrictionIngredientsList);
+                    Log.d(TAG, "custom dietary restrictions retrieved");
                     dietaryRestrictionIngredientsData.postValue(dietaryRestrictionIngredientsList);
                     future.complete(true);
 

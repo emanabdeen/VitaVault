@@ -144,9 +144,9 @@ public class OCRMainActivity extends DrawerBaseActivity {
             }
         });
 
-        previewView.setOnClickListener(new View.OnClickListener() {
+        previewView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View view) {
+            public boolean onLongClick(View view) {
                 try {
                     // Launch the photo picker and let the user choose only images.
                     pickMedia.launch(new PickVisualMediaRequest.Builder()
@@ -156,9 +156,9 @@ public class OCRMainActivity extends DrawerBaseActivity {
                 } catch (Exception e) {
                     Log.e(TAG, "onClick: " + e.getMessage());
                 }
+                return true;
             }
         });
-
 
         parseIngredientsButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -16,7 +16,7 @@ public class OcrIngredientViewHolder extends RecyclerView.ViewHolder {
     private TextView ingredientMatchedStatus;
     private TextView ingredientMatchedCategory;
     private ItemClickListener clickListener;
-    private Button btnAdd;
+    private ImageButton btnAdd;
 
     public OcrIngredientViewHolder(@NonNull View itemView, ItemClickListener clickListener) {
         super(itemView);
@@ -24,14 +24,14 @@ public class OcrIngredientViewHolder extends RecyclerView.ViewHolder {
         ingredientMatchedStatus = itemView.findViewById(R.id.matchedStatus);
         ingredientMatchedCategory = itemView.findViewById(R.id.matchedCategory);
         this.clickListener = clickListener;
-//        btnAdd = itemView.findViewById(R.id.btnAdd);
+        btnAdd = itemView.findViewById(R.id.btnAdd);
 
-//        btnAdd.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                clickListener.OnClickItem(v, getAdapterPosition());
-//            }
-//        });
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.OnClickItem(v, getAdapterPosition());
+            }
+        });
     }
 
 
@@ -57,5 +57,9 @@ public class OcrIngredientViewHolder extends RecyclerView.ViewHolder {
 
     public void setIngredientMatchedCategory(TextView ingredientMatchedCategory) {
         this.ingredientMatchedCategory = ingredientMatchedCategory;
+    }
+
+    public void updateButtonIconAfterAdd() {
+
     }
 }

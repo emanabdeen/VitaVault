@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:layout_gravity="center"
-                    android:text="Matched Status"
+                    android:text="Catetgory"
                     android:textSize="14sp"
                     android:textColor="@color/black"/>
 

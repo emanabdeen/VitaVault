@@ -41,8 +41,11 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
     public void onBindViewHolder(@NonNull OcrIngredientViewHolder holder, int position) {
         OcrIngredient item = ocrIngredientsList.get(position);
         holder.getIngredientName().setText(item.getIngredientName());
-        holder.getIngredientMatchedStatus().setText(item.getDietaryRestrictionFlagged() ? "Warning" : "");
+        holder.getIngredientMatchedStatus().setText(item.isDietaryRestrictionFlagged() ? "⚠️" : "");
         holder.getIngredientMatchedCategory().setText(item.getIngredientMatchedCategory());
+        if (item.isDietaryRestrictionFlagged()) {
+            holder.itemView.findViewById(R.id.btnAdd).setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
