@@ -126,7 +126,15 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
         fetchIngredientList();
 
-            //// end of dynamically setting recycler views
+          binding.btnSave.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  recreate();
+              }
+          });
+
+
+
 
 
             binding.btnAdd.setOnClickListener(new View.OnClickListener() {
