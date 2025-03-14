@@ -283,7 +283,7 @@ public class SymptomReportActivity extends DrawerBaseActivity {
             if (symptomTable.getChildCount() == 0) { // Check if it's the header row
                 textView.setGravity(Gravity.CENTER);
                 textView.setTypeface(null, Typeface.BOLD);
-                textView.setBackgroundColor(getResources().getColor(R.color.accent)); // Header background color
+                textView.setBackgroundColor(getResources().getColor(R.color.accent_light)); // Header background color
                 textView.setTextColor(Color.BLACK); // text color
 
             } else if (i >= 1 && i <= 4) {
@@ -321,22 +321,15 @@ public class SymptomReportActivity extends DrawerBaseActivity {
         int startX = margin;
         int startY = margin;
 
-        // Load the app logo from resources-------------------------------------------------------------------------------
-        //Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.vitavault_icon_report3);
-        String appName="--- VitaVault ---";
+        // Start the first page
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create();
+        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
+        Canvas canvas = page.getCanvas();
 
-        // Define text paint for user data --------------------------------------------------------------------------
-        TextPaint userDataPaint = new TextPaint();
-        userDataPaint.setColor(Color.BLACK);
-        userDataPaint.setTextSize(12);
-        userDataPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
+        // Set the background color of the canvas to white
+        canvas.drawColor(Color.WHITE);
 
-        // User data
-        String userEmail = "user@example.com"; // Replace with actual user email
-        String userAgeRange = "25-34"; // Replace with actual age range
-        String userGender = "Male"; // Replace with actual gender
-
-        // Define text paint for headers and content------------------------------------------
+        // Define text paint for headers and content
         TextPaint headerPaint = new TextPaint();
         headerPaint.setColor(Color.BLACK);
         headerPaint.setTextSize(12);
@@ -353,34 +346,47 @@ public class SymptomReportActivity extends DrawerBaseActivity {
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setStrokeWidth(1);
 
-        // Define column widths for 6 columns
-        int[] columnWidths = {150, 80, 100, 100, 100, 200};
+        // Define text paint for user data
+        TextPaint userDataPaint = new TextPaint();
+        userDataPaint.setColor(Color.BLACK);
+        userDataPaint.setTextSize(12);
+        userDataPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
 
-        // Start the first page
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create();
-        PdfDocument.Page page = pdfDocument.startPage(pageInfo);
-        Canvas canvas = page.getCanvas();
 
-        // Set the background color of the canvas to white
-        canvas.drawColor(Color.WHITE);
+        // Load the app logo from resources-------------------------------------------------------------------------------
+        //Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.vitavault_icon_report3);
+        String appName=" VitaVault ";
 
-        // Draw the logo at the top of the page------------------------------------------------------
+        // Draw the logo at the top of the page
         /*int logoWidth = 2; // Adjust the width as needed
         int logoHeight = (int) (logo.getHeight() * ((float) logoWidth / logo.getWidth())); // Maintain aspect ratio
         canvas.drawBitmap(logo, startX, startY, null);
         startY += logoHeight + 40; // Add spacing below the logo*/
-        canvas.drawText(appName, startX, startY, userDataPaint);
-        startY += 40; // Move Y position down
+        headerPaint.setTextSize(16);
+        canvas.drawText(appName, startX, startY, headerPaint);
+        startY += 30; // Move Y position down
 
-        // Draw user data----------------------------------------------------------------------------
-       // canvas.drawText("Email: " + userEmail, startX, startY, userDataPaint);
+
+
+        // User data ----------------------------------------------------------------------------------
+        String userEmail = "user@example.com"; // Replace with actual user email
+        String userAgeRange = "25-34"; // Replace with actual age range
+        String userGender = "Male"; // Replace with actual gender
+
+        // Draw user data
+        // canvas.drawText("Email: " + userEmail, startX, startY, userDataPaint);
         //startY += 20; // Move Y position down
         canvas.drawText("Age Range: " + userAgeRange, startX, startY, userDataPaint);
         startY += 20; // Move Y position down
         canvas.drawText("Gender: " + userGender, startX, startY, userDataPaint);
         startY += 30; // Add spacing before the table
 
-        // Draw the table headers--------------------------------------------------------------------
+
+        // Define column widths for 6 columns --------------------------------------------------------------------
+        int[] columnWidths = {150, 80, 100, 100, 100, 200};
+
+        // Draw the table headers
+        headerPaint.setTextSize(12);
         String[] headers = {"Symptom Name", "Level", "Date", "Start Time", "End Time", "Description"};
         startY = drawTableRow(canvas, headers, startX, startY, columnWidths, headerPaint, borderPaint);
         startY += 10; // Add spacing between header and rows
