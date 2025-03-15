@@ -36,11 +36,15 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.insight.R;
 import com.example.insight.databinding.ActivitySymptomReportBinding;
 import com.example.insight.model.Symptom;
+import com.example.insight.model.UserAccount;
 import com.example.insight.utility.StringHandler;
 import com.example.insight.utility.SymptomsCategories;
 import com.example.insight.utility.TimeValidator;
+import com.example.insight.viewmodel.AccountViewModel;
 import com.example.insight.viewmodel.SymptomViewModel;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -51,7 +55,11 @@ import java.util.Locale;
 public class SymptomReportActivity extends DrawerBaseActivity {
 
     ActivitySymptomReportBinding binding;
+    FirebaseAuth mAuth;
+    FirebaseUser user;
     private SymptomViewModel symptomViewModel;
+    AccountViewModel viewModel;
+    UserAccount userAccount;
     private String selectedType = "";
 
 
@@ -64,6 +72,23 @@ public class SymptomReportActivity extends DrawerBaseActivity {
 
         // Initialize ViewModel
         symptomViewModel = new ViewModelProvider(this).get(SymptomViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AccountViewModel.class);
+
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        if (user == null) {
+            finish();
+            startActivity(new Intent(getApplicationContext(), Login.class));
+        }
+
+        viewModel.GetUserProfile();
+
+        //to observe the data and display it
+        viewModel.getUserAccountData().observe(this, userAccountData -> {
+            userAccount = userAccountData;
+        });
+
+
 
         // Set up date pickers for start and end date inputs
         binding.startDateInput.setOnClickListener(new View.OnClickListener() {
@@ -342,9 +367,16 @@ public class SymptomReportActivity extends DrawerBaseActivity {
 
 
         // User data ----------------------------------------------------------------------------------
-        String userEmail = "user@example.com"; // Replace with actual user email
-        String userAgeRange = "25-34"; // Replace with actual age range
-        String userGender = "Male"; // Replace with actual gender
+
+        String userEmail = ""; // Replace with actual user email
+        String userAgeRange = ""; // Replace with actual age range
+        String userGender = ""; // Replace with actual gender
+
+        if (userAccount != null) {
+            userAgeRange= userAccount.getAgeRange();
+            userGender = userAccount.getGender();
+        }
+
 
         // Draw user data
         // canvas.drawText("Email: " + userEmail, startX, startY, userDataPaint);
