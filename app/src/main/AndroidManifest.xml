@@ -51,6 +51,7 @@
             android:exported="false" />
         <activity android:name=".view.MedicationsActivity" />
         <activity android:name=".view.MedicationDetails" />
+        <activity android:name=".view.AddAlarmActivity" />
 
         <activity
             android:name=".view.DashboardActivity"

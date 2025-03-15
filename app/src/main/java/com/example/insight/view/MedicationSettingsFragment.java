@@ -1,0 +1,121 @@
+package com.example.insight.view;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.example.insight.adapter.MedicationAlarmAdapter;
+import com.example.insight.databinding.FragmentMedicationSettingsBinding;
+import com.example.insight.model.MedicationAlarm;
+import com.example.insight.utility.AlarmHelper;
+import com.example.insight.view.EditItemClickListener;
+import com.example.insight.viewmodel.MedicationAlarmsViewModel;
+
+import java.util.ArrayList;
+
+public class MedicationSettingsFragment extends Fragment {
+
+    private String medicationId;
+    private FragmentMedicationSettingsBinding binding;
+    private MedicationAlarmAdapter adapter;
+    private MedicationAlarmsViewModel viewModel;
+
+    public static MedicationSettingsFragment newInstance(String medicationId) {
+        MedicationSettingsFragment fragment = new MedicationSettingsFragment();
+        Bundle args = new Bundle();
+        args.putString("medicationID", medicationId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            medicationId = getArguments().getString("medicationID");
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = FragmentMedicationSettingsBinding.inflate(inflater, container, false);
+        setupRecyclerView();
+
+        // Initialize the ViewModel
+        viewModel = new ViewModelProvider(this).get(MedicationAlarmsViewModel.class);
+        viewModel.getAlarms().observe(getViewLifecycleOwner(), alarms -> {
+            if (alarms != null && !alarms.isEmpty()) {
+                binding.textViewNoAlarms.setVisibility(View.GONE);
+                binding.recyclerViewAlarms.setVisibility(View.VISIBLE);
+                adapter.updateAlarms(alarms);
+            } else {
+                binding.textViewNoAlarms.setVisibility(View.VISIBLE);
+                binding.recyclerViewAlarms.setVisibility(View.GONE);
+            }
+        });
+
+        // Fetch alarms for the medication
+        viewModel.fetchAlarms(medicationId);
+
+        return binding.getRoot();
+    }
+
+    private void setupRecyclerView() {
+        // Set up the adapter with the EditItemClickListener callbacks.
+        adapter = new MedicationAlarmAdapter(requireContext(), new ArrayList<>(), new EditItemClickListener() {
+            @Override
+            public void OnClickEdit(View v, int pos) {
+                // Retrieve the alarm being edited from the adapter.
+                MedicationAlarm alarm = adapter.getAlarmAt(pos);
+                if (alarm != null) {
+                    Intent intent = new Intent(getActivity(), AddAlarmActivity.class);
+                    // Pass flag to indicate editing mode
+                    intent.putExtra("isEdit", true);
+                    // Pass alarm details for editing
+                    intent.putExtra("alarmId", alarm.getAlarmId());
+                    intent.putExtra("medicationId", alarm.getMedicationId());
+                    intent.putExtra("day", alarm.getDay());
+                    intent.putExtra("time", alarm.getTime());
+                    intent.putExtra("repeatInfo", alarm.getRepeatInfo());
+                    // Optionally, pass additional data if needed.
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getContext(), "Unable to retrieve alarm for editing.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void OnClickItem(View v, int pos) {
+                // Could make clicking the alarm editable
+            }
+
+            @Override
+            public void OnClickDelete(View v, int pos) {
+                // Retrieve the alarm to delete
+                MedicationAlarm alarm = adapter.getAlarmAt(pos);
+                if (alarm != null) {
+                    int requestCode = (alarm.getMedicationId() + alarm.getDay() + alarm.getTime()).hashCode();
+                    // Cancel the alarm using AlarmHelper
+                    AlarmHelper.cancelAlarm(getContext(), requestCode, alarm.getMedicationId(), "MedicationName");
+                    // Delete the alarm from Firestore via the ViewModel.
+                    viewModel.deleteAlarm(alarm.getMedicationId(), alarm.getAlarmId());
+                } else {
+                    Toast.makeText(getContext(), "Unable to retrieve alarm for deletion.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        binding.recyclerViewAlarms.setAdapter(adapter);
+        binding.recyclerViewAlarms.setLayoutManager(new LinearLayoutManager(requireContext()));
+    }
+}

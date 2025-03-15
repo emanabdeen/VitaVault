@@ -10,6 +10,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.insight.R;
 import com.example.insight.databinding.ActivityMedicationsBinding;
+import com.example.insight.utility.AlarmHelper;
+import com.example.insight.viewmodel.MedicationAlarmsViewModel;
 import com.example.insight.viewmodel.MedicationViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,8 +52,22 @@ public class MedicationsActivity extends DrawerBaseActivity {
         // Handle Deletion (alarm cancel + Firestore delete)
         medicationViewModel.getMedicationToDelete().observe(this, medication -> {
             if (medication != null) {
-                cancelAllAlarmsForMedication(this, medication);
-                medicationViewModel.removeMedication(medication.getMedicationId());
+                // 1) Fetch the alarms from the subcollection
+                MedicationAlarmsViewModel alarmsViewModel =
+                        new ViewModelProvider(this).get(MedicationAlarmsViewModel.class);
+
+                alarmsViewModel.fetchAlarmsForDeletion(medication.getMedicationId(), alarmList -> {
+                    // 2) Cancel all alarms using the new helper
+                    AlarmHelper.cancelAllAlarmsForMedication(
+                            MedicationsActivity.this,
+                            medication.getMedicationId(),
+                            medication.getName(),
+                            alarmList
+                    );
+
+                    // 3) Now remove the medication doc (and logs, if any)
+                    medicationViewModel.removeMedication(medication.getMedicationId());
+                });
             }
         });
 

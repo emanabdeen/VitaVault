@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.example.insight.model.Medication;
+import com.example.insight.model.MedicationAlarm;
 import com.example.insight.receiver.AlarmReceiver;
 
 import java.util.Calendar;
@@ -54,17 +55,17 @@ public class AlarmHelper {
         Log.d("AlarmHelper", "🛑 Alarm canceled for: " + medicationName);
     }
 
-    public static void cancelAllAlarmsForMedication(Context context, Medication medication) {
-        HashMap<String, List<String>> reminderMap = medication.getReminderMap();
-
-        for (String day : reminderMap.keySet()) {
-            List<String> times = reminderMap.get(day);
-            for (String time : times) {
-                int requestCode = (medication.getMedicationId() + day + time).hashCode(); // Same way you created it
-                cancelAlarm(context, requestCode, medication.getMedicationId(), medication.getName());
-            }
+    public static void cancelAllAlarmsForMedication(Context context,
+                                                    String medicationId,
+                                                    String medicationName,
+                                                    List<MedicationAlarm> alarmList) {
+        for (MedicationAlarm alarm : alarmList) {
+            // Recreate the same request code used when setting the alarm
+            int requestCode = (medicationId + alarm.getDay() + alarm.getTime()).hashCode();
+            cancelAlarm(context, requestCode, medicationId, medicationName);
         }
     }
+
 
 
 }

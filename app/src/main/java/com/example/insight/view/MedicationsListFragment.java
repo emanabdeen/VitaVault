@@ -157,10 +157,13 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
         if (currentMedications != null && pos < currentMedications.size()) {
             String medicationId = currentMedications.get(pos).getMedicationId();
             String medicationName = currentMedications.get(pos).getName();
+            String dosage = currentMedications.get(pos).getDosage() + " " +
+                    currentMedications.get(pos).getUnit();
 
             Intent intent = new Intent(requireContext(), MedicationLogsActivity.class);
             intent.putExtra("medicationID", medicationId);
             intent.putExtra("medicationName", medicationName);
+            intent.putExtra("dosage",dosage);
             startActivity(intent);
         }
     }
