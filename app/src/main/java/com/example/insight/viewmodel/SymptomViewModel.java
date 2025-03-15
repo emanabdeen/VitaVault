@@ -305,15 +305,15 @@ public class SymptomViewModel extends ViewModel {
 
         Query query = symptomsRef;
 
-        if(startDateStr.isEmpty()&& !endDateStr.isEmpty()){
+        if(startDateStr.isEmpty()&& !endDateStr.isEmpty()){ //if only end date was selected
             query = symptomsRef
                     .whereLessThanOrEqualTo("recordDate", endDateStr);
         }
-        else if(endDateStr.isEmpty() && !startDateStr.isEmpty()){
+        else if(endDateStr.isEmpty() && !startDateStr.isEmpty()){ //if only start date was selected
             query = symptomsRef
                     .whereGreaterThanOrEqualTo("recordDate", startDateStr);
         }
-        else if(!endDateStr.isEmpty() && !startDateStr.isEmpty()){
+        else if(!endDateStr.isEmpty() && !startDateStr.isEmpty()){ //if start and end date were selected
             query = symptomsRef
                     .whereGreaterThanOrEqualTo("recordDate", startDateStr)
                     .whereLessThanOrEqualTo("recordDate", endDateStr);

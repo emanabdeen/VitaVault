@@ -36,6 +36,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.insight.R;
 import com.example.insight.databinding.ActivitySymptomReportBinding;
 import com.example.insight.model.Symptom;
+import com.example.insight.utility.StringHandler;
+import com.example.insight.utility.TimeValidator;
 import com.example.insight.viewmodel.SymptomViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -163,19 +165,12 @@ public class SymptomReportActivity extends DrawerBaseActivity {
 
     private void searchSymptomsByDateRange(String symptomType) {
         // Get selected dates from input fields
-        String startDateStr = binding.startDateInput.getText().toString();
-        String endDateStr = binding.endDateInput.getText().toString();
+        String startDateStr = StringHandler.defaultIfNull(binding.startDateInput.getText().toString());
+        String endDateStr = StringHandler.defaultIfNull(binding.endDateInput.getText().toString());
 
-        //if no dates are selected, get all symptoms
-        if (startDateStr.isEmpty() && endDateStr.isEmpty()) {
-            clearTable();
-            //if no dates are selected
-            symptomViewModel.GetAllSymptoms();
-        } else {
-            clearTable();
-            //if dates are selected
-            symptomViewModel.GetSymptomsByDateRange(startDateStr, endDateStr, symptomType);
-        }
+        //Get the data from firestore
+        clearTable();
+        symptomViewModel.GetSymptomsByDateRange(startDateStr, endDateStr, symptomType);
 
         // Observe the LiveData to update the table
         symptomViewModel.getSymptomsData().observe(this, symptoms -> {

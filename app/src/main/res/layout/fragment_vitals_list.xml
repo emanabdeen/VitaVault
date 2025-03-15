@@ -24,7 +24,29 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dateLayout"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchTextDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:inputType="date"
+                android:hint="search by date"
+                android:paddingVertical="12dp"
+                android:textSize="12sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!--<EditText
             android:id="@+id/searchTextDate"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
@@ -39,7 +61,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0"/>
+            app:layout_constraintHorizontal_bias="0"/>-->
 
         <ImageButton
             android:id="@+id/iconSearch"
@@ -49,7 +71,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.146"
-            app:layout_constraintStart_toEndOf="@+id/searchTextDate"
+            app:layout_constraintStart_toEndOf="@+id/dateLayout"
             app:layout_constraintTop_toTopOf="parent"
             android:background="@android:color/transparent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>

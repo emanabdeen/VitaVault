@@ -1,5 +1,7 @@
 package com.example.insight.view;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,12 +19,14 @@ import com.example.insight.utility.StringHandler;
 import com.example.insight.utility.TimeValidator;
 import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.VitalViewModel;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Objects;
 
 public class VitalDetails extends DrawerBaseActivity {
@@ -125,6 +129,22 @@ public class VitalDetails extends DrawerBaseActivity {
                 binding.lblMeasure2.setText("Diastolic " + unit);
             }
         }
+
+        // Set up date pickers for start date inputs
+        binding.editTextDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePicker(binding.editTextDate);
+            }
+        });
+
+        // Set up time pickers for start and end date inputs
+        binding.editTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTimePicker(binding.editTime);
+            }
+        });
 
         //  Save Button
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
@@ -290,6 +310,45 @@ public class VitalDetails extends DrawerBaseActivity {
         }catch (Exception e) {
             Log.e("error", "try-catch error: "+ e.getMessage());
         }
+    }
+
+    private void showDatePicker(TextInputEditText dateInput) {
+        // Get current date
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Create and show DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    // Format the selected date and set it to the input field
+                    String selectedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                    dateInput.setText(selectedDate);
+                },
+                year, month, day
+        );
+        datePickerDialog.show();
+    }
+
+    private void showTimePicker(TextInputEditText timeInput) {
+        // Get current time
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        // Create and show TimePickerDialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                this,
+                (view, selectedHour, selectedMinute) -> {
+                    // Format the selected time and set it to the input field
+                    String selectedTime = String.format("%02d:%02d", selectedHour, selectedMinute);
+                    timeInput.setText(selectedTime);
+                },
+                hour, minute, true // true for 24-hour format
+        );
+        timePickerDialog.show();
     }
 
     private void showError(TextView errorView, String message, boolean isVisible) {

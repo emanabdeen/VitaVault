@@ -1,6 +1,7 @@
 package com.example.insight.view;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -125,11 +126,25 @@ public class SymptomDetails extends DrawerBaseActivity {
 
         }
 
-        // Set up date pickers for start and end date inputs
+        // Set up date pickers for start date inputs
         binding.editTextDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDatePicker(binding.editTextDate);
+            }
+        });
+
+        // Set up time pickers for start and end date inputs
+        binding.editTimeStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTimePicker(binding.editTimeStart);
+            }
+        });
+        binding.editTimeEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTimePicker(binding.editTimeEnd);
             }
         });
 
@@ -217,11 +232,6 @@ public class SymptomDetails extends DrawerBaseActivity {
         String symptomDescription = StringHandler.defaultIfNull(binding.txtDescription.getText());
         String selectedLevelValue = getSelectedRadioButtonValue(binding.radioGroupSymptomLevel);
 
-        // Check for empty fields
-        /*if (TextUtils.isEmpty(recordDateStr) || TextUtils.isEmpty(recordTimeStartStr)) {
-            showError(binding.errorGeneral, "One or more fields are empty.", true);
-            return false;
-        }*/
         boolean isDateAndTimeHaveValues= !TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStartStr);
         // Validate date and time
         boolean isDateValid = DateValidator.isValidDate(recordDateStr);
@@ -292,6 +302,25 @@ public class SymptomDetails extends DrawerBaseActivity {
                 year, month, day
         );
         datePickerDialog.show();
+    }
+
+    private void showTimePicker(TextInputEditText timeInput) {
+        // Get current time
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        // Create and show TimePickerDialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                this,
+                (view, selectedHour, selectedMinute) -> {
+                    // Format the selected time and set it to the input field
+                    String selectedTime = String.format("%02d:%02d", selectedHour, selectedMinute);
+                    timeInput.setText(selectedTime);
+                },
+                hour, minute, true // true for 24-hour format
+        );
+        timePickerDialog.show();
     }
     private void showError(TextView errorView, String message, boolean isVisible) {
         if (isVisible) {

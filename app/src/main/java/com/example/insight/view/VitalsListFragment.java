@@ -1,5 +1,6 @@
 package com.example.insight.view;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -20,11 +21,13 @@ import com.example.insight.databinding.FragmentVitalsListBinding;
 import com.example.insight.model.Vital;
 import com.example.insight.utility.DateValidator;
 import com.example.insight.viewmodel.VitalViewModel;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class VitalsListFragment extends Fragment implements ItemClickListener {
@@ -96,6 +99,13 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             binding.searchMessage.setText(searchResultMessageData);
         });
 
+        // Set up date pickers for start date inputs
+        binding.searchTextDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePicker(binding.searchTextDate);
+            }
+        });
 
         // Search Button Logic
         binding.iconSearch.setOnClickListener(v -> {
@@ -118,8 +128,6 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
 
             }
         });
-
-
     }
 
     @Override
@@ -172,9 +180,27 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
                 viewModel.GetVitalsByDate(searchDateStr);
             }else{
                 viewModel.GetVitalsByType(vitalType);
-
             }
         }
+    }
 
+    private void showDatePicker(TextInputEditText dateInput) {
+        // Get current date
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Create and show DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    // Format the selected date and set it to the input field
+                    String selectedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                    dateInput.setText(selectedDate);
+                },
+                year, month, day
+        );
+        datePickerDialog.show();
     }
 }
