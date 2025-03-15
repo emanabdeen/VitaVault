@@ -54,7 +54,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginBottom="20dp"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="20dp"
+            android:paddingRight="20dp"
+            android:paddingLeft="20dp">
             <!-- Vertical LinearLayout with margin between CardViews -->
 
             <LinearLayout
@@ -212,7 +214,6 @@
             android:textStyle="bold"
             android:layout_marginBottom="20dp"
             />
-
 
 
 </LinearLayout>
