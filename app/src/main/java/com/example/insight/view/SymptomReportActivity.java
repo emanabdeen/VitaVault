@@ -1,13 +1,10 @@
 package com.example.insight.view;
 
-import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -28,16 +25,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.insight.R;
@@ -46,8 +39,6 @@ import com.example.insight.model.Symptom;
 import com.example.insight.viewmodel.SymptomViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
@@ -89,14 +80,15 @@ public class SymptomReportActivity extends DrawerBaseActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.symptom_types, // Reference to the string array
-                android.R.layout.simple_spinner_item // Default layout for Spinner items
+                R.layout.custom_spinner_selected_item // Default layout for Spinner items
         );
         //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // Dropdown layout
-        adapter.setDropDownViewResource(R.layout.custom_spinner_item); // Dropdown layout
+        adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item); // Dropdown layout
         binding.symptomTypeSpinner.setAdapter(adapter);
 
         // Set a default selection (All Symptoms) first item
         binding.symptomTypeSpinner.setSelection(0);
+        binding.symptomTypeSpinner.setDropDownWidth(510); // Set width in pixels
 
         // Handle Spinner item selection
         binding.symptomTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

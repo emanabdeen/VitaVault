@@ -49,20 +49,19 @@ public class MyProfileActivity extends DrawerBaseActivity {
         ArrayAdapter<CharSequence> ageAdapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.age_array,
-                android.R.layout.simple_spinner_item
+                R.layout.custom_spinner_selected_item
         );
-        ageAdapter.setDropDownViewResource(R.layout.custom_spinner_item);
+        ageAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
         binding.spinnerAge.setAdapter(ageAdapter);
 
         // Populate gender spinner
         ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.gender_array,
-                android.R.layout.simple_spinner_item
+                R.layout.custom_spinner_selected_item
         );
-        genderAdapter.setDropDownViewResource(R.layout.custom_spinner_item);
+        genderAdapter.setDropDownViewResource(R.layout.custom_spinner_dropdown_item);
         binding.spinnerGender.setAdapter(genderAdapter);
-
 
         //to observe the data and display it
         viewModel.getUserAccountData().observe(this, userAccountData -> {

@@ -139,8 +139,18 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/errorDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/error"
+            android:textSize="15sp"
+            android:textStyle="italic"
+            android:layout_marginTop="10dp"
+            android:visibility="invisible" />
         <Button
-            android:id="@+id/testPasswordChange"
+            android:id="@+id/btnPasswordChange"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Change Password"

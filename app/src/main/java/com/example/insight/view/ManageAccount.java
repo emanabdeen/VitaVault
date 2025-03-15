@@ -4,8 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.insight.R;
@@ -19,9 +18,7 @@ public class ManageAccount extends DrawerBaseActivity {
     ActivityManageAccountBinding binding;
     FirebaseAuth mAuth;
     FirebaseUser user;
-    Button changePassButton;
-    //ImageButton backButton;
-    EditText oldPw, newPw, confirmPw, email;
+    TextView errorTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,50 +29,84 @@ public class ManageAccount extends DrawerBaseActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-
         if (user == null) {
             finish();
             startActivity(new Intent(ManageAccount.this, Login.class));
         }
-        oldPw = binding.editTextOldPw;
-        newPw = binding.editTextNewPw;
-        confirmPw = binding.editTextConfirmPw;
-        email = binding.editTextEmail;
-        //backButton = binding.backButton;
 
-        changePassButton = binding.testPasswordChange;
+        errorTextView = findViewById(R.id.errorDate);
 
-//        backButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                finish();
-//            }
-//        });
-        changePassButton.setOnClickListener(new View.OnClickListener() {
+        binding.btnPasswordChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAuth = FirebaseAuth.getInstance();
-                if (user != null) {
-                    LoginRegisterHelper lrh = new LoginRegisterHelper();
-                    try {
-                        lrh.changePassword(oldPw.getText().toString(), newPw.getText().toString(), confirmPw.getText().toString(), mAuth)
-                                        .whenComplete((result, error) -> {
-                                            if (error != null) {
-                                                Log.e("MainActivity", "changePassword() call encountered an error: " + error.getMessage());
-                                            }
-                                            if (result == null) {
-                                                Log.e("ManageAccount", "Change password result was null...");
-                                                result = "An error occurred, please try again or contact support.";
-                                            }
-                                            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
-                                            finish();
-                                        });
-                    } catch (InterruptedException e) {
-                        Log.e("MainActivity", "Change password encountered an error: " + e.getMessage());
+                String oldPw = binding.editTextOldPw.getText().toString();
+                String newPw = binding.editTextNewPw.getText().toString();
+                String confirmPw = binding.editTextConfirmPw.getText().toString();
+
+                if (validatePassword(newPw, confirmPw)) {
+                    mAuth = FirebaseAuth.getInstance();
+                    if (user != null) {
+                        LoginRegisterHelper lrh = new LoginRegisterHelper();
+                        try {
+                            lrh.changePassword(oldPw, newPw, confirmPw, mAuth)
+                                    .whenComplete((result, error) -> {
+                                        if (error != null) {
+                                            Log.e("MainActivity", "changePassword() call encountered an error: " + error.getMessage());
+                                        }
+                                        if (result == null) {
+                                            Log.e("ManageAccount", "Change password result was null...");
+                                            result = "An error occurred, please try again or contact support.";
+                                        }
+                                        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_LONG).show();
+                                        finish();
+                                    });
+                        } catch (InterruptedException e) {
+                            Log.e("MainActivity", "Change password encountered an error: " + e.getMessage());
+                        }
                     }
                 }
             }
         });
+    }
+
+    private boolean validatePassword(String newPw, String confirmPw) {
+        if (newPw.length() < 8) {
+            showError("Password must be at least 8 characters long.");
+            return false;
+        }
+
+        if (!newPw.matches(".*[A-Z].*")) {
+            showError("Password must contain at least one uppercase letter.");
+            return false;
+        }
+
+        if (!newPw.matches(".*[a-z].*")) {
+            showError("Password must contain at least one lowercase letter.");
+            return false;
+        }
+
+        if (!newPw.matches(".*\\d.*")) {
+            showError("Password must contain at least one number.");
+            return false;
+        }
+
+        if (!newPw.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*")) {
+            showError("Password must contain at least one special character.");
+            return false;
+        }
+
+        if (!newPw.equals(confirmPw)) {
+            showError("Passwords do not match.");
+            return false;
+        }
+
+        errorTextView.setVisibility(View.INVISIBLE);
+        return true;
+    }
+
+    private void showError(String errorMessage) {
+        errorTextView.setText(errorMessage);
+        errorTextView.setVisibility(View.VISIBLE);
     }
 
     @Override
