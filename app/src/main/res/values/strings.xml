@@ -57,14 +57,13 @@
 
     <string-array name="symptom_types">
         <item>All Symptoms</item>
-        <item>HEADACHE</item>
-        <item>COUGHING</item>
-        <item>NAUSEA</item>
-        <item>RASH</item>
-        <item>CHEST_PAIN</item>
-        <item>SORE_THROAT</item>
-        <item>JOIN_PAIN</item>
-        <item>OTHER</item>
+        <item>Headache</item>
+        <item>Coughing</item>
+        <item>Rash</item>
+        <item>Chest Pain</item>
+        <item>Sore Throat</item>
+        <item>Join Pain</item>
+        <item>Other</item>
     </string-array>
 
 

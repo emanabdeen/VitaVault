@@ -48,7 +48,8 @@
             android:exported="false" />
         <activity
             android:name=".view.SymptomDetails"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.SymptomsMainActivity"
             android:exported="false" />
@@ -63,7 +64,8 @@
             android:exported="false" />
         <activity
             android:name=".view.VitalDetails"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.ModeActivity"
             android:exported="false" />

@@ -28,7 +28,6 @@ public class SymptomActivity extends DrawerBaseActivity {
     private SymptomsListFragment symptomsListFragment;
     private SymptomViewModel viewModel;
     List<Symptom> symptomsList = new ArrayList<>();
-    //Symptom symptom = new Symptom();
     String symptomType;
 
     @Override
@@ -75,12 +74,12 @@ public class SymptomActivity extends DrawerBaseActivity {
 
         replaceFragment(symptomsListFragment); // Show vitals list by default
 
-        binding.btnListByType.setOnClickListener(new View.OnClickListener() {
+        /*binding.btnListByType.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 replaceFragment(symptomsListFragment);
             }
-        });
+        });*/
 
         // -------------------------------Add Button --------------------------------------------
         binding.btnAdd.setOnClickListener(new View.OnClickListener() {

@@ -34,7 +34,7 @@
     <android.widget.ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="60dp">
+        android:layout_marginTop="30dp">
         <!-- Vertical LinearLayout with margin between CardViews -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,14 +44,6 @@
             android:paddingEnd="50dp"
             android:paddingTop="20dp">
 
-
-            <!-- Category Dropdown -->
-            <!--    <Spinner-->
-            <!--        android:id="@+id/spinnerCategory"-->
-            <!--        android:layout_width="match_parent"-->
-            <!--        android:layout_height="wrap_content"-->
-            <!--        android:background="@drawable/spinner_background"-->
-            <!--        android:padding="8dp" />-->
 
             <!-- Date Label -->
             <TextView
@@ -70,6 +62,7 @@
                     android:id="@+id/editTextDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_background"
                     android:focusable="false"
                     android:inputType="date"
                     android:paddingVertical="10dp"/>
@@ -110,6 +103,7 @@
                     android:id="@+id/editTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_background"
                     android:focusable="false"
                     android:inputType="time"
                     android:paddingVertical="8dp"/>

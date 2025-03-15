@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/vitavault_page_background3"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:paddingHorizontal="16dp"
     tools:context=".view.SymptomReportActivity">
 
     <LinearLayout
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
-        android:layout_marginBottom="35dp">
+        android:layout_marginBottom="65dp">
 
         <ImageView
             android:id="@+id/image"
@@ -33,7 +33,7 @@
         android:layout_gravity="center_vertical"
         android:orientation="horizontal">
 
-        <LinearLayout
+        <!--<LinearLayout
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
@@ -72,6 +72,82 @@
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+        </LinearLayout>-->
+
+        <LinearLayout
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <!-- Start Date Input with Clear Button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="5dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/startDateInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:hint="From"
+                        android:inputType="date"
+                        android:textSize="14sp"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Clear Button -->
+                <ImageView
+                    android:id="@+id/btnClearFrom"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="3dp"
+                    android:src="@drawable/outline_cancel_24" />
+            </LinearLayout>
+
+            <!-- End Date Input with Clear Button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/endDateInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:hint="To"
+                        android:inputType="date"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Clear Button -->
+                <ImageView
+                    android:id="@+id/btnClearTo"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center_vertical"
+                    android:padding="3dp"
+                    android:src="@drawable/outline_cancel_24" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -152,6 +228,4 @@
     </ScrollView>
 
 </LinearLayout>
-<!--
-    android:background="@drawable/table_border"
-    android:divider="@drawable/table_border"-->
+

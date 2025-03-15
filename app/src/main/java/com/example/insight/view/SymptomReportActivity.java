@@ -37,6 +37,7 @@ import com.example.insight.R;
 import com.example.insight.databinding.ActivitySymptomReportBinding;
 import com.example.insight.model.Symptom;
 import com.example.insight.utility.StringHandler;
+import com.example.insight.utility.SymptomsCategories;
 import com.example.insight.utility.TimeValidator;
 import com.example.insight.viewmodel.SymptomViewModel;
 import com.google.android.material.textfield.TextInputEditText;
@@ -100,7 +101,8 @@ public class SymptomReportActivity extends DrawerBaseActivity {
                 if (s.equals("all symptoms")) {
                     selectedType = "";
                 } else {
-                    selectedType = parent.getItemAtPosition(position).toString();
+                    String input = parent.getItemAtPosition(position).toString();
+                    selectedType = SymptomsCategories.getEnumNameBySymptomCategory(input);
                 }
                 Log.d("activity", "Selected: " + selectedType);
             }
@@ -108,6 +110,19 @@ public class SymptomReportActivity extends DrawerBaseActivity {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 // Do nothing
+            }
+        });
+
+        binding.btnClearFrom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.startDateInput.setText("");
+            }
+        });
+        binding.btnClearTo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.endDateInput.setText("");
             }
         });
 
@@ -206,7 +221,7 @@ public class SymptomReportActivity extends DrawerBaseActivity {
         // Add rows for each symptom
         for (Symptom symptom : symptoms) {
             addTableRow(
-                    symptom.getSymptomName(),
+                    SymptomsCategories.valueOf(symptom.getSymptomName()).getSymptom(),
                     symptom.getSymptomLevel(),
                     symptom.getRecordDate().toString(),
                     symptom.getStartTime().toString(),

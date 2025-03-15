@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingStart="40dp"
-            android:paddingTop="15dp"
+            android:paddingTop="10dp"
             android:paddingEnd="40dp">
 
 
@@ -52,19 +52,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date"
-                android:textStyle="bold"
-                android:visibility="gone"/>
+                android:textStyle="bold"/>
 
-            <!-- Date Picker -->
-            <EditText
-                android:id="@+id/editTextDate3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background"
-                android:inputType="date"
-                android:padding="8dp"
-                android:textColor="@color/black"
-                android:visibility="gone"/>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/dateLayout"
                 android:layout_width="match_parent"
@@ -75,8 +64,8 @@
                     android:id="@+id/editTextDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_background"
                     android:focusable="false"
-                    android:hint="Date"
                     android:inputType="date"
                     android:paddingVertical="10dp"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -118,6 +107,7 @@
                             android:id="@+id/editTimeStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/edit_text_background"
                             android:focusable="false"
                             android:inputType="time"
                             android:paddingVertical="8dp"/>
@@ -169,6 +159,7 @@
                             android:id="@+id/editTimeEnd"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@drawable/edit_text_background"
                             android:focusable="false"
                             android:inputType="time"
                             android:paddingVertical="8dp"/>

@@ -180,7 +180,7 @@ public class VitalViewModel extends ViewModel {
                         vitalsData.postValue(vitalsList);
                     } else {
 
-                        searchResultMessageData.postValue("No movies found matching your search.");
+                        searchResultMessageData.postValue("No vitals found matching your search.");
                         vitalsData.postValue(vitalsList);
                     }
                 })
@@ -394,7 +394,7 @@ public class VitalViewModel extends ViewModel {
                         vitalsData.postValue(vitalsList);
                     } else {
 
-                        searchResultMessageData.postValue("No movies found matching your search.");
+                        searchResultMessageData.postValue("No vitals found matching your search.");
                         vitalsData.postValue(vitalsList);
                     }
                 })

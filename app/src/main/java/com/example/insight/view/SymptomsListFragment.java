@@ -88,16 +88,26 @@ public class SymptomsListFragment extends Fragment implements ItemClickListener{
         // Observe Symptoms Data
         viewModel.getSymptomsData().observe(getViewLifecycleOwner(), symptomsData -> {
             Log.d("debug", "--Update View at symptoms list recycler view--");
-            symptomList = symptomsData;
-            symptomsListAdapter.updateData(symptomsData); // Update adapter data
 
-            // Hide loading indicator
-            binding.progressBar.setVisibility(View.GONE);//----it does not work for now
+            if(symptomsData != null && !symptomsData.isEmpty()){
+                symptomList = symptomsData;
+                symptomsListAdapter.updateData(symptomsData); // Update adapter data
+                binding.recyclerLayout.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
+            }
+
         });
 
         // Observe Search Message
         viewModel.getSearchResultMessageData().observe(getViewLifecycleOwner(), searchResultMessageData -> {
-            binding.searchMessage.setText(searchResultMessageData);
+
+            if(searchResultMessageData != null && !searchResultMessageData.isEmpty()){
+                binding.searchMessage.setText(searchResultMessageData);
+                binding.searchMessage.setVisibility(View.VISIBLE);
+                binding.recyclerLayout.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.GONE);
+            }
+            /*binding.searchMessage.setText(searchResultMessageData);*/
         });
 
         // Set up date pickers for start date inputs
@@ -108,16 +118,22 @@ public class SymptomsListFragment extends Fragment implements ItemClickListener{
             }
         });
 
+        //if search by date cleared get all symptoms by type
+        binding.btnClearDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.searchTextDate.setText("");
+                viewModel.GetSymptomsByType(symptomType);
+                searchCriteria = "type";
+            }
+        });
+
 
         // Search Button Logic
         binding.iconSearch.setOnClickListener(v -> {
             searchDateStr = binding.searchTextDate.getText().toString();
 
-            if (searchDateStr.isEmpty()){
-                //if the the search date is empty it will get all dates for this symptom type
-                viewModel.GetSymptomsByType(symptomType);
-                searchCriteria = "type";
-            }else {
+            if (!searchDateStr.isEmpty()){
                 //if there is a date inserted, validate it before sending the request
                 boolean isDateValid = DateValidator.isValidDate(searchDateStr);
                 if (isDateValid){
@@ -126,7 +142,9 @@ public class SymptomsListFragment extends Fragment implements ItemClickListener{
                 }else{
                     Toast.makeText(requireContext(), "Please enter a valid date", Toast.LENGTH_LONG).show();
                 }
-
+            }else{
+                viewModel.GetSymptomsByType(symptomType);
+                searchCriteria = "type";
             }
         });
 
