@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.MedicationsListFragment"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:id="@+id/searchLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal"
+        android:paddingStart="5dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0">
+
+        <EditText
+            android:id="@+id/searchText"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_text_background"
+            android:hint="search for ingredient by name"
+            android:textColorHint="@color/light_gray"
+            android:textColor="@color/black"
+            android:inputType="text"
+            android:padding="8dp"
+            android:textSize="13sp"
+            android:layout_gravity="center"/>
+
+        <ImageButton
+            android:id="@+id/iconSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_search"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/ocrResultListView"
+        android:layout_width="match_parent"
+        android:layout_height="580dp"
+        android:gravity="start"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:paddingStart="5dp"
+        android:paddingTop="5dp" >
+
+        <TextView
+            android:id="@+id/emptyMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No ingredients found."
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/accent"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/ocrIngredientRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:layout_marginBottom="40dp"
+            android:scrollbars="vertical" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center" />
+    <TextView
+        android:id="@+id/searchMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/accent"
+        android:textSize="18sp" />
+</LinearLayout>

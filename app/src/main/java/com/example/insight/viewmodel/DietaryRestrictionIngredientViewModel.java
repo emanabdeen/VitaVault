@@ -20,7 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class dietaryRestrictionIngredientViewModel extends ViewModel {
+public class DietaryRestrictionIngredientViewModel extends ViewModel {
 
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -60,7 +60,7 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
 
 
     //Constructor
-    public dietaryRestrictionIngredientViewModel() {
+    public DietaryRestrictionIngredientViewModel() {
         customIngredientLiveData.setValue(customIngredientList);
         predefinedIngredientLiveData.setValue(predefinedIngredientList);
         diaryIngredientLiveData.setValue(diaryIngredientList);

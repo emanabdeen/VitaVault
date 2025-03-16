@@ -15,7 +15,7 @@ import com.example.insight.databinding.ActivityDietaryRestrictionsMainBinding;
 import com.example.insight.model.DietaryRestrictionIngredient;
 import com.example.insight.utility.CommonRestrictedIngredients;
 import com.example.insight.utility.RestrictedIngredientsCategory;
-import com.example.insight.viewmodel.dietaryRestrictionIngredientViewModel;
+import com.example.insight.viewmodel.DietaryRestrictionIngredientViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -30,7 +30,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
     FirebaseAuth mAuth;
     FirebaseUser user;
     Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> restrictionsMap;
-    private dietaryRestrictionIngredientViewModel viewModel;
+    private DietaryRestrictionIngredientViewModel viewModel;
     private List<DietaryRestrictionIngredient> selectedIngredientList;
     DietaryRestrictionPredefinedItemAdapter groupedIngredientsAdapter;
 
@@ -59,7 +59,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
         restrictionsMap = CommonRestrictedIngredients.GetAllIngredientsWithCategory();
 
-        viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
+        viewModel = new ViewModelProvider(this).get(DietaryRestrictionIngredientViewModel.class);
         viewModel.getPredefinedDietaryRestrictionIngredients();
 
         groupedIngredientsAdapter = new DietaryRestrictionPredefinedItemAdapter(this, restrictionsMap,this);
