@@ -184,11 +184,13 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
         fetchIngredientList();
 
-          binding.btnSave.setOnClickListener(new View.OnClickListener() {
+        /*
+        binding.btnSave.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
               }
           });
+          */
 
 
             binding.btnAdd.setOnClickListener(new View.OnClickListener() {
