@@ -36,5 +36,8 @@
     <string name="BodyTemperature">Body Temperature</string>
     <string name="Weight">Weight</string>
     <string name="dietaryRestrictionsTitle">Dietary Restrictions</string>
+    <string name="scanResultDescription">Scanned ingredients matching your restricted ingredients show an ⚠️ icon.\nTap on + to add an ingredient to your restricted list.</string>
+    <string name="scanMainActivityDescription">Take a photo of an ingredients list or tap on the camera preview to select an image from your device\nBest results by cropping tightly to the text.</string>
+    <string name="cameraControlsDescription">Tap here to start the camera preview\nLong press to select an image from your device\nThe same controls will work when a photo or image are displayed</string>
 
 </resources>

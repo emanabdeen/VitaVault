@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,7 @@ import com.example.insight.R;
 import com.example.insight.model.OcrIngredient;
 import com.example.insight.view.ItemClickListener;
 import com.example.insight.view.OcrIngredientViewHolder;
+
 import java.util.List;
 
 public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredientViewHolder>{
@@ -43,10 +45,24 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
         holder.getIngredientName().setText(item.getIngredientName());
         holder.getIngredientMatchedStatus().setText(item.isDietaryRestrictionFlagged() ? "⚠️" : "");
         holder.getIngredientMatchedCategory().setText(item.getIngredientMatchedCategory());
-        if (item.isDietaryRestrictionFlagged()) {
+        ImageButton button = holder.itemView.findViewById(R.id.btnAdd);
+        if (item.isAddedAsCustom()) {
+            button.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
+            button.setBackgroundResource(0);
+            button.setImageResource(R.drawable.check_mark);
+        } else {
+            button.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
+            button.setBackgroundResource(R.color.accent);
+            button.setImageResource(R.drawable.ic_add);
+        }
+        if (item.isDietaryRestrictionFlagged() || item.isSameNameAsCommonRestrictedIngredient()) {
             holder.itemView.findViewById(R.id.btnAdd).setVisibility(View.INVISIBLE);
+        } else {
+            holder.itemView.findViewById(R.id.btnAdd).setVisibility(View.VISIBLE);
         }
     }
+
+
 
     @Override
     public int getItemCount() {

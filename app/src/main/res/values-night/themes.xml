@@ -12,7 +12,10 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
 
+        <item name="android:textSize">18sp</item>
 
+        <!-- This changes the color of icons, including the drawer icon -->
+        <item name="colorControlNormal">#FFFFFF</item>
 
         <!-- Set custom splash screen icon (replace with your image) -->
         <!--  <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>-->

@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:outlineAmbientShadowColor="#B61717"
     android:outlineProvider="background"
-    android:outlineSpotShadowColor="#B81D1D"
+    android:background="@drawable/vitavault_page_background3"
     tools:context=".view.OCRMainActivity">
 
-    <RelativeLayout
+    <Space
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="10dp" />
 
-        <!--        <ImageView-->
-        <!--            android:id="@+id/backgroundMask"-->
-        <!--            android:src="@drawable/background_clip_mask"-->
-        <!--            android:background="@android:color/transparent"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_centerHorizontal="true"-->
-        <!--            android:layout_centerVertical="true" />-->
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/scanMainActivityDescription"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        android:textStyle="italic" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="45dp" />
 
         <android.widget.ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/vitavault_page_background3"
             android:scrollbars="none"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.4"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.95">
+            android:layout_marginBottom="40dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -42,27 +43,7 @@
                 android:orientation="vertical"
                 android:padding="10dp">
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="Take a photo of an ingredients list or tap on the camera preview to select an image from your device"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:textSize="13sp"
-                    android:textStyle="italic"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.496"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.053" />
 
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp" />
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -98,7 +79,7 @@
                         android:outlineAmbientShadowColor="@color/Test"
                         android:outlineProvider="background"
                         android:paddingBottom="2dp"
-                        android:text="Tap here to start the camera preview\nLong press to select an image from your device\nThe same controls will work when a photo or image are displayed"
+                        android:text="@string/cameraControlsDescription"
                         android:textAlignment="center"
                         android:textIsSelectable="false"
                         android:textSize="20sp" />
@@ -132,11 +113,11 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:scrollbars="vertical"
-                    android:text="Please wait for OCR results"
-                    android:textAlignment="center" />
+                    android:hint="Enter ingredients here or scan an image"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="20dp" />
             </LinearLayout>
         </android.widget.ScrollView>
-    </RelativeLayout>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

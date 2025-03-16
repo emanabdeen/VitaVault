@@ -144,19 +144,18 @@ public class OCRMainActivity extends DrawerBaseActivity {
             }
         });
 
-        previewView.setOnLongClickListener(new View.OnLongClickListener() {
+        previewView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public void onClick(View view) {
                 try {
                     // Launch the photo picker and let the user choose only images.
                     pickMedia.launch(new PickVisualMediaRequest.Builder()
-                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                            .build());
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build());
                     Log.d(TAG, "onClick: OCR TEST - media picker launched");
                 } catch (Exception e) {
                     Log.e(TAG, "onClick: " + e.getMessage());
                 }
-                return true;
             }
         });
 
@@ -325,7 +324,6 @@ public class OCRMainActivity extends DrawerBaseActivity {
                 } else {
                     Log.d(TAG, "checkPermissions: permission denied");
                     Toast.makeText(OCRMainActivity.this, "Camera permission denied!\nEnable camera permission in app settings to take photos for OCR...", Toast.LENGTH_LONG).show();
-                    showImageView();
                 }
             });
 
@@ -361,18 +359,18 @@ public class OCRMainActivity extends DrawerBaseActivity {
                             imageBitmap[0] = ImageDecoder.decodeBitmap(source);
                             new Thread(() -> {
                                 runOnUiThread( () -> startCropActivity(uri));
-                                runOnUiThread(() -> {
-                                    if (imageBitmap[0] != null) {
-                                        Log.d(TAG, "onImageSaved: imageBitmap[0] is not null, setting image view");
-                                        cameraResultImageView.setImageURI(uri);
-                                        showImageView();
-                                        // Unbind camera controller to stop camera and save battery when not in use
-                                        if (cameraController != null) {
-                                            cameraController.unbind();
-                                        }
-                                        detectText();
-                                    }
-                                });
+//                                runOnUiThread(() -> {
+//                                    if (imageBitmap[0] != null) {
+//                                        Log.d(TAG, "onImageSaved: imageBitmap[0] is not null, setting image view");
+//                                        cameraResultImageView.setImageURI(uri);
+//                                        showImageView();
+//                                        // Unbind camera controller to stop camera and save battery when not in use
+//                                        if (cameraController != null) {
+//                                            cameraController.unbind();
+//                                        }
+//                                        detectText();
+//                                    }
+//                                });
                             }).start();
                         } catch (Exception e) {
                             Log.e(TAG, "onClick: " + e.getMessage());

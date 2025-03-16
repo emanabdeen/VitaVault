@@ -10,6 +10,8 @@ public class OcrIngredient implements Serializable, Comparable<OcrIngredient> {
     private Boolean dietaryRestrictionFlagged = false;
     @Nullable
     private String matchedCategory;
+    private Boolean addedAsCustom = false;
+    private Boolean sameNameAsCommonRestrictedIngredient = false;
 
 
     // For constructing a new OcrIngredient object for each ingredient parsed from OCR text
@@ -39,7 +41,10 @@ public class OcrIngredient implements Serializable, Comparable<OcrIngredient> {
         return "OcrIngredient{" +
                 "ingredientName= " + ingredientName +
                 ", dietaryRestrictionFlagged= " + dietaryRestrictionFlagged +
-                ", matchedCategory= " + matchedCategory;
+                ", matchedCategory= " + matchedCategory +
+                ", addedAsCustom= " + addedAsCustom +
+                ", sameNameAsCommonRestrictedIngredient= " + sameNameAsCommonRestrictedIngredient +
+                '}';
     }
 
     // Getters and setters
@@ -66,5 +71,21 @@ public class OcrIngredient implements Serializable, Comparable<OcrIngredient> {
     }
     public void setDietaryRestrictionFlagged(Boolean matchedDietaryRestriction) {
         this.dietaryRestrictionFlagged = matchedDietaryRestriction;
+    }
+
+    public Boolean isAddedAsCustom() {
+        return addedAsCustom;
+    }
+
+    public void setAddedAsCustom(Boolean addedAsCustom) {
+        this.addedAsCustom = addedAsCustom;
+    }
+
+    public Boolean isSameNameAsCommonRestrictedIngredient() {
+        return sameNameAsCommonRestrictedIngredient;
+    }
+
+    public void setSameNameAsCommonRestrictedIngredient(Boolean sameNameAsCommonRestrictedIngredient) {
+        this.sameNameAsCommonRestrictedIngredient = sameNameAsCommonRestrictedIngredient;
     }
 }

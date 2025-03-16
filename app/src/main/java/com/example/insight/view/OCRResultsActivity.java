@@ -31,14 +31,9 @@ import java.util.List;
 
 public class OCRResultsActivity extends DrawerBaseActivity {
     private static final String TAG = "OCRResultsActivity";
-    private static final String FALSE = "false";
-    private static final String TRUE = "true";
 
     private ActivityOcrResultsBinding binding;
     private IngredientScanViewModel ingredientScanViewModel;
-    private DietaryRestrictionIngredientViewModel dietaryRestrictionsViewModel;
-    private List<OcrIngredient> ocrIngredientsList;
-    private OcrIngredientListAdapter ocrIngredientsListAdapter;
     private OcrIngredientsListFragment ocrIngredientsListFragment;
     FirebaseAuth mAuth;
     FirebaseUser user;
@@ -68,14 +63,12 @@ public class OCRResultsActivity extends DrawerBaseActivity {
         replaceFragment(ocrIngredientsListFragment);
 
         ingredientScanViewModel = new ViewModelProvider(this).get(IngredientScanViewModel.class);
-        dietaryRestrictionsViewModel = new ViewModelProvider(this).get(DietaryRestrictionIngredientViewModel.class);
 
         ingredientScanViewModel.getMatchedIngredientsData().observe(this, new Observer<List<OcrIngredient>>() {
             @Override
             public void onChanged(List<OcrIngredient> matchedIngredients) {
                 if (matchedIngredients != null || !matchedIngredients.isEmpty()) {
                     // Update the adapter with the new data
-                    ocrIngredientsList = matchedIngredients;
                     ocrIngredientsListFragment.updateIngredientsList(matchedIngredients);
                 }
                 else {

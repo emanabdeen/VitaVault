@@ -56,24 +56,21 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
 
         // Observe LiveData for scanned ingredients List
         ingredientScanViewModel.getMatchedIngredientsData().observe(getViewLifecycleOwner(), matchedIngredients -> {
-            if (matchedIngredients == null) {
-                // Show progress bar while loading
-                binding.progressBar.setVisibility(View.VISIBLE);
-                binding.ocrIngredientRecyclerView.setVisibility(View.GONE);
-                binding.emptyMessage.setVisibility(View.GONE);
-            } else if (!matchedIngredients.isEmpty()) {
-                // Hide progress bar when medications are loaded
+            Log.d(TAG, "matched ingredients retrieved" + matchedIngredients);
+            if (matchedIngredients != null && !matchedIngredients.isEmpty()) {
                 matchedIngredientsList = matchedIngredients;
                 ocrIngredientListAdapter.updateData(matchedIngredientsList);
-                binding.ocrIngredientRecyclerView.setVisibility(View.VISIBLE);
+                binding.ocrResultListView.setVisibility(View.VISIBLE);
                 binding.emptyMessage.setVisibility(View.GONE);
                 binding.progressBar.setVisibility(View.GONE);
-            } else {
-                // Hide progress bar and show "No medications found" message
-                binding.ocrIngredientRecyclerView.setVisibility(View.GONE);
-                binding.emptyMessage.setVisibility(View.VISIBLE);
-                binding.emptyMessage.setText("No ingredients found.");
-                binding.progressBar.setVisibility(View.GONE);
+            }
+        });
+
+        binding.iconSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String query = binding.searchText.getText().toString().trim();
+                filterIngredients(query);
             }
         });
     }
@@ -89,9 +86,10 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
         Log.d(TAG, "added new custom ingredient from ocr scan result list" + newCustomIngredient.getIngredientName());
 
         // Change icon to checkmark to show that ingredient has been added
-        ImageButton btnAdd = binding.ocrIngredientRecyclerView.findViewHolderForAdapterPosition(pos).itemView.findViewById(R.id.btnAdd);
-        btnAdd.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        btnAdd.setImageResource(R.drawable.check_mark);
+        matchedIngredientsList.get(pos).setAddedAsCustom(true);
+        ocrIngredientListAdapter.updateData(matchedIngredientsList);
+        ocrIngredientListAdapter.notifyDataSetChanged();
+
     }
 
     @Override

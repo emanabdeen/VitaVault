@@ -25,7 +25,8 @@
 
     <color name="Test">#B79C27B0</color> <!-- Semi-transparent black for light theme -->
 
-
+    <color name="primary_ocr">#E0CACA</color>
+    <color name="secondary_ocr"></color>
 
     <color name="shadow_color_light">#80C12121</color>
 
