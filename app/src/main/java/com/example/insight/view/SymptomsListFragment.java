@@ -1,5 +1,6 @@
 package com.example.insight.view;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -20,11 +21,13 @@ import com.example.insight.databinding.FragmentSymptomsListBinding;
 import com.example.insight.model.Symptom;
 import com.example.insight.utility.DateValidator;
 import com.example.insight.viewmodel.SymptomViewModel;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class SymptomsListFragment extends Fragment implements ItemClickListener{
@@ -85,16 +88,44 @@ public class SymptomsListFragment extends Fragment implements ItemClickListener{
         // Observe Symptoms Data
         viewModel.getSymptomsData().observe(getViewLifecycleOwner(), symptomsData -> {
             Log.d("debug", "--Update View at symptoms list recycler view--");
-            symptomList = symptomsData;
-            symptomsListAdapter.updateData(symptomsData); // Update adapter data
 
-            // Hide loading indicator
-            binding.progressBar.setVisibility(View.GONE);//----it does not work for now
+            if(symptomsData != null && !symptomsData.isEmpty()){
+                symptomList = symptomsData;
+                symptomsListAdapter.updateData(symptomsData); // Update adapter data
+                binding.recyclerLayout.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
+            }
+
         });
 
         // Observe Search Message
         viewModel.getSearchResultMessageData().observe(getViewLifecycleOwner(), searchResultMessageData -> {
-            binding.searchMessage.setText(searchResultMessageData);
+
+            if(searchResultMessageData != null && !searchResultMessageData.isEmpty()){
+                binding.searchMessage.setText(searchResultMessageData);
+                binding.searchMessage.setVisibility(View.VISIBLE);
+                binding.recyclerLayout.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.GONE);
+            }
+            /*binding.searchMessage.setText(searchResultMessageData);*/
+        });
+
+        // Set up date pickers for start date inputs
+        binding.searchTextDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePicker(binding.searchTextDate);
+            }
+        });
+
+        //if search by date cleared get all symptoms by type
+        binding.btnClearDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.searchTextDate.setText("");
+                viewModel.GetSymptomsByType(symptomType);
+                searchCriteria = "type";
+            }
         });
 
 
@@ -102,11 +133,7 @@ public class SymptomsListFragment extends Fragment implements ItemClickListener{
         binding.iconSearch.setOnClickListener(v -> {
             searchDateStr = binding.searchTextDate.getText().toString();
 
-            if (searchDateStr.isEmpty()){
-                //if the the search date is empty it will get all dates for this symptom type
-                viewModel.GetSymptomsByType(symptomType);
-                searchCriteria = "type";
-            }else {
+            if (!searchDateStr.isEmpty()){
                 //if there is a date inserted, validate it before sending the request
                 boolean isDateValid = DateValidator.isValidDate(searchDateStr);
                 if (isDateValid){
@@ -115,7 +142,9 @@ public class SymptomsListFragment extends Fragment implements ItemClickListener{
                 }else{
                     Toast.makeText(requireContext(), "Please enter a valid date", Toast.LENGTH_LONG).show();
                 }
-
+            }else{
+                viewModel.GetSymptomsByType(symptomType);
+                searchCriteria = "type";
             }
         });
 
@@ -174,5 +203,25 @@ public class SymptomsListFragment extends Fragment implements ItemClickListener{
             }
         }
 
+    }
+
+    private void showDatePicker(TextInputEditText dateInput) {
+        // Get current date
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Create and show DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    // Format the selected date and set it to the input field
+                    String selectedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                    dateInput.setText(selectedDate);
+                },
+                year, month, day
+        );
+        datePickerDialog.show();
     }
 }

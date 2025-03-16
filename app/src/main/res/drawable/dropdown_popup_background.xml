@@ -1,0 +1,13 @@
+<!-- res/drawable/dropdown_popup_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Set the background color -->
+    <solid android:color="@color/primary" /> <!-- White color -->
+
+    <!-- Set rounded corners -->
+    <corners android:radius="20dp" /> <!-- Adjust the radius as needed -->
+
+    <!-- Optional: Add a border -->
+    <stroke
+        android:width="3dp"
+        android:color="#FFDDDDDD" /> <!-- Border color -->
+</shape>

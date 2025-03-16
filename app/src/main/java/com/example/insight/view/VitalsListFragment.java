@@ -1,5 +1,6 @@
 package com.example.insight.view;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -20,11 +21,13 @@ import com.example.insight.databinding.FragmentVitalsListBinding;
 import com.example.insight.model.Vital;
 import com.example.insight.utility.DateValidator;
 import com.example.insight.viewmodel.VitalViewModel;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class VitalsListFragment extends Fragment implements ItemClickListener {
@@ -84,42 +87,72 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
         // Observe Vitals Data
         viewModel.getVitalsData().observe(getViewLifecycleOwner(), vitalsData -> {
             Log.d("debug", "--Update View at vitals list recycler view--");
-            vitalList = vitalsData;
+
+            if (vitalsData != null && !vitalsData.isEmpty()) {
+                vitalList = vitalsData;
+                vitalsListAdapter.updateData(vitalsData); // Update adapter data
+                binding.recyclerLayout.setVisibility(View.VISIBLE);
+                binding.progressBar.setVisibility(View.GONE);
+            }
+
+            /*vitalList = vitalsData;
             vitalsListAdapter.updateData(vitalsData); // Update adapter data
 
             // Hide loading indicator
-            binding.progressBar.setVisibility(View.GONE);//----it does not work for now
+            binding.progressBar.setVisibility(View.GONE);*/
         });
 
         // Observe Search Message
         viewModel.getSearchResultMessageData().observe(getViewLifecycleOwner(), searchResultMessageData -> {
-            binding.searchMessage.setText(searchResultMessageData);
+            if (searchResultMessageData != null && !searchResultMessageData.isEmpty()) {
+                binding.searchMessage.setText(searchResultMessageData);
+                binding.searchMessage.setVisibility(View.VISIBLE);
+                binding.recyclerLayout.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(View.GONE);
+            }
+
+            /*binding.searchMessage.setText(searchResultMessageData);*/
         });
 
+        // Set up date pickers for start date inputs
+        binding.searchTextDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePicker(binding.searchTextDate);
+            }
+        });
+
+        //if search by date cleared get all symptoms by type
+        binding.btnClearDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.searchTextDate.setText("");
+                viewModel.GetVitalsByType(vitalType);
+                searchCriteria = "type";
+            }
+        });
 
         // Search Button Logic
         binding.iconSearch.setOnClickListener(v -> {
             searchDateStr = binding.searchTextDate.getText().toString();
 
-            if (searchDateStr.isEmpty()){
+            if (!searchDateStr.isEmpty()) {
+
+                //if there is a date inserted, validate it before sending the request
+                boolean isDateValid = DateValidator.isValidDate(searchDateStr);
+                if (isDateValid) {
+                    viewModel.GetVitalsByDateAndType(searchDateStr, vitalType);
+                    searchCriteria = "date";
+                } else {
+                    Toast.makeText(requireContext(), "Please enter a valid date", Toast.LENGTH_LONG).show();
+                }
+            } else {
                 //if the the search date is empty it will get all dates for this vital type
                 Log.i("trace", "Search initiated for: " + searchDateStr);
                 viewModel.GetVitalsByType(vitalType);
                 searchCriteria = "type";
-            }else {
-                //if there is a date inserted, validate it before sending the request
-                boolean isDateValid = DateValidator.isValidDate(searchDateStr);
-                if (isDateValid){
-                    viewModel.GetVitalsByDateAndType(searchDateStr, vitalType);
-                    searchCriteria = "date";
-                }else{
-                    Toast.makeText(requireContext(), "Please enter a valid date", Toast.LENGTH_LONG).show();
-                }
-
             }
         });
-
-
     }
 
     @Override
@@ -146,8 +179,8 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             //navigate to vitalDetail Page
             Intent intentObj = new Intent(requireContext(), VitalDetails.class);
             intentObj.putExtra("vitalID", vitalID);
-            intentObj.putExtra("vitalType","");
-            intentObj.putExtra("unit","");
+            intentObj.putExtra("vitalType", "");
+            intentObj.putExtra("unit", "");
             intentObj.putExtra("title", title);
             intentObj.putExtra("image", image);
             startActivity(intentObj);
@@ -168,13 +201,31 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
             //Toast.makeText(getContext(), "Vital record is successfully deleted", Toast.LENGTH_LONG).show();
 
             //To refresh the recyclerview list
-            if (searchCriteria.equals("date")){
+            if (searchCriteria.equals("date")) {
                 viewModel.GetVitalsByDate(searchDateStr);
-            }else{
+            } else {
                 viewModel.GetVitalsByType(vitalType);
-
             }
         }
+    }
 
+    private void showDatePicker(TextInputEditText dateInput) {
+        // Get current date
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Create and show DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    // Format the selected date and set it to the input field
+                    String selectedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                    dateInput.setText(selectedDate);
+                },
+                year, month, day
+        );
+        datePickerDialog.show();
     }
 }

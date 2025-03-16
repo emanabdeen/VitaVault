@@ -1,4 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/vitavault_page_background3"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    tools:context=".view.SymptomActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:layout_marginBottom="25dp">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:padding="10dp"
+            android:layout_gravity="center"
+            android:background="@drawable/glow_white"/>
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+    </LinearLayout>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnAdd"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="@drawable/button_custom2"
+        android:drawableStart="@drawable/baseline_add_primary"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:text="Add"
+        android:textSize="18sp"
+        android:textColor="@color/primary"
+        android:layout_gravity="center"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fragmentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:paddingBottom="20dp">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
+
+<!--
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +64,6 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:background="@drawable/vitavault_page_background3"
 tools:context=".view.SymptomActivity">
-
 
 <LinearLayout
     android:layout_width="match_parent"
@@ -99,4 +155,4 @@ tools:context=".view.SymptomActivity">
     app:layout_constraintVertical_bias="0.165"/>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>-->

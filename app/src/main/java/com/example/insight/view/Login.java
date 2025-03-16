@@ -24,7 +24,6 @@ public class Login extends AppCompatActivity {
 
     ActivityLoginBinding binding;
     FirebaseAuth mAuth;
-    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +48,15 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
 
                 //Validate Email & PW are not empty
-                String userEmail= binding.editTxtEmail.getText().toString();
-                String userPW= binding.editTxtPW.getText().toString();
+                String userEmail = binding.editTxtEmail.getText().toString();
+                String userPW = binding.editTxtPW.getText().toString();
                 //String userEmail= "test@test.com";
                 //String userPW= "Test@123";
 
-                if(userEmail.matches("")||userPW.matches("")){
+                if (userEmail.matches("") || userPW.matches("")) {
                     //show error message
                     binding.txtErrorMessage.setText("Please insert a valid email and a valid password.");
-                }else{
+                } else {
                     signIn(binding.editTxtEmail.getText().toString(), binding.editTxtPW.getText().toString());
                     //signIn("test@test.com", "Test@123");
                 }
@@ -69,7 +68,7 @@ public class Login extends AppCompatActivity {
         ConstraintLayout successMessage = binding.successMessage;
 
         //Read Intent value. if registration process succeeded, will show success message
-        boolean registerSuccess = intentObj.getBooleanExtra("registerSuccess",false);
+        boolean registerSuccess = intentObj.getBooleanExtra("registerSuccess", false);
         // Set visibility based on registerSuccess
         if (registerSuccess) {
             title.setVisibility(View.GONE);
@@ -81,11 +80,11 @@ public class Login extends AppCompatActivity {
     }
 
     private void signIn(String email, String password) {
-        mAuth.signInWithEmailAndPassword(email,password)
+        mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             //if success, update the UI with the signed-in user's info
                             Log.d("tag", "signInWithEmail:success");
 
@@ -93,7 +92,7 @@ public class Login extends AppCompatActivity {
                             Intent intentObj = new Intent(getApplicationContext(), IntroActivity.class); //Navigate to page
                             startActivity(intentObj);
                             finish();
-                        }else{
+                        } else {
                             // If sign-in fails, check the exception for the reason
                             Exception exception = task.getException();
                             if (exception != null) {

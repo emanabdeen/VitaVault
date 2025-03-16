@@ -34,7 +34,7 @@
     <android.widget.ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="60dp">
+        android:layout_marginTop="30dp">
         <!-- Vertical LinearLayout with margin between CardViews -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,14 +45,6 @@
             android:paddingTop="20dp">
 
 
-            <!-- Category Dropdown -->
-            <!--    <Spinner-->
-            <!--        android:id="@+id/spinnerCategory"-->
-            <!--        android:layout_width="match_parent"-->
-            <!--        android:layout_height="wrap_content"-->
-            <!--        android:background="@drawable/spinner_background"-->
-            <!--        android:padding="8dp" />-->
-
             <!-- Date Label -->
             <TextView
                 android:layout_width="wrap_content"
@@ -60,14 +52,30 @@
                 android:text="Date"
                 android:textStyle="bold" />
 
-            <EditText
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dateLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_background"
+                    android:focusable="false"
+                    android:inputType="date"
+                    android:paddingVertical="10dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--<EditText
                 android:id="@+id/editTextDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_background"
                 android:inputType="date"
                 android:padding="8dp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"/>-->
 
             <TextView
                 android:id="@+id/errorDate"
@@ -86,14 +94,29 @@
                 android:text="Time"
                 android:textStyle="bold" />
 
-            <EditText
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/startTimeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edit_text_background"
+                    android:focusable="false"
+                    android:inputType="time"
+                    android:paddingVertical="8dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--<EditText
                 android:id="@+id/editTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_text_background"
                 android:inputType="time"
                 android:padding="8dp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"/>-->
 
             <TextView
                 android:id="@+id/errorTime"

@@ -1,5 +1,7 @@
 package com.example.insight.view;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,12 +30,14 @@ import com.example.insight.utility.TimeValidator;
 import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.SymptomViewModel;
 import com.example.insight.viewmodel.VitalViewModel;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -119,153 +123,134 @@ public class SymptomDetails extends DrawerBaseActivity {
             //put initial values for current time and date
             binding.editTextDate.setText(DateValidator.LocalDateToString(LocalDate.now()));
             binding.editTimeStart.setText(TimeValidator.LocalTimeToString(LocalTime.now()));
+
         }
 
-        //  Save Button
+        // Set up date pickers for start date inputs
+        binding.editTextDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePicker(binding.editTextDate);
+            }
+        });
+
+        // Set up time pickers for start and end date inputs
+        binding.editTimeStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTimePicker(binding.editTimeStart);
+            }
+        });
+        binding.editTimeEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTimePicker(binding.editTimeEnd);
+            }
+        });
+
+        // Save Button Click Listener
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 try {
-                    if (pageFunction.equals("createSymptom")){
-                        CreateNewSymptom();
+                    if (validateSymptomInputs()) {
+                        if (pageFunction.equals("createSymptom")) {
+                            CreateNewSymptom();
+                        } else if (pageFunction.equals("editSymptom")) {
+                            EditSymptom();
+                        }
                     }
-                    if (pageFunction.equals("editSymptom")){
-                        EditSymptom();
-                    }
-
-                }catch (Exception e) {
-                    Log.e("error", "try-catch error: "+ e.getMessage());
+                } catch (Exception e) {
+                    Log.e("error", "try-catch error: " + e.getMessage());
                 }
-
             }
         });
     }
 
     private void CreateNewSymptom() {
-
-        try{
-            SymptomViewModel viewModel= new SymptomViewModel();
+        try {
             Symptom newSymptom;
 
             // Get data from UI
             String recordDateStr = binding.editTextDate.getText().toString();
             String recordTimeStartStr = binding.editTimeStart.getText().toString();
-            String recordTimeEndStr =  StringHandler.defaultIfNull(binding.editTimeEnd.getText()); //if it null will be saved as ""
-            String symptomDescription = StringHandler.defaultIfNull(binding.txtDescription.getText()); //if it null will be saved as ""
-            // Get the selected value
+            String recordTimeEndStr = StringHandler.defaultIfNull(binding.editTimeEnd.getText());//if it null will be saved as ""
+            String symptomDescription = StringHandler.defaultIfNull(binding.txtDescription.getText());//if it null will be saved as ""
             String selectedLevelValue = getSelectedRadioButtonValue(binding.radioGroupSymptomLevel);
 
-            if (!TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStartStr)) {
-                showError(binding.errorGeneral, "", false);
+            LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+            LocalTime recordTimeStart = TimeValidator.StringToLocalTime(recordTimeStartStr);
 
-                boolean isDateValid = DateValidator.isValidDate(recordDateStr);
-                boolean isTimeStartValid = TimeValidator.isValidTime(recordTimeStartStr);
-                boolean isTimeEndValid = true; // it will be true by default but will be validate if it has value
-                if(!TextUtils.isEmpty(recordTimeEndStr)){
-                    isTimeEndValid = TimeValidator.isValidTime(recordTimeEndStr);
-                }
-
-                // Handle date error
-                showError(binding.errorDate, "Invalid Date (e.g., 2025-05-15)", !isDateValid);
-                // Handle time error
-                showError(binding.errorTimeStart, "Invalid Time (e.g., 14:30)", !isTimeStartValid);
-                showError(binding.errorTimeEnd, "Invalid Time (e.g., 14:30)", !isTimeEndValid);
-
-                if (isDateValid && isTimeStartValid && isTimeEndValid) {
-                    LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
-                    LocalTime recordTimeStart = TimeValidator.StringToLocalTime(recordTimeStartStr);
-
-                    if (recordTimeEndStr.isEmpty()){
-                        // Create symptom object with the retrieved data
-                        newSymptom = new Symptom(recordDate, recordTimeStart, Optional.empty(),symptomType,selectedLevelValue,symptomDescription);
-                    }else{
-                        LocalTime endTime = TimeValidator.StringToLocalTime(recordTimeEndStr);
-
-                        // Create symptom object with the retrieved data
-                        newSymptom = new Symptom(recordDate, recordTimeStart, Optional.ofNullable(endTime),symptomType,selectedLevelValue,symptomDescription);
-                    }
-                    viewModel.AddSymptom(newSymptom);
-                    Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
-                    finish();
-
-
-                }
+            if (recordTimeEndStr.isEmpty()) {
+                newSymptom = new Symptom(recordDate, recordTimeStart, Optional.empty(), symptomType, selectedLevelValue, symptomDescription);
             } else {
-                //Handle missing field error
-                showError(binding.errorGeneral, "One or more fields are empty.", true);
-                Log.e("error", "One or more fields are empty.");
+                LocalTime endTime = TimeValidator.StringToLocalTime(recordTimeEndStr);
+                newSymptom = new Symptom(recordDate, recordTimeStart, Optional.ofNullable(endTime), symptomType, selectedLevelValue, symptomDescription);
             }
 
-        }catch (Exception e) {
-            Log.e("error", "try-catch error: "+ e.getMessage());
+            viewModel.AddSymptom(newSymptom);
+            Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
+            finish();
+        } catch (Exception e) {
+            Log.e("error", "try-catch error: " + e.getMessage());
         }
     }
-
-    private void EditSymptom(){
-        try{
-            SymptomViewModel viewModel= new SymptomViewModel();
+    private void EditSymptom() {
+        try {
             Symptom updatedSymptom;
 
             // Get data from UI
             String recordDateStr = binding.editTextDate.getText().toString();
             String recordTimeStartStr = binding.editTimeStart.getText().toString();
-            String recordTimeEndStr =  StringHandler.defaultIfNull(binding.editTimeEnd.getText()); //if it null will be saved as ""
+            String recordTimeEndStr = StringHandler.defaultIfNull(binding.editTimeEnd.getText()); //if it null will be saved as ""
             String symptomDescription = StringHandler.defaultIfNull(binding.txtDescription.getText()); //if it null will be saved as ""
-            // Get the selected value
-            String selectedlevelValue = getSelectedRadioButtonValue(binding.radioGroupSymptomLevel);
+            String selectedLevelValue = getSelectedRadioButtonValue(binding.radioGroupSymptomLevel);
 
-            if (!TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStartStr)) {
-                showError(binding.errorGeneral, "", false);
+            LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
+            LocalTime recordTimeStart = TimeValidator.StringToLocalTime(recordTimeStartStr);
 
-                boolean isDateValid = DateValidator.isValidDate(recordDateStr);
-                boolean isTimeStartValid = TimeValidator.isValidTime(recordTimeStartStr);
-                boolean isTimeEndValid = true; // it will be true by default but will be validate if it has value
-                if(!TextUtils.isEmpty(recordTimeEndStr)){
-                    isTimeEndValid = TimeValidator.isValidTime(recordTimeEndStr);
-                }
-
-                // Handle date error
-                showError(binding.errorDate, "Invalid Date (e.g., 2025-05-15)", !isDateValid);
-                // Handle time error
-                showError(binding.errorTimeStart, "Invalid Time (e.g., 14:30)", !isTimeStartValid);
-                showError(binding.errorTimeEnd, "Invalid Time (e.g., 14:30)", !isTimeEndValid);
-
-                if (isDateValid && isTimeStartValid && isTimeEndValid) {
-                    LocalDate recordDate = DateValidator.StringToLocalDate(recordDateStr);
-                    LocalTime recordTimeStart = TimeValidator.StringToLocalTime(recordTimeStartStr);
-
-                    if (recordTimeEndStr.isEmpty()){
-                        // Create symptom object with the retrieved data
-                        updatedSymptom = new Symptom(recordDate, recordTimeStart, Optional.empty(),symptomType,selectedlevelValue,symptomDescription);
-
-                    }else{
-                        LocalTime endTime = TimeValidator.StringToLocalTime(recordTimeEndStr);
-
-                        // Create symptom object with the retrieved data
-                        updatedSymptom = new Symptom(recordDate, recordTimeStart, Optional.ofNullable(endTime),symptomType,selectedlevelValue,symptomDescription);
-                    }
-                    updatedSymptom.setSymptomId(symptomId);
-                    viewModel.UpdateSymptom(updatedSymptom);
-                    Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
-                    finish();
-
-
-
-                }
+            if (recordTimeEndStr.isEmpty()) {
+                updatedSymptom = new Symptom(recordDate, recordTimeStart, Optional.empty(), symptomType, selectedLevelValue, symptomDescription);
             } else {
-                //Handle missing field error
-                showError(binding.errorGeneral, "One or more fields are empty.", true);
-                Log.e("error", "One or more fields are empty.");
+                LocalTime endTime = TimeValidator.StringToLocalTime(recordTimeEndStr);
+                updatedSymptom = new Symptom(recordDate, recordTimeStart, Optional.ofNullable(endTime), symptomType, selectedLevelValue, symptomDescription);
             }
 
-        }catch (Exception e) {
-            Log.e("error", "try-catch error: "+ e.getMessage());
+            updatedSymptom.setSymptomId(symptomId);
+            viewModel.UpdateSymptom(updatedSymptom);
+            Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
+            finish();
+        } catch (Exception e) {
+            Log.e("error", "try-catch error: " + e.getMessage());
         }
     }
+    private boolean validateSymptomInputs() {
+        // Get data from UI
+        String recordDateStr = binding.editTextDate.getText().toString();
+        String recordTimeStartStr = binding.editTimeStart.getText().toString();
+        String recordTimeEndStr = StringHandler.defaultIfNull(binding.editTimeEnd.getText());
+        String symptomDescription = StringHandler.defaultIfNull(binding.txtDescription.getText());
+        String selectedLevelValue = getSelectedRadioButtonValue(binding.radioGroupSymptomLevel);
 
+        boolean isDateAndTimeHaveValues= !TextUtils.isEmpty(recordDateStr) && !TextUtils.isEmpty(recordTimeStartStr);
+        // Validate date and time
+        boolean isDateValid = DateValidator.isValidDate(recordDateStr);
+        boolean isTimeStartValid = TimeValidator.isValidTime(recordTimeStartStr);
+        boolean isTimeEndValid = TextUtils.isEmpty(recordTimeEndStr) || (!TextUtils.isEmpty(recordTimeEndStr) && TimeValidator.isValidTime(recordTimeEndStr));
 
-    // Map values to RadioButton IDs
+        // Validate symptom level
+        boolean isLevelSelected = !TextUtils.isEmpty(selectedLevelValue);
+
+        // Show errors if validation fails
+        showError(binding.errorGeneral, "One or more fields are empty.", !isDateAndTimeHaveValues);
+        showError(binding.errorDate, "Invalid Date (e.g., 2025-05-15)", !isDateValid);
+        showError(binding.errorTimeStart, "Invalid Time (e.g., 14:30)", !isTimeStartValid);
+        showError(binding.errorTimeEnd, "Invalid Time (e.g., 14:30)", !isTimeEndValid);
+        showError(binding.errorLevel, "Please select a symptom level.", !isLevelSelected);
+
+        // Return true only if all validations pass
+        return isDateAndTimeHaveValues && isDateValid && isTimeStartValid && isTimeEndValid && isLevelSelected;
+    }
     private int getRadioButtonIdForValue(String value) {
         switch (value) {
             case "Not Present":
@@ -299,12 +284,50 @@ public class SymptomDetails extends DrawerBaseActivity {
         }
     }
 
+    private void showDatePicker(TextInputEditText dateInput) {
+        // Get current date
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Create and show DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    // Format the selected date and set it to the input field
+                    String selectedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                    dateInput.setText(selectedDate);
+                },
+                year, month, day
+        );
+        datePickerDialog.show();
+    }
+
+    private void showTimePicker(TextInputEditText timeInput) {
+        // Get current time
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        // Create and show TimePickerDialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                this,
+                (view, selectedHour, selectedMinute) -> {
+                    // Format the selected time and set it to the input field
+                    String selectedTime = String.format("%02d:%02d", selectedHour, selectedMinute);
+                    timeInput.setText(selectedTime);
+                },
+                hour, minute, true // true for 24-hour format
+        );
+        timePickerDialog.show();
+    }
     private void showError(TextView errorView, String message, boolean isVisible) {
         if (isVisible) {
             errorView.setText(message);
             errorView.setVisibility(View.VISIBLE);
         } else {
-            errorView.setVisibility(View.GONE);
+            errorView.setVisibility(View.INVISIBLE);
         }
     }
 }

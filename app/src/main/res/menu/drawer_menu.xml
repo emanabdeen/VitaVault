@@ -7,24 +7,34 @@
         android:title="Home" />
 
     <item
-        android:id="@+id/nav_symptoms"
-        android:icon="@drawable/icon_symptoms"
-        android:title="Symptoms" />
-
-    <item
         android:id="@+id/nav_vitals"
         android:icon="@drawable/ic_vitals2"
         android:title="Vitals" />
 
     <item
-        android:id="@+id/nav_reports"
-        android:icon="@drawable/ic_report2"
-        android:title="Reports" />
+        android:id="@+id/nav_symptoms"
+        android:icon="@drawable/ic_symptom2"
+        android:title="Symptoms" />
+
+    <item
+        android:id="@+id/nav_medication"
+        android:icon="@drawable/ic_medication2"
+        android:title="Medications" />
 
     <item
         android:id="@+id/nav_dietary"
         android:icon="@drawable/ic_diet2"
         android:title="Dietary Restrictions" />
+
+    <item
+        android:id="@+id/nav_ocr"
+        android:icon="@drawable/ic_ocr2"
+        android:title="OCR" />
+
+    <item
+        android:id="@+id/nav_reports"
+        android:icon="@drawable/ic_report2"
+        android:title="Reports" />
 
     <item
         android:id="@+id/nav_account"

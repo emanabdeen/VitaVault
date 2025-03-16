@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/vitavault_page_background3"
+    android:padding="16dp"
     tools:context=".view.MedicationsActivity">
 
     <!--- Icon and Title -->
@@ -27,16 +28,11 @@
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_gravity="center"
-                android:background="@drawable/icon_medications"
-                android:padding="10dp" />
+                android:background="@drawable/glow_white"
+                android:padding="10dp"
+                android:src="@drawable/icon_medications"/>
 
-            <TextView
-                android:id="@+id/textViewTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
+
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatButton

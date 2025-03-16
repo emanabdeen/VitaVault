@@ -19,7 +19,8 @@
             android:layout_height="70dp"
             android:padding="10dp"
             android:layout_gravity="center"
-            android:background="@drawable/icon_dietary"/>
+            android:src="@drawable/icon_dietary"
+            android:background="@drawable/glow_white"/>
 
         <TextView
             android:id="@+id/textViewTitle"
