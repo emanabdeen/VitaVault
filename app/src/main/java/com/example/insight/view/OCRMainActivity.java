@@ -24,7 +24,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -32,9 +31,9 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.LifecycleCameraController;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.example.insight.databinding.ActivityOcrMainBinding;
-import com.example.insight.model.OcrIngredient;
 import com.example.insight.utility.ImageUtils;
 import com.example.insight.utility.IngredientUtils;
 import com.example.insight.utility.OcrApiClient;
@@ -46,14 +45,13 @@ import com.google.mlkit.vision.text.Text;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.Executor;
 
 public class OCRMainActivity extends DrawerBaseActivity {
     private static final String TAG = "OCRMainActivity";
-    private static final String FALSE = "false";
-    private static final String TRUE = "true";
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
 
@@ -62,11 +60,10 @@ public class OCRMainActivity extends DrawerBaseActivity {
     private TextView baseInstructionsText;
     private ImageView cameraResultImageView;
     private EditText ocrResultText;
-    private Bitmap capturedImageBitmap, croppedImageBitmap;
+    private Bitmap  capturedImageBitmap, croppedImageBitmap;
     // TODO: Use capturedImageBitmap for preview snapshot and fallback if user cancels crop (if crop cancel doesn't update bitmap for ocr)
     // TODO: Clear capturedImageBitmap at start of each action that might change it, then fallback to capturedImageBitmap if null
-    // TODO: Handle cancel of crop activity, fallback to previewview? or fallback to placeholder icon? or fallback to uncropped image with capturedBitmapImage and still trigger OCR?
-    private Uri imageUri, croppedImageUri;
+    private Uri imageUri, savedImageUri, croppedImageUri;
     private ProcessCameraProvider cameraProvider;
 
     private LifecycleCameraController cameraController;
@@ -150,8 +147,8 @@ public class OCRMainActivity extends DrawerBaseActivity {
                 try {
                     // Launch the photo picker and let the user choose only images.
                     pickMedia.launch(new PickVisualMediaRequest.Builder()
-                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                        .build());
+                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                            .build());
                     Log.d(TAG, "onClick: OCR TEST - media picker launched");
                 } catch (Exception e) {
                     Log.e(TAG, "onClick: " + e.getMessage());
@@ -175,9 +172,12 @@ public class OCRMainActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
                 if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    // You can use the API that requires the permission.
-                    Log.d(TAG, "OnClick: camera button clicked, trying to capture photo");
-                    capturePhoto();
+                    if (previewView.getVisibility() != View.VISIBLE) {
+                        startCameraX();
+                    } else {
+                        Log.d(TAG, "OnClick: camera button clicked, trying to capture photo");
+                        capturePhoto();
+                    }
                 } else {
                     Log.d(TAG, "cameraButton.onclick(): Camera permission not granted, requesting camera permission");
                     requestPermissionLauncher.launch(Manifest.permission.CAMERA);
@@ -193,7 +193,6 @@ public class OCRMainActivity extends DrawerBaseActivity {
             new Thread(() -> {
                 runOnUiThread(() -> {
                     if (imageBitmap != null) {
-                        Log.d(TAG, "capturePhoto: imageBitmap[0] is not null, setting image view");
                         cameraResultImageView.setImageBitmap(imageBitmap);
                         showImageView();
                     }
@@ -203,43 +202,56 @@ public class OCRMainActivity extends DrawerBaseActivity {
             Log.e(TAG, "onClick: " + e.getMessage());
             Toast.makeText(OCRMainActivity.this, "Error taking photo", Toast.LENGTH_LONG).show();
         }
+        File tempFile = null;
+        try {
+            tempFile = File.createTempFile("ocr_image_", ".jpg", getCacheDir());
+        } catch (IOException e) {
+            Log.e(TAG, "capturePhoto: Error creating temp file", e);
+            //Toast.makeText(OCRMainActivity.this, "Error creating temp file", Toast.LENGTH_LONG).show();
+        }
         long timestamp = System.currentTimeMillis();
         ContentValues contentValues = new ContentValues();
         contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, timestamp);
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+        ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(tempFile).build();
+        File finalTempFile = tempFile;
+        //cameraController.takePicture(
+        //outputFileOptions,
+        Uri tempImageUri = FileProvider.getUriForFile(this, "com.example.android.fileprovider", tempFile);
         cameraController.takePicture(
-                new ImageCapture.OutputFileOptions.Builder(
-                        getContentResolver(),
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        contentValues
-                ).build(),
+               outputFileOptions,
                 getExecutor(),
                 new ImageCapture.OnImageSavedCallback() {
                     @Override
                     public void onImageSaved(ImageCapture.OutputFileResults outputFileResults) {
-                        imageUri = outputFileResults.getSavedUri();
-                        Log.d(TAG, "onImageSaved: " + imageUri);
+                        Uri savedPhotoUri = Uri.fromFile(finalTempFile);
+                        Log.d(TAG, "onImageSaved: " + savedPhotoUri);
                         Bitmap[] imageBitmap = new Bitmap[1];
-                        try {
-                            runOnUiThread( () -> startCropActivity(imageUri));
-                            ImageDecoder.Source source = ImageDecoder.createSource(getContentResolver(), imageUri);
-                            imageBitmap[0] = ImageDecoder.decodeBitmap(source);
-                            Log.d(TAG, "onImageSaved: imageBitmap[0] is not null");
-
-                            new Thread(() -> {
+                        new Thread(() -> {
+                            try {
+                                ImageDecoder.Source source = ImageDecoder.createSource(getContentResolver(), savedPhotoUri);
+                                imageBitmap[0] = ImageDecoder.decodeBitmap(source);
                                 runOnUiThread(() -> {
                                     if (imageBitmap[0] != null) {
                                         Log.d(TAG, "onImageSaved: imageBitmap[0] is not null, setting image view");
                                         cameraResultImageView.setImageBitmap(imageBitmap[0]);
                                         showImageView();
+                                        croppedImageBitmap = imageBitmap[0];
+                                        // Unbind camera controller to stop camera and save battery when not in use
+                                        if (cameraController != null) {
+                                            cameraController.unbind();
+                                        }
+                                        detectText();
                                     }
                                 });
-                            }).start();
-                        } catch (Exception e) {
-                            Log.e(TAG, "onClick: " + e.getMessage());
-                            Toast.makeText(OCRMainActivity.this, "Error taking photo", Toast.LENGTH_LONG).show();
-                        }
-                        Log.d(TAG, "onImageSaved: image saved");
+                                runOnUiThread( () -> startCropActivity(savedPhotoUri));
+                            } catch (Exception e) {
+                                Log.e(TAG, "onClick: " + e.getMessage());
+                                runOnUiThread( () -> Toast.makeText(OCRMainActivity.this, "Error taking photo", Toast.LENGTH_LONG).show());
+                            }
+
+                            Log.d(TAG, "onImageSaved: image saved");
+                        }).start();
                     }
                     @Override
                     public void onError(ImageCaptureException error) {
@@ -248,6 +260,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
                     }
                 }
         );
+        savedImageUri = Uri.fromFile(finalTempFile);
     }
 
     private void detectText(){
@@ -267,7 +280,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
                                 Toast.makeText(OCRMainActivity.this, "Error detecting text: view log ", Toast.LENGTH_LONG).show();
                                 Log.d(TAG, "An error occurred while detecting text...");
                                 if (task.getException().getMessage() != null ) {
-                                    Log.e(TAG, "detectText exceltion: " + task.getException().getMessage());
+                                    Log.e(TAG, "detectText exception: " + task.getException().getMessage());
                                 }
                             }
                         }
@@ -278,6 +291,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
     }
 
     private void startCropActivity(Uri imageUri) {
+
         croppedImageUri = Uri.fromFile(new File(getCacheDir(), "cropped_image.jpg"));
         Log.d(TAG, "startCropActivity: cropped image uri: " + croppedImageUri);
 
@@ -301,11 +315,28 @@ public class OCRMainActivity extends DrawerBaseActivity {
                             croppedImageBitmap = ImageUtils.loadBitmap(croppedImageUri.getPath());
                             cameraResultImageView.setImageURI(croppedImageUri);
                             showImageView();
-                            imageUri = croppedImageUri;
                             detectText();
                             // Unbind camera controller to stop camera and save battery when not in use
                             if (cameraController != null) {
                                 cameraController.unbind();
+                            }
+                            // Delete original image file
+                            File finalTempFile = new File(savedImageUri.getPath());
+                            if (finalTempFile.delete()) {
+                                if (finalTempFile.exists()) {
+                                    Log.e(TAG, "Captured image file failed to delete.");
+                                } else {
+                                    Log.d(TAG, "Captured image file deleted.");
+                                }
+                            }
+                            // Delete cropped image file
+                            File file = new File(getCacheDir(), "cropped_image.jpg");
+                            if (file.delete()) {
+                                if (file.exists()) {
+                                    Log.e(TAG, "Cropped image file failed to delete.");
+                                } else {
+                                    Log.d(TAG, "Cropped image file deleted.");
+                                }
                             }
                         }
                     } else if (o.getResultCode() == UCrop.RESULT_ERROR) {
@@ -330,6 +361,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
     // Hide imageView and show previewView
     private void showCameraPreview() {
         runOnUiThread(() -> {
+            imageUri = null;
             previewView.setVisibility(View.VISIBLE);
             baseInstructionsText.setVisibility(View.INVISIBLE);
             cameraResultImageView.setVisibility(View.INVISIBLE);
@@ -358,19 +390,20 @@ public class OCRMainActivity extends DrawerBaseActivity {
                             ImageDecoder.Source source = ImageDecoder.createSource(getContentResolver(), uri);
                             imageBitmap[0] = ImageDecoder.decodeBitmap(source);
                             new Thread(() -> {
+                                runOnUiThread(() -> {
+                                    if (imageBitmap[0] != null) {
+                                        Log.d(TAG, "Media Picked: imageBitmap[0] is not null, setting image view");
+                                        cameraResultImageView.setImageURI(uri);
+                                        croppedImageBitmap = imageBitmap[0];
+                                        showImageView();
+                                        // Unbind camera controller to stop camera and save battery when not in use
+                                        if (cameraController != null) {
+                                            cameraController.unbind();
+                                        }
+                                        detectText();
+                                    }
+                                });
                                 runOnUiThread( () -> startCropActivity(uri));
-//                                runOnUiThread(() -> {
-//                                    if (imageBitmap[0] != null) {
-//                                        Log.d(TAG, "onImageSaved: imageBitmap[0] is not null, setting image view");
-//                                        cameraResultImageView.setImageURI(uri);
-//                                        showImageView();
-//                                        // Unbind camera controller to stop camera and save battery when not in use
-//                                        if (cameraController != null) {
-//                                            cameraController.unbind();
-//                                        }
-//                                        detectText();
-//                                    }
-//                                });
                             }).start();
                         } catch (Exception e) {
                             Log.e(TAG, "onClick: " + e.getMessage());
