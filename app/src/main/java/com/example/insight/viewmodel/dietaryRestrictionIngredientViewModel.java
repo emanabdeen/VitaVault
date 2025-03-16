@@ -34,7 +34,7 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
     private final MutableLiveData<List<DietaryRestrictionIngredient>> customIngredientLiveData = new MutableLiveData<>();
     List<DietaryRestrictionIngredient> customIngredientList = new ArrayList<>();
     private final MutableLiveData<List<DietaryRestrictionIngredient>> predefinedIngredientLiveData = new MutableLiveData<>();
-    List<DietaryRestrictionIngredient> predefinedIngredientList = new ArrayList<>();
+    List<DietaryRestrictionIngredient> savedIngredientList = new ArrayList<>();
 
     private final MutableLiveData<List<DietaryRestrictionIngredient>> diaryIngredientLiveData = new MutableLiveData<>();
     List<DietaryRestrictionIngredient> diaryIngredientList = new ArrayList<>();
@@ -62,7 +62,7 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
     //Constructor
     public dietaryRestrictionIngredientViewModel() {
         customIngredientLiveData.setValue(customIngredientList);
-        predefinedIngredientLiveData.setValue(predefinedIngredientList);
+        predefinedIngredientLiveData.setValue(savedIngredientList);
         diaryIngredientLiveData.setValue(diaryIngredientList);
         glutenIngredientLiveData.setValue(glutenIngredientList);
         porkIngredientLiveData.setValue(porkIngredientList);
@@ -70,7 +70,6 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
         meatsIngredientLiveData.setValue(meatsIngredientList);
         nutsIngredientLiveData.setValue(nutsIngredientList);
         otherIngredientLiveData.setValue(otherIngredientList);
-
     }
 
     //Getter
@@ -80,6 +79,7 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
     }
 
     public LiveData<List<DietaryRestrictionIngredient>> getPredefinedIngredientsData() {
+        Log.e("debug","Predefined liveData size:"+ predefinedIngredientLiveData.getValue().size());
         return predefinedIngredientLiveData;
     }
 
@@ -92,6 +92,7 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
     }
 
     public MutableLiveData<List<DietaryRestrictionIngredient>> getDiaryIngredientLiveData() {
+        Log.e("debug","Diary liveData size:"+ diaryIngredientLiveData.getValue().size());
         return diaryIngredientLiveData;
     }
 
@@ -110,6 +111,36 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
     public MutableLiveData<List<DietaryRestrictionIngredient>> getOtherIngredientLiveData() {
         return otherIngredientLiveData;
     }
+
+    //setters
+    public void setDiaryIngredientList(List<DietaryRestrictionIngredient> diaryIngredientList) {
+        this.diaryIngredientList = diaryIngredientList;
+    }
+
+    public void setGlutenIngredientList(List<DietaryRestrictionIngredient> glutenIngredientList) {
+        this.glutenIngredientList = glutenIngredientList;
+    }
+
+    public void setPorkIngredientList(List<DietaryRestrictionIngredient> porkIngredientList) {
+        this.porkIngredientList = porkIngredientList;
+    }
+
+    public void setShellfishIngredientList(List<DietaryRestrictionIngredient> shellfishIngredientList) {
+        this.shellfishIngredientList = shellfishIngredientList;
+    }
+
+    public void setMeatsIngredientList(List<DietaryRestrictionIngredient> meatsIngredientList) {
+        this.meatsIngredientList = meatsIngredientList;
+    }
+
+    public void setNutsIngredientList(List<DietaryRestrictionIngredient> nutsIngredientList) {
+        this.nutsIngredientList = nutsIngredientList;
+    }
+
+    public void setOtherIngredientList(List<DietaryRestrictionIngredient> otherIngredientList) {
+        this.otherIngredientList = otherIngredientList;
+    }
+
 
 
 
@@ -163,7 +194,6 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
             }
         });
 
-
     }
 
 
@@ -178,7 +208,7 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                predefinedIngredientList = new ArrayList<>();
+                savedIngredientList = new ArrayList<>();
                 QuerySnapshot querySnapshot = task.getResult();
 
                 if (querySnapshot != null && !querySnapshot.isEmpty()) {
@@ -200,11 +230,11 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
                         Log.d("AddCustomIngredientdebug", ingredient.getIngredientName());
 
 
-                        predefinedIngredientList.add(ingredient);
+                        savedIngredientList.add(ingredient);
                     }
 
 
-                    predefinedIngredientLiveData.postValue(predefinedIngredientList);
+                    predefinedIngredientLiveData.postValue(savedIngredientList);
                     updateSelectedItems();
 
                 }else{
@@ -277,85 +307,170 @@ public class dietaryRestrictionIngredientViewModel extends ViewModel {
     }
 
 //loads all predefined ingredients into the viewModel
-    public void loadCategoryLiveData(String category, List<DietaryRestrictionIngredient> ingredientList){
 
-        if(category.equalsIgnoreCase(RestrictedIngredientsCategory.DAIRY.getCategoryDescription())){
+    private void updateSelectedItems() {
 
-            diaryIngredientList = ingredientList;
+        resetLists();
+
+        for (DietaryRestrictionIngredient selectedIngredient : savedIngredientList) {
+
+            Log.i("debug-ViewModel", "Selected: " + selectedIngredient.getIngredientName());
+
+            if (selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.DAIRY.getCategoryDescription())) {
+
+                diaryIngredientList.forEach(i -> {
+
+                    if (i.getIngredientName().equalsIgnoreCase(selectedIngredient.getIngredientName())) {
+                        i.setSelected(true);
+                        i.setIngredientId(selectedIngredient.getIngredientId());
+                        Log.i("debug-ViewModel", "MATCH: " + i.getIngredientName());
+                    }
+
+                    Log.e("debug-ViewModel", i.getIngredientName() + " is selected: " + i.getIsSelected());
+                });
+
+                diaryIngredientLiveData.postValue(diaryIngredientList);
+
+            } else if (selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.GLUTEN.getCategoryDescription())) {
 
 
-        }else if(category.equalsIgnoreCase(RestrictedIngredientsCategory.GLUTEN.getCategoryDescription())){
+                glutenIngredientList.forEach(i -> {
 
-            glutenIngredientList = ingredientList;
+                    if (i.getIngredientName().equalsIgnoreCase(selectedIngredient.getIngredientName())) {
+                        i.setSelected(true);
+                        i.setIngredientId(selectedIngredient.getIngredientId());
+                        Log.i("debug-ViewModel", "MATCH: " + i.getIngredientName());
+                    }
 
-        }else if(category.equalsIgnoreCase(RestrictedIngredientsCategory.PORK.getCategoryDescription())){
+                    Log.e("debug-ViewModel", i.getIngredientName() + " is selected: " + i.getIsSelected());
+                });
 
-            porkIngredientList = ingredientList;
+                glutenIngredientLiveData.postValue(glutenIngredientList);
 
-        }else if(category.equalsIgnoreCase(RestrictedIngredientsCategory.SHELLFISH.getCategoryDescription())){
+            } else if (selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.PORK.getCategoryDescription())) {
 
-            shellfishIngredientList = ingredientList;
-        }else if(category.equalsIgnoreCase(RestrictedIngredientsCategory.MEATS.getCategoryDescription())){
+                porkIngredientList.forEach(i -> {
 
-            meatsIngredientList = ingredientList;
+                    if (i.getIngredientName().equalsIgnoreCase(selectedIngredient.getIngredientName())) {
+                        i.setSelected(true);
+                        i.setIngredientId(selectedIngredient.getIngredientId());
+                        Log.i("debug-ViewModel", "MATCH: " + i.getIngredientName());
+                    }
 
-        }else if(category.equalsIgnoreCase(RestrictedIngredientsCategory.NUTS.getCategoryDescription())){
+                    Log.e("debug-ViewModel", i.getIngredientName() + " is selected: " + i.getIsSelected());
+                });
 
-            nutsIngredientList = ingredientList;
+                porkIngredientLiveData.postValue(porkIngredientList);
 
-        }else if(category.equalsIgnoreCase(RestrictedIngredientsCategory.OTHER.getCategoryDescription())){
 
-            otherIngredientList = ingredientList;
-        }else{
-            Log.e("LoadIngredient","Unknown Category: "+category);
+            } else if (selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.SHELLFISH.getCategoryDescription())) {
+
+                shellfishIngredientList.forEach(i -> {
+
+                    if (i.getIngredientName().equalsIgnoreCase(selectedIngredient.getIngredientName())) {
+                        i.setSelected(true);
+                        i.setIngredientId(selectedIngredient.getIngredientId());
+                        Log.i("debug-ViewModel", "MATCH: " + i.getIngredientName());
+                    }
+
+                    Log.e("debug-ViewModel", i.getIngredientName() + " is selected: " + i.getIsSelected());
+                });
+
+                shellfishIngredientLiveData.postValue(shellfishIngredientList);
+
+
+            } else if (selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.MEATS.getCategoryDescription())) {
+
+                meatsIngredientList.forEach(i -> {
+
+                    if (i.getIngredientName().equalsIgnoreCase(selectedIngredient.getIngredientName())) {
+                        i.setSelected(true);
+                        i.setIngredientId(selectedIngredient.getIngredientId());
+                        Log.i("debug-ViewModel", "MATCH: " + i.getIngredientName());
+                    }
+
+                    Log.e("debug-ViewModel", i.getIngredientName() + " is selected: " + i.getIsSelected());
+                });
+
+                meatsIngredientLiveData.postValue(meatsIngredientList);
+
+
+            } else if (selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.NUTS.getCategoryDescription())) {
+
+                nutsIngredientList.forEach(i -> {
+
+                    if (i.getIngredientName().equalsIgnoreCase(selectedIngredient.getIngredientName())) {
+                        i.setSelected(true);
+                        i.setIngredientId(selectedIngredient.getIngredientId());
+                        Log.i("debug-ViewModel", "MATCH: " + i.getIngredientName());
+                    }
+
+                    Log.e("debug-ViewModel", i.getIngredientName() + " is selected: " + i.getIsSelected());
+                });
+
+                nutsIngredientLiveData.postValue(nutsIngredientList);
+
+
+            } else if (selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.OTHER.getCategoryDescription())) {
+
+                otherIngredientList.forEach(i -> {
+
+                    if (i.getIngredientName().equalsIgnoreCase(selectedIngredient.getIngredientName())) {
+                        i.setSelected(true);
+                        i.setIngredientId(selectedIngredient.getIngredientId());
+                        Log.i("debug-ViewModel", "MATCH: " + i.getIngredientName());
+                    }
+
+                    Log.e("debug-ViewModel", i.getIngredientName() + " is selected: " + i.getIsSelected());
+                });
+
+                otherIngredientLiveData.postValue(otherIngredientList);
+
+
+            } else {
+                Log.e("MatchIngredient", "MatchNotFound: " + selectedIngredient.getIngredientName() + ", " + selectedIngredient.getIngredientCategory());
+            }
+
         }
-
     }
 
-    private void updateSelectedItems(){
+    private void resetLists() {
 
-        for (DietaryRestrictionIngredient selectedIngredient: predefinedIngredientList ) {
+        diaryIngredientList.forEach(dairy->{
+            dairy.setSelected(false);
+            dairy.setIngredientId(null);
+        });
 
-           if(selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.DAIRY.getCategoryDescription())){
+        glutenIngredientList.forEach(gluten->{
+            gluten.setSelected(false);
+            gluten.setIngredientId(null);
+        });
 
-               diaryIngredientList.forEach( i -> {
+        porkIngredientList.forEach(pork->{
+            pork.setSelected(false);
+            pork.setIngredientId(null);
+        });
 
-                   if (i.getIngredientName().equalsIgnoreCase(selectedIngredient.getIngredientName())){
-                       i.setSelected(true);
-                   }else{
-                       i.setSelected(false);
-                   }
+        shellfishIngredientList.forEach(shellfish->{
+            shellfish.setSelected(false);
+            shellfish.setIngredientId(null);
+        });
 
-                   Log.e("DietLoad", i.getIngredientName() + " is selected: " +i.getIsSelected());
-               });
+        meatsIngredientList.forEach(meats->{
+            meats.setSelected(false);
+            meats.setIngredientId(null);
+        });
 
-               diaryIngredientLiveData.postValue(diaryIngredientList);
+        nutsIngredientList.forEach(nuts->{
+            nuts.setSelected(false);
+            nuts.setIngredientId(null);
+        });
 
-            }else if(selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.GLUTEN.getCategoryDescription())){
-
-           }else if(selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.PORK.getCategoryDescription())){
-
-           }else if(selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.SHELLFISH.getCategoryDescription())){
-
-           }else if(selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.MEATS.getCategoryDescription())){
-
-           }else if(selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.NUTS.getCategoryDescription())){
-
-           }else if(selectedIngredient.getIngredientCategory().equalsIgnoreCase(RestrictedIngredientsCategory.OTHER.getCategoryDescription())){
-
-           }else{
-               Log.e("MatchIngredient","MatchNotFound: "+selectedIngredient.getIngredientName()+", "+selectedIngredient.getIngredientCategory());
-           }
-
-
-        }
+        otherIngredientList.forEach(other->{
+            other.setSelected(false);
+            other.setIngredientId(null);
+        });
 
     }
-
-
-
-
-
-
 
 }

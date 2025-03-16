@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implements MultipleRecyclerViewItemClickListener {
 
@@ -31,8 +32,8 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
     FirebaseUser user;
     Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> restrictionsMap;
     private dietaryRestrictionIngredientViewModel viewModel;
-    private List<DietaryRestrictionIngredient> selectedIngredientList;
-    DietaryRestrictionPredefinedItemAdapter groupedIngredientsAdapter;
+    //private List<DietaryRestrictionIngredient> selectedIngredientList;
+    DietaryRestrictionPredefinedItemAdapter diaryAdapter, glutenAdapter, porkAdapter, shellfishAdapter, meatAdapter,nutsAdapter, othersAdapter ;
 
     @Override
 
@@ -41,28 +42,22 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
         binding = ActivityDietaryRestrictionsMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        allocateActivityTitle("Dietary Restrictions");
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        selectedIngredientList = new ArrayList<>();
+        //selectedIngredientList = new ArrayList<>();
 
         if (user == null) {
             finish();
             startActivity(new Intent(DietaryRestrictionsMainActivity.this, Login.class));
         }
 
-        binding = ActivityDietaryRestrictionsMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        allocateActivityTitle("Dietary Restrictions");
-
         restrictionsMap = CommonRestrictedIngredients.GetAllIngredientsWithCategory();
 
         viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
         viewModel.getPredefinedDietaryRestrictionIngredients();
 
-        groupedIngredientsAdapter = new DietaryRestrictionPredefinedItemAdapter(this, restrictionsMap,this);
 
 
         int i = 0;
@@ -73,69 +68,127 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
                 RestrictedIngredientsCategory ingredientsCategory = entry.getKey();
                 List<CommonRestrictedIngredients> commonRestrictedIngredientsList = entry.getValue();
 
-                //dynamically fills each category label
-                String fieldName = "group" + (i + 1);
+                /////////
 
-
-                Field field = binding.getClass().getDeclaredField(fieldName);
-                field.setAccessible(true);
-
-                //sets group name
-                TextView textView = (TextView) field.get(binding);
-                textView.setText(ingredientsCategory.getCategoryDescription());
-
-
-                //parse Enum to Bean
+                Log.i("debug-main", ingredientsCategory.getCategoryDescription());
                 List<DietaryRestrictionIngredient> ingredientListBean = new ArrayList<>();
 
                 for (CommonRestrictedIngredients ingredient : commonRestrictedIngredientsList) {
+
+                    Log.i("debug-main", ingredient.getIngredientDescription());
+
                     DietaryRestrictionIngredient newIngredient = new DietaryRestrictionIngredient();
                     newIngredient.setIngredientName(ingredient.getIngredientDescription());
                     newIngredient.setIngredientCategory(ingredientsCategory.getCategoryDescription());
                     ingredientListBean.add(newIngredient);
                 }
 
-                viewModel.loadCategoryLiveData(ingredientsCategory.getCategoryDescription(),ingredientListBean);
+            if(ingredientsCategory.getCategoryDescription().equalsIgnoreCase(RestrictedIngredientsCategory.DAIRY.getCategoryDescription())){
+
+                Log.e("debug-main", ingredientsCategory.getCategoryDescription());
+
+                //parse Enum to Bean
+
+                String diaryGroupList = String.valueOf(binding.groupList1.getResources().getResourceEntryName(binding.groupList1.getId()));
+
+                viewModel.setDiaryIngredientList(ingredientListBean);
+
+                diaryAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, diaryGroupList);
+
+                binding.group1.setText(ingredientsCategory.getCategoryDescription());
+                binding.groupList1.setAdapter(diaryAdapter);
+                binding.groupList1.setLayoutManager(new LinearLayoutManager(this));
+
+            }else if(ingredientsCategory.getCategoryDescription().equalsIgnoreCase(RestrictedIngredientsCategory.GLUTEN.getCategoryDescription())){
+
+                String glutenGroupList = String.valueOf(binding.groupList2.getResources().getResourceEntryName(binding.groupList2.getId()));
+
+                viewModel.setGlutenIngredientList(ingredientListBean);
+                glutenAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, glutenGroupList);
+
+                binding.group2.setText(ingredientsCategory.getCategoryDescription());
+                binding.groupList2.setAdapter(glutenAdapter);
+                binding.groupList2.setLayoutManager(new LinearLayoutManager(this));
 
 
-                String recyclerName = "groupList" + (i + 1);
+            }else if(ingredientsCategory.getCategoryDescription().equalsIgnoreCase(RestrictedIngredientsCategory.PORK.getCategoryDescription())){
+
+                String porkGroupList = String.valueOf(binding.groupList3.getResources().getResourceEntryName(binding.groupList3.getId()));
+
+                viewModel.setPorkIngredientList(ingredientListBean);
+                porkAdapter =  new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, porkGroupList);
+
+                binding.group3.setText(ingredientsCategory.getCategoryDescription());
+                binding.groupList3.setAdapter(porkAdapter);
+                binding.groupList3.setLayoutManager(new LinearLayoutManager(this));
+
+            }else if(ingredientsCategory.getCategoryDescription().equalsIgnoreCase(RestrictedIngredientsCategory.SHELLFISH.getCategoryDescription())){
+
+                String shellfishGroupList = String.valueOf(binding.groupList4.getResources().getResourceEntryName(binding.groupList4.getId()));
+
+                viewModel.setShellfishIngredientList(ingredientListBean);
+                shellfishAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, shellfishGroupList);
+
+                binding.group4.setText(ingredientsCategory.getCategoryDescription());
+                binding.groupList4.setAdapter(shellfishAdapter);
+                binding.groupList4.setLayoutManager(new LinearLayoutManager(this));
+
+            }else if(ingredientsCategory.getCategoryDescription().equalsIgnoreCase(RestrictedIngredientsCategory.MEATS.getCategoryDescription())){
+
+                String meatGroupList = String.valueOf(binding.groupList5.getResources().getResourceEntryName(binding.groupList5.getId()));
+
+                viewModel.setMeatsIngredientList(ingredientListBean);
+                meatAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, meatGroupList);
+
+                binding.group5.setText(ingredientsCategory.getCategoryDescription());
+                binding.groupList5.setAdapter(meatAdapter);
+                binding.groupList5.setLayoutManager(new LinearLayoutManager(this));
 
 
-                //dynamically sets the adapter for each one of the recyclerViews
-                Field recyclerView = binding.getClass().getDeclaredField(recyclerName);
-                recyclerView.setAccessible(true);
-
-                RecyclerView recycler = (RecyclerView) recyclerView.get(binding);
-
-                groupedIngredientsAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, recyclerView.getName());
-                recycler.setAdapter(groupedIngredientsAdapter);
+            }else if(ingredientsCategory.getCategoryDescription().equalsIgnoreCase(RestrictedIngredientsCategory.NUTS.getCategoryDescription())){
 
 
-
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-                recycler.setLayoutManager(layoutManager);
+                String nutsGroupList = String.valueOf(binding.groupList6.getResources().getResourceEntryName(binding.groupList6.getId()));
 
 
-            } catch (NoSuchFieldException e) {
-                Log.e("DietaryMain", e.getMessage());
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                viewModel.setNutsIngredientList(ingredientListBean);
+                nutsAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, nutsGroupList);
+
+                binding.group6.setText(ingredientsCategory.getCategoryDescription());
+                binding.groupList6.setAdapter(nutsAdapter);
+                binding.groupList6.setLayoutManager(new LinearLayoutManager(this));
+
+
+            }else if(ingredientsCategory.getCategoryDescription().equalsIgnoreCase(RestrictedIngredientsCategory.OTHER.getCategoryDescription())){
+
+
+                String otherGroupList = String.valueOf(binding.groupList7.getResources().getResourceEntryName(binding.groupList7.getId()));
+
+                viewModel.setOtherIngredientList(ingredientListBean);
+                othersAdapter = new DietaryRestrictionPredefinedItemAdapter(this, ingredientListBean, this, otherGroupList);
+
+                binding.group7.setText(ingredientsCategory.getCategoryDescription());
+                binding.groupList7.setAdapter(othersAdapter);
+                binding.groupList7.setLayoutManager(new LinearLayoutManager(this));
+
+            }else{
+                Log.e("debug","Invalid Category: "+ingredientsCategory.getCategoryDescription());
+            }
+
+
+            }catch (Exception e){
+                Log.e("debug", e.getMessage());
             }
             i++;
         }
-
 
         fetchIngredientList();
 
           binding.btnSave.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                  recreate();
               }
           });
-
-
-            //// end of dynamically setting recycler views
 
 
             binding.btnAdd.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +196,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
                 public void onClick(View v) {
                     Intent intentObj = new Intent(getApplicationContext(), DietaryRestrictionsAddCustomActivity.class);
                     startActivity(intentObj);
+
                 }
             });
 
@@ -151,8 +205,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
 
     @Override
-    public void onItemClick(View v, int position, String recyclerViewId, boolean isChecked) {
-
+    public void onItemClick(View v, int position, String recyclerViewId, boolean isChecked, String ingredientId) {
 
         //based on the list, identifies the category in the map
 
@@ -163,20 +216,19 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
             //decrease 1 as map index starts in 0, and groupList starts as 1.
             int mapCategoryPosition = Integer.parseInt(categoryPosition[1])-1;
             RestrictedIngredientsCategory selectedCategory = (RestrictedIngredientsCategory) restrictionsMap.keySet().toArray()[mapCategoryPosition];
-            List<CommonRestrictedIngredients> selectedIngredientList = restrictionsMap.get(selectedCategory);
-            CommonRestrictedIngredients selectedItem = selectedIngredientList.get(position);
+            List<CommonRestrictedIngredients> clickedIngredientList = restrictionsMap.get(selectedCategory);
+            CommonRestrictedIngredients clickedItem = clickedIngredientList.get(position);
 
-            DietaryRestrictionIngredient selectedIngredient = new DietaryRestrictionIngredient(selectedItem.getIngredientDescription(),selectedCategory.getCategoryDescription() );
 
             if (isChecked) {
+                DietaryRestrictionIngredient selectedIngredient = new DietaryRestrictionIngredient(clickedItem.getIngredientDescription(),selectedCategory.getCategoryDescription() );
                 viewModel.addDietaryRestrictionIngredient(selectedIngredient);
-                Log.e("DIET", selectedIngredient.getIngredientName());
+
             } else {
-                //viewModel.deleteDietaryRestrictionIngredient(selectedIngredient);
+                viewModel.deleteDietaryRestrictionIngredient(ingredientId);
             }
 
             fetchIngredientList();
-            //recreate();
 
         }
 
@@ -184,24 +236,112 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
     private void fetchIngredientList(){
 
-        selectedIngredientList.clear();
+        //selectedIngredientList.clear();
         viewModel.getPredefinedDietaryRestrictionIngredients();
-        viewModel.getPredefinedIngredientsData().observe(this, ingredientData -> {
+
+
+        viewModel.getDiaryIngredientLiveData().observe(this, ingredientData -> {
             if (ingredientData != null && !ingredientData.isEmpty()) {
-                selectedIngredientList = ingredientData;//to reset the current list
 
-               // groupedIngredientsAdapter.updateIngredientList(selectedIngredientList);
+                //selectedIngredientList.addAll(ingredientData.stream().filter(i -> i.getIsSelected() == true).collect(Collectors.toList()));
+                diaryAdapter.updateIngredientList(ingredientData);
 
-
-                Log.d("DIETARYMAIN", "ingredientList count>> " + selectedIngredientList.size());
+                Log.d("debug-main", " DIARY ingredientList count>> " + ingredientData.size());
             }
             else {
-                Log.d("DIETARYMAIN", "ingredientList is null or empty.");
+                Log.d("debug-main", " DAIRY ingredientList is null or empty.");
             }
         });
+
+
+        viewModel.getGlutenIngredientLiveData().observe(this, ingredientData -> {
+            if (ingredientData != null && !ingredientData.isEmpty()) {
+
+                //selectedIngredientList.addAll(ingredientData.stream().filter(i -> i.getIsSelected() == true).collect(Collectors.toList()));
+                glutenAdapter.updateIngredientList(ingredientData);
+
+                Log.d("debug-main", " DIARY ingredientList count>> " + ingredientData.size());
+            }
+            else {
+                Log.d("debug-main", " DAIRY ingredientList is null or empty.");
+            }
+        });
+
+        viewModel.getPorkIngredientLiveData().observe(this, ingredientData -> {
+            if (ingredientData != null && !ingredientData.isEmpty()) {
+
+                //selectedIngredientList.addAll(ingredientData.stream().filter(i -> i.getIsSelected() == true).collect(Collectors.toList()));
+                porkAdapter.updateIngredientList(ingredientData);
+
+                Log.d("debug-main", " DIARY ingredientList count>> " + ingredientData.size());
+            }
+            else {
+                Log.d("debug-main", " DAIRY ingredientList is null or empty.");
+            }
+        });
+
+
+        viewModel.getShellfishIngredientLiveData().observe(this, ingredientData -> {
+            if (ingredientData != null && !ingredientData.isEmpty()) {
+
+                //selectedIngredientList.addAll(ingredientData.stream().filter(i -> i.getIsSelected() == true).collect(Collectors.toList()));
+                shellfishAdapter.updateIngredientList(ingredientData);
+
+                Log.d("debug-main", " DIARY ingredientList count>> " + ingredientData.size());
+            }
+            else {
+                Log.d("debug-main", " DAIRY ingredientList is null or empty.");
+            }
+        });
+
+
+        viewModel.getMeatsIngredientLiveData().observe(this, ingredientData -> {
+            if (ingredientData != null && !ingredientData.isEmpty()) {
+
+                //selectedIngredientList.addAll(ingredientData.stream().filter(i -> i.getIsSelected() == true).collect(Collectors.toList()));
+                meatAdapter.updateIngredientList(ingredientData);
+
+                Log.d("debug-main", " DIARY ingredientList count>> " + ingredientData.size());
+            }
+            else {
+                Log.d("debug-main", " DAIRY ingredientList is null or empty.");
+            }
+        });
+
+
+        viewModel.getNutsIngredientLiveData().observe(this, ingredientData -> {
+            if (ingredientData != null && !ingredientData.isEmpty()) {
+
+                //selectedIngredientList.addAll(ingredientData.stream().filter(i -> i.getIsSelected() == true).collect(Collectors.toList()));
+                nutsAdapter.updateIngredientList(ingredientData);
+
+                Log.d("debug-main", " DIARY ingredientList count>> " + ingredientData.size());
+            }
+            else {
+                Log.d("debug-main", " DAIRY ingredientList is null or empty.");
+            }
+        });
+
+
+        viewModel.getOtherIngredientLiveData().observe(this, ingredientData -> {
+            if (ingredientData != null && !ingredientData.isEmpty()) {
+
+                //selectedIngredientList.addAll(ingredientData.stream().filter(i -> i.getIsSelected() == true).collect(Collectors.toList()));
+                othersAdapter.updateIngredientList(ingredientData);
+
+                Log.d("debug-main", " DIARY ingredientList count>> " + ingredientData.size());
+            }
+            else {
+                Log.d("debug-main", " DAIRY ingredientList is null or empty.");
+            }
+        });
+
+
+
+
+
+
+
     }
-
-
-
 
 }
