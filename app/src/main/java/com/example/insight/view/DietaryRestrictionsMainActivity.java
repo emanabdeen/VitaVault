@@ -4,26 +4,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insight.adapter.DietaryRestrictionPredefinedItemAdapter;
 import com.example.insight.databinding.ActivityDietaryRestrictionsMainBinding;
 import com.example.insight.model.DietaryRestrictionIngredient;
 import com.example.insight.utility.CommonRestrictedIngredients;
 import com.example.insight.utility.RestrictedIngredientsCategory;
-import com.example.insight.viewmodel.dietaryRestrictionIngredientViewModel;
+import com.example.insight.viewmodel.DietaryRestrictionIngredientViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implements MultipleRecyclerViewItemClickListener {
 
@@ -31,7 +27,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
     FirebaseAuth mAuth;
     FirebaseUser user;
     Map<RestrictedIngredientsCategory, List<CommonRestrictedIngredients>> restrictionsMap;
-    private dietaryRestrictionIngredientViewModel viewModel;
+    private DietaryRestrictionIngredientViewModel viewModel;
     //private List<DietaryRestrictionIngredient> selectedIngredientList;
     DietaryRestrictionPredefinedItemAdapter diaryAdapter, glutenAdapter, porkAdapter, shellfishAdapter, meatAdapter,nutsAdapter, othersAdapter ;
 
@@ -55,7 +51,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
         restrictionsMap = CommonRestrictedIngredients.GetAllIngredientsWithCategory();
 
-        viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
+        viewModel = new ViewModelProvider(this).get(DietaryRestrictionIngredientViewModel.class);
         viewModel.getPredefinedDietaryRestrictionIngredients();
 
 

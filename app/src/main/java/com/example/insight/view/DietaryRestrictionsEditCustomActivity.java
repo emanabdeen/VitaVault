@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.insight.databinding.ActivityDietaryRestrictionsAddCustomBinding;
 import com.example.insight.model.DietaryRestrictionIngredient;
-import com.example.insight.viewmodel.dietaryRestrictionIngredientViewModel;
+import com.example.insight.viewmodel.DietaryRestrictionIngredientViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -19,7 +19,7 @@ public class DietaryRestrictionsEditCustomActivity extends DrawerBaseActivity {
 
 
         ActivityDietaryRestrictionsAddCustomBinding binding;
-        private dietaryRestrictionIngredientViewModel viewModel;
+        private DietaryRestrictionIngredientViewModel viewModel;
         FirebaseAuth mAuth;
         FirebaseUser user;
         DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient();
@@ -34,7 +34,7 @@ public class DietaryRestrictionsEditCustomActivity extends DrawerBaseActivity {
             allocateActivityTitle("Dietary Restrictions");
             binding.textViewTitle.setText("Update Custom Dietary Restriction");
 
-            viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
+            viewModel = new ViewModelProvider(this).get(DietaryRestrictionIngredientViewModel.class);
 
             mAuth = FirebaseAuth.getInstance();
             user = mAuth.getCurrentUser();
@@ -62,7 +62,7 @@ public class DietaryRestrictionsEditCustomActivity extends DrawerBaseActivity {
                 public void onClick(View v) {
 
                     try {
-                        dietaryRestrictionIngredientViewModel viewModel = new dietaryRestrictionIngredientViewModel();
+                        DietaryRestrictionIngredientViewModel viewModel = new DietaryRestrictionIngredientViewModel();
                         String uid = user.getUid();
 
                         String ingredientText = String.valueOf(binding.editIngredient.getText());

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.insight.adapter.DietaryRestrictionCustomIngredientAdapter;
 import com.example.insight.databinding.ActivityDietaryRestrictionsAddCustomBinding;
 import com.example.insight.model.DietaryRestrictionIngredient;
-import com.example.insight.viewmodel.dietaryRestrictionIngredientViewModel;
+import com.example.insight.viewmodel.DietaryRestrictionIngredientViewModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -24,7 +24,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
 
     ActivityDietaryRestrictionsAddCustomBinding binding;
     DietaryRestrictionCustomIngredientAdapter ingredientAdapter;
-    private dietaryRestrictionIngredientViewModel viewModel;
+    private DietaryRestrictionIngredientViewModel viewModel;
     List<DietaryRestrictionIngredient> ingredientList = new ArrayList<>();
     FirebaseAuth mAuth;
     FirebaseUser user;
@@ -43,7 +43,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
         allocateActivityTitle("Dietary Restrictions");
         binding.textViewTitle.setText("Add Custom Dietary Restriction");
 
-        viewModel = new ViewModelProvider(this).get(dietaryRestrictionIngredientViewModel.class);
+        viewModel = new ViewModelProvider(this).get(DietaryRestrictionIngredientViewModel.class);
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -71,7 +71,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
             public void onClick(View v) {
 
                     try {
-                        dietaryRestrictionIngredientViewModel viewModel = new dietaryRestrictionIngredientViewModel();
+                        DietaryRestrictionIngredientViewModel viewModel = new DietaryRestrictionIngredientViewModel();
                         String uid = user.getUid();
 
                         String ingredientText = String.valueOf(binding.editIngredient.getText());
