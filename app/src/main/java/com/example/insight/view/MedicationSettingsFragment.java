@@ -19,6 +19,7 @@ import com.example.insight.model.MedicationAlarm;
 import com.example.insight.utility.AlarmHelper;
 import com.example.insight.view.EditItemClickListener;
 import com.example.insight.viewmodel.MedicationAlarmsViewModel;
+import com.example.insight.viewmodel.MedicationViewModel;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,9 @@ public class MedicationSettingsFragment extends Fragment {
     private FragmentMedicationSettingsBinding binding;
     private MedicationAlarmAdapter adapter;
     private MedicationAlarmsViewModel viewModel;
+    private String medicationName;
+    private String dosage;
+    private MedicationViewModel medicationViewModel;
 
     public static MedicationSettingsFragment newInstance(String medicationId) {
         MedicationSettingsFragment fragment = new MedicationSettingsFragment();
@@ -68,6 +72,15 @@ public class MedicationSettingsFragment extends Fragment {
         // Fetch alarms for the medication
         viewModel.fetchAlarms(medicationId);
 
+        // Initialize MedicationViewModel to fetch medication details.
+        medicationViewModel = new ViewModelProvider(this).get(MedicationViewModel.class);
+        medicationViewModel.getMedication(medicationId).observe(getViewLifecycleOwner(), medication -> {
+            if (medication != null) {
+                medicationName = medication.getName();
+                dosage = medication.getDosage() +  " " + medication.getUnit();
+            }
+        });
+
         return binding.getRoot();
     }
 
@@ -88,6 +101,8 @@ public class MedicationSettingsFragment extends Fragment {
                     intent.putExtra("day", alarm.getDay());
                     intent.putExtra("time", alarm.getTime());
                     intent.putExtra("repeatInfo", alarm.getRepeatInfo());
+                    intent.putExtra("medicationName", medicationName);
+                    intent.putExtra("dosage", dosage);
                     // Optionally, pass additional data if needed.
                     startActivity(intent);
                 } else {
@@ -118,4 +133,12 @@ public class MedicationSettingsFragment extends Fragment {
         binding.recyclerViewAlarms.setAdapter(adapter);
         binding.recyclerViewAlarms.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Force a fresh fetch of alarms every time the fragment comes into focus
+        viewModel.fetchAlarms(medicationId);
+    }
+
 }

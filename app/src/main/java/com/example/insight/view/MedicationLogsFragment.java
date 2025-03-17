@@ -72,4 +72,11 @@ public class MedicationLogsFragment extends Fragment {
         binding.recyclerViewLogs.setAdapter(adapter);
         binding.recyclerViewLogs.setLayoutManager(new LinearLayoutManager(requireContext()));
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Force a fresh fetch of logs every time the fragment comes into focus
+        viewModel.fetchMedicationLogs(medicationId);
+    }
 }

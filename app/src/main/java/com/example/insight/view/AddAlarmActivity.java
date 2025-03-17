@@ -169,7 +169,7 @@ public class AddAlarmActivity extends DrawerBaseActivity {
                     // Retrieve old alarm details from intent extras.
                     String oldDay = getIntent().getStringExtra("day");
                     String oldTime = getIntent().getStringExtra("time");
-
+                    medicationId = getIntent().getStringExtra("medicationId");
                     // Compare the old values with the updated ones (for simplicity, here we assume the day doesn't change)
                     boolean timeChanged = !oldTime.equals(selectedTime);
 
@@ -182,7 +182,7 @@ public class AddAlarmActivity extends DrawerBaseActivity {
 
                     // Create a new alarm object using the updated values.
                     MedicationAlarm updatedAlarm = new MedicationAlarm();
-                    updatedAlarm.setDay(oldDay);  // assuming day remains the same in edit mode
+                    updatedAlarm.setDay(alarm.getDay());
                     updatedAlarm.setTime(selectedTime); // new time if the user changed it
                     updatedAlarm.setRepeatInfo(binding.switchRepeating.isChecked() ? "Repeats weekly" : "One-time");
                     updatedAlarm.setEnabled(true);

@@ -32,6 +32,7 @@ public class MedicationViewModel extends ViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<List<Medication>> medicationsData = new MutableLiveData<>();
     private final MutableLiveData<Medication> medicationToDelete = new MutableLiveData<>();
+    private final MutableLiveData<Medication> medicationLiveData = new MutableLiveData<>();
 
     private List<Medication> medicationsList = new ArrayList<>();
 
@@ -49,6 +50,25 @@ public class MedicationViewModel extends ViewModel {
 
     public LiveData<Medication> getMedicationToDelete() {
         return medicationToDelete;
+    }
+
+    public LiveData<Medication> getMedication(String medicationId) {
+        if (uid == null) {
+            Log.e(TAG, "User not authenticated");
+            return medicationLiveData;
+        }
+        db.collection("users")
+                .document(uid)
+                .collection("medications")
+                .document(medicationId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Medication medication = documentSnapshot.toObject(Medication.class);
+                    medicationLiveData.postValue(medication);
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Failed to fetch medication", e));
+
+        return medicationLiveData;
     }
 
     // ------------------------------------------------------------------------
