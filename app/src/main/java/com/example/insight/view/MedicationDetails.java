@@ -1,13 +1,11 @@
 package com.example.insight.view;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProvider;
 
@@ -72,7 +70,7 @@ public class MedicationDetails extends DrawerBaseActivity {
                 }
             });
 
-            // In edit mode, enable the Manage Alarms button and hide the warning.
+            // In edit mode, enable Manage Alarms button and hide warning
             binding.btnManageAlarms.setEnabled(true);
             binding.textViewAlarmWarning.setVisibility(View.GONE);
             binding.btnManageAlarms.setOnClickListener(v -> {
@@ -82,9 +80,9 @@ public class MedicationDetails extends DrawerBaseActivity {
                 alarmIntent.putExtra("dosage", medication.getDosage() + " " + medication.getUnit());
                 startActivity(alarmIntent);
             });
+
         } else {
             pageFunction = "createMedication";
-            // Disable Manage Alarms button until medication is saved.
             binding.btnManageAlarms.setEnabled(false);
             binding.textViewAlarmWarning.setVisibility(View.VISIBLE);
             binding.textViewAlarmWarning.setText("Need to add medication first");
@@ -101,6 +99,15 @@ public class MedicationDetails extends DrawerBaseActivity {
             } catch (Exception e) {
                 Log.e("MedicationDetails", "Error saving medication: " + e.getMessage());
             }
+        });
+
+        // Clear errors on focus
+        binding.editTextMedicationName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) binding.textErrorMedicationName.setVisibility(View.INVISIBLE);
+        });
+
+        binding.editTextDosage.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) binding.textErrorDosage.setVisibility(View.INVISIBLE);
         });
     }
 
@@ -121,37 +128,65 @@ public class MedicationDetails extends DrawerBaseActivity {
         }
     }
 
-    private void createNewMedication() {
-        String name = binding.editTextMedicationName.getText().toString();
-        String dosage = binding.editTextDosage.getText().toString();
-        String unit = binding.spinnerUnit.getSelectedItem().toString();
+    /**
+     * Validate fields and show red error messages if empty
+     */
+    private boolean validateMedicationFields() {
+        boolean isValid = true;
 
-        if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(dosage)) {
-            Medication newMedication = new Medication(name, dosage, unit, false, false);
-            viewModel.addMedication(newMedication);
-            Toast.makeText(getApplicationContext(), "Medication Created", Toast.LENGTH_LONG).show();
-            setResult(RESULT_OK);
-            finish();
-        } else {
-            Toast.makeText(getApplicationContext(), "One or more fields are empty.", Toast.LENGTH_LONG).show();
+        String name = binding.editTextMedicationName.getText().toString().trim();
+        String dosage = binding.editTextDosage.getText().toString().trim();
+
+        // Reset errors
+        binding.textErrorMedicationName.setVisibility(View.GONE);
+        binding.textErrorDosage.setVisibility(View.GONE);
+
+        if (TextUtils.isEmpty(name)) {
+            binding.textErrorMedicationName.setText("Medication Name is required");
+            binding.textErrorMedicationName.setVisibility(View.VISIBLE);
+            isValid = false;
         }
+
+        if (TextUtils.isEmpty(dosage)) {
+            binding.textErrorDosage.setText("Dosage is required");
+            binding.textErrorDosage.setVisibility(View.VISIBLE);
+            isValid = false;
+        }
+
+        return isValid;
     }
 
-    private void editMedication() {
-        String name = binding.editTextMedicationName.getText().toString();
-        String dosage = binding.editTextDosage.getText().toString();
+    /**
+     * Save new medication after validation
+     */
+    private void createNewMedication() {
+        if (!validateMedicationFields()) return;
+
+        String name = binding.editTextMedicationName.getText().toString().trim();
+        String dosage = binding.editTextDosage.getText().toString().trim();
         String unit = binding.spinnerUnit.getSelectedItem().toString();
 
-        if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(dosage)) {
-            medication.setName(name);
-            medication.setDosage(dosage);
-            medication.setUnit(unit);
-            viewModel.updateMedication(medication);
-            Toast.makeText(getApplicationContext(), "Medication Updated", Toast.LENGTH_LONG).show();
-            setResult(RESULT_OK);
-            finish();
-        } else {
-            Toast.makeText(getApplicationContext(), "One or more fields are empty.", Toast.LENGTH_LONG).show();
-        }
+        Medication newMedication = new Medication(name, dosage, unit, false, false);
+        viewModel.addMedication(newMedication);
+        setResult(RESULT_OK);
+        finish();
+    }
+
+    /**
+     * Edit existing medication after validation
+     */
+    private void editMedication() {
+        if (!validateMedicationFields()) return;
+
+        String name = binding.editTextMedicationName.getText().toString().trim();
+        String dosage = binding.editTextDosage.getText().toString().trim();
+        String unit = binding.spinnerUnit.getSelectedItem().toString();
+
+        medication.setName(name);
+        medication.setDosage(dosage);
+        medication.setUnit(unit);
+        viewModel.updateMedication(medication);
+        setResult(RESULT_OK);
+        finish();
     }
 }

@@ -49,13 +49,7 @@
                     android:textSize="14sp"
                     android:textColor="@color/black"/>
 
-                <TextView
-                    android:id="@+id/alarm_repeat_txt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Repeats Weekly"
-                    android:textSize="12sp"
-                    android:textColor="@color/black"/>
+
             </LinearLayout>
 
             <!-- Action Buttons Section -->

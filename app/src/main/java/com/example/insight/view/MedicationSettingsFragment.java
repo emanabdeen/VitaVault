@@ -91,15 +91,12 @@ public class MedicationSettingsFragment extends Fragment {
                 // Retrieve the alarm being edited from the adapter.
                 MedicationAlarm alarm = adapter.getAlarmAt(pos);
                 if (alarm != null) {
-                    Intent intent = new Intent(getActivity(), AddAlarmActivity.class);
-                    // Pass flag to indicate editing mode
-                    intent.putExtra("isEdit", true);
+                    Intent intent = new Intent(getActivity(), EditAlarmActivity.class);
                     // Pass alarm details for editing
                     intent.putExtra("alarmId", alarm.getAlarmId());
                     intent.putExtra("medicationId", alarm.getMedicationId());
                     intent.putExtra("day", alarm.getDay());
                     intent.putExtra("time", alarm.getTime());
-                    intent.putExtra("repeatInfo", alarm.getRepeatInfo());
                     intent.putExtra("medicationName", medicationName);
                     intent.putExtra("dosage", dosage);
                     // Optionally, pass additional data if needed.
@@ -124,6 +121,8 @@ public class MedicationSettingsFragment extends Fragment {
                     AlarmHelper.cancelAlarm(getContext(), requestCode, alarm.getMedicationId(), "MedicationName");
                     // Delete the alarm from Firestore via the ViewModel.
                     viewModel.deleteAlarm(alarm.getMedicationId(), alarm.getAlarmId());
+                    // Remove the alarm from local storage.
+                    com.example.insight.utility.AlarmLocalStorageHelper.removeAlarm(getContext(), alarm);
                 } else {
                     Toast.makeText(getContext(), "Unable to retrieve alarm for deletion.", Toast.LENGTH_SHORT).show();
                 }

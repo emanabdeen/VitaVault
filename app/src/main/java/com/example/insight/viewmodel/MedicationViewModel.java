@@ -1,5 +1,6 @@
 package com.example.insight.viewmodel;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -7,6 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.insight.model.Medication;
+import com.example.insight.model.MedicationAlarm;
+import com.example.insight.utility.AlarmHelper;
+import com.example.insight.utility.AlarmLocalStorageHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -214,6 +218,23 @@ public class MedicationViewModel extends ViewModel {
                             .addOnFailureListener(e -> Log.e(TAG, "Error retrieving alarms", e));
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error retrieving logs", e));
+    }
+
+    public void deleteMedicationAndAlarms(Medication medication, Context appContext) {
+        // 1. Delete the medication from Firestore.
+        removeMedication(medication.getMedicationId());
+
+        // 2. Retrieve locally stored alarms.
+        List<MedicationAlarm> localAlarms = AlarmLocalStorageHelper.getAlarms(appContext);
+
+        // 3. Loop through and cancel/remove alarms associated with this medication.
+        for (MedicationAlarm alarm : localAlarms) {
+            if (alarm.getMedicationId().equals(medication.getMedicationId())) {
+                int requestCode = (alarm.getMedicationId() + alarm.getDay() + alarm.getTime()).hashCode();
+                AlarmHelper.cancelAlarm(appContext, requestCode, alarm.getMedicationId(), alarm.getMedicationName());
+                AlarmLocalStorageHelper.removeAlarm(appContext, alarm);
+            }
+        }
     }
 
 

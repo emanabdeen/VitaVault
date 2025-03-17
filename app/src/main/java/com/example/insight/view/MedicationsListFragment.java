@@ -182,7 +182,22 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
     public void OnClickDelete(View v, int pos) {
         if (currentMedications != null && pos < currentMedications.size()) {
             Medication medication = currentMedications.get(pos);
+            String medId = medication.getMedicationId();
+
+
             viewModel.prepareToRemoveMedication(medication);
+
+            // Show a confirmation dialog
+            new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Medication")
+                    .setMessage("Are you sure you want to delete this medication and all its alarms?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // Delete the medication and its alarms.
+                        // Use the application context to avoid leaking an Activity context.
+                        viewModel.deleteMedicationAndAlarms(medication, requireContext().getApplicationContext());
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
         }
     }
 
