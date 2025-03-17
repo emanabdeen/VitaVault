@@ -1,7 +1,6 @@
 package com.example.insight.view;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.insight.adapter.MedicationLogAdapter;
 import com.example.insight.databinding.FragmentMedicationLogsBinding;
-import com.example.insight.model.MedicationLog;
 import com.example.insight.viewmodel.MedicationLogsViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MedicationLogsFragment extends Fragment {
 

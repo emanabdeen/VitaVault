@@ -17,7 +17,6 @@ import com.example.insight.adapter.MedicationAlarmAdapter;
 import com.example.insight.databinding.FragmentMedicationSettingsBinding;
 import com.example.insight.model.MedicationAlarm;
 import com.example.insight.utility.AlarmHelper;
-import com.example.insight.view.EditItemClickListener;
 import com.example.insight.viewmodel.MedicationAlarmsViewModel;
 import com.example.insight.viewmodel.MedicationViewModel;
 
