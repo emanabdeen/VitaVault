@@ -5,7 +5,7 @@ import java.util.List;
 
 public enum RestrictedIngredientsCategory {
 
-    DAIRY("Diary"),
+    DAIRY("Dairy"),
     GLUTEN("Gluten"),
     MEATS("Meats"),
     PORK("Pork"),
