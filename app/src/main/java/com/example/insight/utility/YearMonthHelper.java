@@ -14,6 +14,9 @@ public final class YearMonthHelper {
 
 
     public static YearMonth getNextYearMonthData(YearMonth yearMonthDate) {
+        if (yearMonthDate == null) {
+            return null;
+        }
         YearMonth nextYearMonth = yearMonthDate.plusMonths(1);
 
 //        YearMonthData result = new YearMonthData();
@@ -24,6 +27,9 @@ public final class YearMonthHelper {
     }
 
     public static YearMonth getPreviousYearMonthData(YearMonth yearMonthDate) {
+        if (yearMonthDate == null) {
+            return null;
+        }
         YearMonth previousYearMonth = yearMonthDate.minusMonths(1);
 
 //        YearMonthData result = new YearMonthData();
@@ -34,6 +40,9 @@ public final class YearMonthHelper {
     }
 
     public static String getLocalizedMonthName(YearMonth yearMonthDate) {
+        if (yearMonthDate == null) {
+            return null;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM");
         return yearMonthDate.atDay(1).format(formatter);
     }

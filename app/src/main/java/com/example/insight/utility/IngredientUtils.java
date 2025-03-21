@@ -189,24 +189,33 @@ public class IngredientUtils {
     }
 
     public static HashMap<String, ArrayList<OcrIngredient>> parseIngredientsMapToOcrIngredients(HashMap<String, ArrayList<String>> ingredientsListMap) {
+        if (ingredientsListMap == null || ingredientsListMap.isEmpty()) {
+            return new HashMap<String, ArrayList<OcrIngredient>>();
+        }
         HashMap<String, ArrayList<OcrIngredient>> ocrIngredientsListMap = new HashMap<String, ArrayList<OcrIngredient>>();
         ArrayList<OcrIngredient> ingredientsList = new ArrayList<OcrIngredient>();
         ArrayList<OcrIngredient> mayContainList = new ArrayList<OcrIngredient>();
         ArrayList<OcrIngredient> containsList = new ArrayList<OcrIngredient>();
 
-        for (String ingredient : ingredientsListMap.get("ingredients")) {
-            ingredientsList.add(new OcrIngredient(ingredient));
+        if (ingredientsListMap.get("ingredients") != null) {
+            for (String ingredient : ingredientsListMap.get("ingredients")) {
+                ingredientsList.add(new OcrIngredient(ingredient));
+            }
+            ocrIngredientsListMap.put("ingredients", ingredientsList);
         }
-        for (String ingredient : ingredientsListMap.get("may_contain")) {
-            mayContainList.add(new OcrIngredient(ingredient));
+        if (ingredientsListMap.get("may_contain") != null) {
+            for (String ingredient : ingredientsListMap.get("may_contain")) {
+                mayContainList.add(new OcrIngredient(ingredient));
+            }
+            ocrIngredientsListMap.put("may_contain", mayContainList);
         }
-        for (String ingredient : ingredientsListMap.get("contains")) {
-            containsList.add(new OcrIngredient(ingredient));
+        if (ingredientsListMap.get("contains") != null) {
+            for (String ingredient : ingredientsListMap.get("contains")) {
+                containsList.add(new OcrIngredient(ingredient));
+            }
+            ocrIngredientsListMap.put("contains", containsList);
         }
 
-        ocrIngredientsListMap.put("ingredients", ingredientsList);
-        ocrIngredientsListMap.put("may_contain", mayContainList);
-        ocrIngredientsListMap.put("contains", containsList);
         return ocrIngredientsListMap;
     }
 
@@ -285,7 +294,7 @@ public class IngredientUtils {
         ArrayList<OcrIngredient> commonIngredientsLabeledList = new ArrayList<>();
         for(OcrIngredient ingredient : ingredientsList) {
             for(CommonRestrictedIngredients restrictedIngredient : CommonRestrictedIngredients.values()) {
-                if (restrictedIngredient.getIngredientDescription().toLowerCase().equals(ingredient.getIngredientName())) {
+                if (restrictedIngredient.getIngredientDescription().toLowerCase().equals(ingredient.getIngredientName().toLowerCase())) {
                     ingredient.setIngredientMatchedCategory(restrictedIngredient.getCategory().getCategoryDescription());
                     Log.d(TAG, "Item is a common ingredient, marking and hiding button");
                     ingredient.setSameNameAsCommonRestrictedIngredient(true);

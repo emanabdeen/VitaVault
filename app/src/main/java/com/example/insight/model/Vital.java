@@ -1,8 +1,6 @@
 package com.example.insight.model;
 
 import com.example.insight.utility.DateValidator;
-import com.example.insight.utility.Unites;
-import com.example.insight.utility.VitalsCategories;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

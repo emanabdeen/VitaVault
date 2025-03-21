@@ -1,6 +1,6 @@
 package com.example.insight.utility;
 
-public enum Unites {
+public enum Units {
 
     BPM("BPM"),
     mmHg("mmHg"),
@@ -12,7 +12,7 @@ public enum Unites {
     private final String unit;
 
     // Constructor to set the string value for each enum constant
-    Unites(String unit) {
+    Units(String unit) {
         this.unit = unit;
     }
 
@@ -22,9 +22,9 @@ public enum Unites {
     }
 
     // Custom method to convert a string to the corresponding enum constant
-    public static Unites fromString(String text) {
+    public static Units fromString(String text) {
         if (text != null) {
-            for (Unites u : Unites.values()) {
+            for (Units u : Units.values()) {
                 if (u.getUnit().equalsIgnoreCase(text.trim())) {
                     return u;
                 }

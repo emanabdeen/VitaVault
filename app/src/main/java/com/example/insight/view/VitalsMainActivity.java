@@ -2,25 +2,13 @@ package com.example.insight.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.insight.R;
-import com.example.insight.databinding.ActivityVitalsBinding;
 import com.example.insight.databinding.ActivityVitalsMainBinding;
 import com.example.insight.model.Vital;
-import com.example.insight.utility.Unites;
+import com.example.insight.utility.Units;
 import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.VitalViewModel;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,7 +49,7 @@ public class VitalsMainActivity extends DrawerBaseActivity {
                 Intent intentObj = new Intent(getApplicationContext(), VitalsActivity.class);
                 vitalViewModel.GetVitalsByType(VitalsCategories.BodyTemperature.toString());
                 intentObj.putExtra("vitalType",VitalsCategories.BodyTemperature.toString());
-                intentObj.putExtra("unit", Unites.Celsius.toString());
+                intentObj.putExtra("unit", Units.Celsius.toString());
                 intentObj.putExtra("title", "Body Temperature");
                 intentObj.putExtra("image", "@drawable/body_temperature");
                 startActivity(intentObj);
@@ -74,7 +62,7 @@ public class VitalsMainActivity extends DrawerBaseActivity {
                 Intent intentObj = new Intent(getApplicationContext(), VitalsActivity.class);
                 vitalViewModel.GetVitalsByType(VitalsCategories.BloodPressure.toString());
                 intentObj.putExtra("vitalType",VitalsCategories.BloodPressure.toString());
-                intentObj.putExtra("unit", Unites.mmHg.toString());
+                intentObj.putExtra("unit", Units.mmHg.toString());
                 intentObj.putExtra("title", "Blood Pressure");
                 intentObj.putExtra("image", "@drawable/pressure");
                 startActivity(intentObj);
@@ -86,7 +74,7 @@ public class VitalsMainActivity extends DrawerBaseActivity {
                 Intent intentObj = new Intent(getApplicationContext(), VitalsActivity.class);
                 vitalViewModel.GetVitalsByType(VitalsCategories.HeartRate.toString());
                 intentObj.putExtra("vitalType",VitalsCategories.HeartRate.toString());
-                intentObj.putExtra("unit", Unites.BPM.toString());
+                intentObj.putExtra("unit", Units.BPM.toString());
                 intentObj.putExtra("title", "Heart Rate");
                 intentObj.putExtra("image", "@drawable/heartbeat");
                 startActivity(intentObj);
@@ -99,7 +87,7 @@ public class VitalsMainActivity extends DrawerBaseActivity {
                 Intent intentObj = new Intent(getApplicationContext(), VitalsActivity.class);
                 vitalViewModel.GetVitalsByType(VitalsCategories.Weight.toString());
                 intentObj.putExtra("vitalType",VitalsCategories.Weight.toString());
-                intentObj.putExtra("unit", Unites.Kilograms.toString());
+                intentObj.putExtra("unit", Units.Kilograms.toString());
                 intentObj.putExtra("title", "Weight");
                 intentObj.putExtra("image", "@drawable/weight_scale");
                 startActivity(intentObj);

@@ -8,15 +8,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 public class ImageUtils {
-    public static byte[] bitmapToByteArray(Bitmap bitmap) {
-        if (bitmap == null) {
-            Log.d("ImageUtils", "bitmap is null");
-            return null;
-        }
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        return stream.toByteArray();
-    }
 
     public static Bitmap loadBitmap(String filePath) {
         File imageFile = new File(filePath);
