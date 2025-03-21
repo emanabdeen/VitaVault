@@ -21,7 +21,7 @@ public enum CommonRestrictedIngredients {
     PORK("Pork",RestrictedIngredientsCategory.PORK),
     HAM("Ham",RestrictedIngredientsCategory.PORK),
     SAUSAGE("Sausage",RestrictedIngredientsCategory.PORK),
-    SHRIMP("shrimp",RestrictedIngredientsCategory.SHELLFISH),
+    SHRIMP("Shrimp",RestrictedIngredientsCategory.SHELLFISH),
     LOBSTER("Lobster",RestrictedIngredientsCategory.SHELLFISH),
     CRAB("Crab",RestrictedIngredientsCategory.SHELLFISH),
     BEEF("Beef",RestrictedIngredientsCategory.MEATS),

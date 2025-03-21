@@ -4,6 +4,6 @@ import android.view.View;
 
 public interface MultipleRecyclerViewItemClickListener {
 
-    void onItemClick(View v,int position, String recyclerViewId, boolean isChecked);
+    void onItemClick(View v,int position, String recyclerViewId, boolean isChecked, String ingredientId);
 
 }
