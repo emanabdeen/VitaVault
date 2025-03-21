@@ -39,5 +39,20 @@
     <string name="missed">missed</string>
     <string name="medication_reminder">Medication Reminder</string>
     <string name="medication_icon">medication icon</string>
+    <string name="Mon">Mon</string>
+    <string name="Tue">Tue\n</string>
+    <string name="Wed">Wed</string>
+    <string name="Thu">Thu</string>
+    <string name="Fri">Fri</string>
+    <string name="Sat">Sat</string>
+    <string name="Sun">Sun</string>
+    <string name="SelectAlarmTime">Select Alarm Time</string>
+    <string name="NoTimeSelected">No time selected</string>
+    <string name="SaveAlarm">SAVE ALARM</string>
+    <string name="medicationName">Medication Name</string>
+    <string name="addMedicationFirst">Need to add medication first to enable alarms</string>
+    <string name="addAlarm">Add Alarm</string>
+    <string name="Unit">Unit</string>
+    <string name="selectDay">Select Day</string>
 
 </resources>
