@@ -33,15 +33,16 @@ public class IngredientUtils {
         String frenchIngredients = "";
 
         if (trimmedLowerInputText.contains(INGREDIENTS) || trimmedLowerInputText.contains("ingedients") || trimmedLowerInputText.contains("imgredients")
-        || trimmedLowerInputText.contains("inqredients") || trimmedLowerInputText.contains("ngredients") || trimmedLowerInputText.contains("ingredient")) {
+        || trimmedLowerInputText.contains("inqredients") || trimmedLowerInputText.contains("ngredients") || trimmedLowerInputText.contains("ingredient") || trimmedLowerInputText.contains("ingredients:")) {
             if (trimmedLowerInputText.contains("ingedients") || trimmedLowerInputText.contains("imgredients") || trimmedLowerInputText.contains("inqredients")
-            || trimmedLowerInputText.contains("ngredients") || trimmedLowerInputText.contains("ingredient")) {
+            || trimmedLowerInputText.contains("ngredients") || trimmedLowerInputText.contains("ingredient") || trimmedLowerInputText.contains("ingredients:")) {
                 trimmedLowerInputText = trimmedLowerInputText.replace("ingedients", "ingredients");
                 trimmedLowerInputText = trimmedLowerInputText.replace("imgredients", "ingredients");
                 trimmedLowerInputText = trimmedLowerInputText.replace("inqredients", "ingredients");
                 trimmedLowerInputText = trimmedLowerInputText.replace("ingedients", "ingredients");
                 trimmedLowerInputText = trimmedLowerInputText.replace("ngredients", "ingredients");
                 trimmedLowerInputText = trimmedLowerInputText.replace("ingredient", "ingredients");
+                trimmedLowerInputText = trimmedLowerInputText.replace("ingredients:", "ingredients");
             }
             ingredientsInputText = trimmedLowerInputText.substring(trimmedLowerInputText.indexOf(INGREDIENTS));
             Log.d(TAG, "Ingredients string detected, carving out");
