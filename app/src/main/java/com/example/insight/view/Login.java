@@ -63,6 +63,14 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        binding.btnForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intentObj = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+                startActivity(intentObj);
+            }
+        });
+
         Intent intentObj = getIntent();
         TextView title = binding.pageTitle;
         ConstraintLayout successMessage = binding.successMessage;

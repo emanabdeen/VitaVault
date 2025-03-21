@@ -1,0 +1,57 @@
+package com.example.insight.view;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.insight.databinding.ActivityForgotPasswordBinding;
+import com.example.insight.utility.LoginRegisterHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+
+public class ForgotPasswordActivity extends AppCompatActivity {
+    ActivityForgotPasswordBinding binding;
+    FirebaseAuth mAuth;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = ActivityForgotPasswordBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        mAuth = FirebaseAuth.getInstance();
+
+        binding.btnRequestReset.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                String email = binding.editTxtEmail.getText().toString();
+                if (LoginRegisterHelper.validateEmail(email)) {
+                    mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                binding.successMessage.setVisibility(View.VISIBLE);
+                                binding.pageTitle.setVisibility(View.GONE);
+                            }
+                            else {
+                                Log.e("ForgotPasswordActivity", "Error sending password reset email: " + task.getException().getMessage());
+                                binding.txtErrorMessage.setText(task.getException().getMessage());
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        binding.btnBackToLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+}

@@ -1,6 +1,7 @@
 package com.example.insight.utility;
 
 import android.util.Log;
+import android.util.Patterns;
 
 import androidx.annotation.NonNull;
 
@@ -137,5 +138,9 @@ public class LoginRegisterHelper {
                     return null;
                 });
         return passwordChangeResult;
+    }
+
+    public static boolean validateEmail(String email) {
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 }
