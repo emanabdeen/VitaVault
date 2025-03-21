@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity implements ItemClickListener {
 
@@ -64,7 +65,6 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
         binding.customIngredientList.setAdapter(ingredientAdapter);
 
 
-
         // Add new custom ingredient
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,21 +74,35 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
                         DietaryRestrictionIngredientViewModel viewModel = new DietaryRestrictionIngredientViewModel();
                         String uid = user.getUid();
 
-                        String ingredientText = String.valueOf(binding.editIngredient.getText());
+                        String ingredientText = String.valueOf(binding.editIngredient.getText()).toLowerCase().trim();
 
                         if (!ingredientText.isEmpty()) {
 
                             DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(ingredientText, customCategory);
 
+                            CompletableFuture<String> isRestrictionDuplicated = viewModel.checkIfIngredientExists(ingredient);
 
-                                viewModel.addDietaryRestrictionIngredient(ingredient);
-                                Toast.makeText(DietaryRestrictionsAddCustomActivity.this, "Saved Successfully", Toast.LENGTH_LONG).show();
-                                showError(binding.errorIngredient, "", false);
+                            Log.i("CheckExisting", "ADD result: "+isRestrictionDuplicated.isDone());
+
+                            isRestrictionDuplicated.whenComplete((result, error) -> {
+
+                                Log.i("CheckExisting", "ADD result: "+result);
 
 
-                            //reloads the ingredient list for both scenarios
-                            clear();
-                            fetchIngredientList();
+                                if(result !=  null){
+                                    if(!result.equals(ingredient.getIngredientId())) {
+                                        Toast.makeText(DietaryRestrictionsAddCustomActivity.this, "Cannot add duplicated ingredient: " + ingredient.getIngredientName(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }else{
+                                    viewModel.addDietaryRestrictionIngredient(ingredient);
+                                    Toast.makeText(DietaryRestrictionsAddCustomActivity.this, "Saved Successfully", Toast.LENGTH_SHORT).show();
+                                    showError(binding.errorIngredient, "", false);
+                                    //reloads the ingredient list for both scenarios
+                                    clear();
+                                    fetchIngredientList();
+                                }
+                            });
+
                         } else {
 
                             showError(binding.errorIngredient, "Required field cannot be empty", true);
@@ -163,11 +177,9 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
             ingredient.setIngredientId(ingredientList.get(pos).getIngredientId());
 
             Intent editIngredientIntent = new Intent(this, DietaryRestrictionsEditCustomActivity.class);
-            //Bundle bundle = new Bundle();
-            //bundle.putSerializable("customDietaryRestriction", ingredient);
+
             editIngredientIntent.putExtra("customDietaryRestriction", ingredient);
             startActivity(editIngredientIntent);
-
 
         }
 
@@ -186,12 +198,11 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
             String ingredientId = ingredientList.get(pos).getIngredientId();
             viewModel.deleteDietaryRestrictionIngredient(ingredientId);
 
-            Toast.makeText(this, ingredientList.get(pos).getIngredientName()+ "deleted", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, ingredientList.get(pos).getIngredientName()+ " deleted", Toast.LENGTH_LONG).show();
 
             //To refresh the recyclerview list
-            //viewModel.getCustomDietaryRestrictionIngredients();
-            fetchIngredientList();
 
+            fetchIngredientList();
 
         }
 

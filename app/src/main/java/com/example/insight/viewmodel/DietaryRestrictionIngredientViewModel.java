@@ -1,6 +1,7 @@
 package com.example.insight.viewmodel;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -13,12 +14,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.local.SQLiteDocumentOverlayCache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class DietaryRestrictionIngredientViewModel extends ViewModel {
 
@@ -28,7 +32,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     public FirebaseUser currentUser = auth.getCurrentUser();
     public String uid = currentUser.getUid();
-    final String  customCategory = "custom";
+    final String customCategory = "custom";
 
     //set the LiveData
     private final MutableLiveData<List<DietaryRestrictionIngredient>> customIngredientLiveData = new MutableLiveData<>();
@@ -58,7 +62,6 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
     List<DietaryRestrictionIngredient> otherIngredientList = new ArrayList<>();
 
 
-
     //Constructor
     public DietaryRestrictionIngredientViewModel() {
         customIngredientLiveData.setValue(customIngredientList);
@@ -74,12 +77,12 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
 
     //Getter
     public LiveData<List<DietaryRestrictionIngredient>> getCustomIngredientsData() {
-        Log.e("debug","liveData size:"+ customIngredientLiveData.getValue().size());
+        Log.e("debug", "liveData size:" + customIngredientLiveData.getValue().size());
         return customIngredientLiveData;
     }
 
     public LiveData<List<DietaryRestrictionIngredient>> getPredefinedIngredientsData() {
-        Log.e("debug","Predefined liveData size:"+ predefinedIngredientLiveData.getValue().size());
+        Log.e("debug", "Predefined liveData size:" + predefinedIngredientLiveData.getValue().size());
         return predefinedIngredientLiveData;
     }
 
@@ -92,7 +95,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
     }
 
     public MutableLiveData<List<DietaryRestrictionIngredient>> getDiaryIngredientLiveData() {
-        Log.e("debug","Diary liveData size:"+ diaryIngredientLiveData.getValue().size());
+        Log.e("debug", "Diary liveData size:" + diaryIngredientLiveData.getValue().size());
         return diaryIngredientLiveData;
     }
 
@@ -142,8 +145,6 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
     }
 
 
-
-
     public void getCustomDietaryRestrictionIngredients() {
 
         customIngredientList = new ArrayList<>();
@@ -154,7 +155,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
                 .collection("dietaryRestrictions");
 
         Query query = dietaryRestrictions.whereEqualTo("ingredientCategory", customCategory);
-                query.get().addOnCompleteListener(task -> {
+        query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
 
                 QuerySnapshot querySnapshot = task.getResult();
@@ -164,16 +165,16 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
                     // Retrieve the documents from the query result
                     for (DocumentSnapshot document : querySnapshot.getDocuments()) {
 
-                            String category = document.getString("ingredientCategory");
-                            String name = document.getString("ingredientName");
+                        String category = document.getString("ingredientCategory");
+                        String name = document.getString("ingredientName");
 
                         Log.d("AddCustomIngredientdebug", "Document ID: " + document.getId());
                         Log.d("AddCustomIngredientdebug", "Category: " + category);
                         Log.d("AddCustomIngredientdebug", "name: " + name);
 
                         // Create vital object with the retrieved data
-                            DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(name,category);
-                            ingredient.setIngredientId(document.getId());
+                        DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(name, category);
+                        ingredient.setIngredientId(document.getId());
 
                         Log.d("AddCustomIngredientdebug", ingredient.getIngredientName());
 
@@ -183,8 +184,8 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
 
                     customIngredientLiveData.postValue(customIngredientList);
 
-                }else{
-                    Log.e("debug","getting the list!! "+ String.valueOf(customIngredientList.size()));
+                } else {
+                    Log.e("debug", "getting the list!! " + String.valueOf(customIngredientList.size()));
                     customIngredientLiveData.postValue(customIngredientList);
                 }
             } else {
@@ -224,7 +225,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
                         Log.d("AddCustomIngredientdebug", "name: " + name);
 
                         // Create vital object with the retrieved data
-                        DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(name,category);
+                        DietaryRestrictionIngredient ingredient = new DietaryRestrictionIngredient(name, category);
                         ingredient.setIngredientId(document.getId());
 
                         Log.d("AddCustomIngredientdebug", ingredient.getIngredientName());
@@ -237,7 +238,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
                     predefinedIngredientLiveData.postValue(savedIngredientList);
                     updateSelectedItems();
 
-                }else{
+                } else {
                     predefinedIngredientLiveData.postValue(null);
                 }
             } else {
@@ -253,7 +254,11 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
 
     public void addDietaryRestrictionIngredient(DietaryRestrictionIngredient ingredient) {
 
+        //ensures the ingredient name is saved in lower case
+        ingredient.setIngredientName(ingredient.getIngredientName().toLowerCase());
+
         try {
+
             DocumentReference addDocRef = db.collection("users")
                     .document(uid)
                     .collection("dietaryRestrictions")
@@ -273,7 +278,7 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
                     .document(uid)
                     .collection("dietaryRestrictions")
                     .document(ingredient.getIngredientId())
-                    .update("ingredientName", ingredient.getIngredientName())
+                    .update("ingredientName", ingredient.getIngredientName().toLowerCase())
                     .addOnSuccessListener(aVoid -> {
 
                     })
@@ -287,9 +292,9 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
     }
 
 
-    public void deleteDietaryRestrictionIngredient(String ingredientId){
+    public void deleteDietaryRestrictionIngredient(String ingredientId) {
 
-        Log.e("AddCustomIngredient",ingredientId);
+        Log.e("AddCustomIngredient", ingredientId);
 
         FirebaseFirestore.getInstance()
                 .collection("users")
@@ -305,6 +310,137 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
                     Log.e("Error", "Error deleting : " + e.getMessage());
                 });
     }
+
+/*
+    public boolean addCustomDietaryRestriction(DietaryRestrictionIngredient ingredient) {
+
+        //ensures the ingredient name is saved in lower case
+        ingredient.setIngredientName(ingredient.getIngredientName().toLowerCase().trim());
+
+        try {
+            CollectionReference dietaryRestrictions = FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(uid)
+                    .collection("dietaryRestrictions");
+
+
+            Query query = dietaryRestrictions.whereEqualTo("ingredientName", ingredient.getIngredientName());
+
+            query.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+
+                    Log.i("CheckExisting", "success");
+                    QuerySnapshot querySnapshot = task.getResult();
+                    Log.i("CheckExisting", querySnapshot.toString());
+                    Log.i("CheckExisting", String.valueOf(querySnapshot.getDocuments().size()));
+
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+
+                        // Retrieve the documents from the query result
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+
+                            String category = document.getString("ingredientCategory");
+                            String name = document.getString("ingredientName");
+
+                            Log.d("CheckExisting", "Document ID: " + document.getId());
+                            Log.d("CheckExisting", "Category: " + category);
+                            Log.d("CheckExisting", "name: " + name);
+
+                            // Create vital object with the retrieved data
+                            Log.d("CheckExisting", "exists 2!");
+                        }
+                        Log.d("CheckExisting", "exists!");
+                        //addedSuccessfully = false;
+
+                    } else {
+                        Log.i("CheckExisting", "Not found!");
+
+                        DocumentReference addDocRef = db.collection("users")
+                                .document(uid)
+                                .collection("dietaryRestrictions")
+                                .add(ingredient).getResult();
+
+                        String generatedId = addDocRef.getId(); //get the iD of the created document
+                        Log.d("debug", "Document added with ID: " + generatedId);
+
+                        //addedSuccessfully = true;
+
+                    }
+                } else {
+                    // Handle failure
+                    Log.e("Firestore", "Error retrieving documents: " + task.getException().getMessage());
+
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e("Firestore", "Error adding document: " + e.getMessage());
+        }
+       // Log.i("CheckExisting", String.valueOf(addedSuccessfully));
+        return false;
+    }
+*/
+
+    public CompletableFuture<String> checkIfIngredientExists(DietaryRestrictionIngredient ingredient) {
+
+        CompletableFuture<String> alreadyExists = new CompletableFuture<>();
+
+        Log.i("CheckExisting", "start method!");
+
+        try {
+            CollectionReference dietaryRestrictions = FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(uid)
+                    .collection("dietaryRestrictions");
+
+
+            Query query = dietaryRestrictions.whereEqualTo("ingredientName", ingredient.getIngredientName());
+
+
+            Log.i("CheckExisting", "Query: " + query);
+
+            query.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.i("CheckExisting", "success");
+                    QuerySnapshot querySnapshot = task.getResult();
+                    Log.i("CheckExisting", querySnapshot.toString());
+                    Log.i("CheckExisting", String.valueOf(querySnapshot.getDocuments().size()));
+
+                    Log.i("checkExisting", "list size: "+String.valueOf(querySnapshot.getDocuments().size()));
+
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+
+                        // Retrieve the documents from the query result
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            //String id = document.getString("ingredientId");
+
+                           // Log.i("CheckExisting",id);
+                            Log.i("CheckExisting",document.getId());
+                            alreadyExists.complete(document.getId());
+                            break;
+
+                        }
+
+                    } else {
+                        Log.i("CheckExisting", "Not found!");
+                        alreadyExists.complete(null);
+
+                    }
+                } else {
+                    // Handle failure
+                    Log.e("Firestore", "Error retrieving documents: " + task.getException().getMessage());
+                    alreadyExists.completeExceptionally(new Exception("Error retrieving documents: " + task.getException().getMessage()));
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e("Firebase", e.getMessage());
+            alreadyExists.completeExceptionally(new Exception("Error retrieving documents: " + e.getMessage()));
+        }
+
+        return alreadyExists;
+    }
+
 
 //loads all predefined ingredients into the viewModel
 
@@ -436,37 +572,37 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
 
     private void resetLists() {
 
-        diaryIngredientList.forEach(dairy->{
+        diaryIngredientList.forEach(dairy -> {
             dairy.setSelected(false);
             dairy.setIngredientId(null);
         });
 
-        glutenIngredientList.forEach(gluten->{
+        glutenIngredientList.forEach(gluten -> {
             gluten.setSelected(false);
             gluten.setIngredientId(null);
         });
 
-        porkIngredientList.forEach(pork->{
+        porkIngredientList.forEach(pork -> {
             pork.setSelected(false);
             pork.setIngredientId(null);
         });
 
-        shellfishIngredientList.forEach(shellfish->{
+        shellfishIngredientList.forEach(shellfish -> {
             shellfish.setSelected(false);
             shellfish.setIngredientId(null);
         });
 
-        meatsIngredientList.forEach(meats->{
+        meatsIngredientList.forEach(meats -> {
             meats.setSelected(false);
             meats.setIngredientId(null);
         });
 
-        nutsIngredientList.forEach(nuts->{
+        nutsIngredientList.forEach(nuts -> {
             nuts.setSelected(false);
             nuts.setIngredientId(null);
         });
 
-        otherIngredientList.forEach(other->{
+        otherIngredientList.forEach(other -> {
             other.setSelected(false);
             other.setIngredientId(null);
         });
