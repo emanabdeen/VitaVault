@@ -52,6 +52,17 @@ public class AlarmReceiver extends BroadcastReceiver {
             return; // Stop further execution
         }
 
+        if ("NOTIFICATION_DISMISSED".equals(action)) {
+            Log.d("AlarmReceiver", "🚨 SWIPED notification");
+
+            // Log "Dismissed" in Firestore
+            logMedicationDismissed(context, medicationId, dosage);
+
+            // Stop alarm sound and remove notification
+            stopAlarm(context);
+            return; // Stop further execution
+        }
+
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         //Check if entire app notifications are disabled
@@ -134,6 +145,19 @@ public class AlarmReceiver extends BroadcastReceiver {
                 context, medicationId.hashCode(), stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
+        // Handle notification swipe-away
+        Intent deleteIntent = new Intent(context, AlarmReceiver.class);
+        deleteIntent.setAction("NOTIFICATION_DISMISSED");
+        deleteIntent.putExtra("medicationId", medicationId);
+        deleteIntent.putExtra("dosage", dosage);
+
+        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(
+                context,
+                medicationId.hashCode() + 1000, // Make sure it's unique from other pendingIntents
+                deleteIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
 
         // Build notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
@@ -144,10 +168,11 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setAutoCancel(false)
                 .setOngoing(true)
-                .addAction(android.R.drawable.ic_menu_info_details, "VIEW", openAppPendingIntent) // 👈 New action
                 .addAction(android.R.drawable.ic_menu_close_clear_cancel, "DISMISS", stopPendingIntent) // Button renamed
                 .setContentIntent(openAppPendingIntent)
-                .setFullScreenIntent(openAppPendingIntent, true); // Optional heads-up popup
+                .setFullScreenIntent(openAppPendingIntent, true)
+                .setDeleteIntent(deletePendingIntent);
+
 
         // Show notification
         Log.d("AlarmReceiver", "🚀 Ready to show notification...");

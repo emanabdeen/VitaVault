@@ -41,23 +41,24 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
                 }
         );
 
-        // 1. Get medication details from the Intent
+        // Get medication details from the Intent
         medicationId = getIntent().getStringExtra("medicationID");
         medicationName = getIntent().getStringExtra("medicationName");
         dosage = getIntent().getStringExtra("dosage");
 
-        // 2. Optionally set a text title (if you have a TextView with ID textViewTitle)
-        // binding.textViewTitle.setText(medicationName + " Logs");
 
-        // 3. Create the fragments, passing the medicationId
+        // Optionally set a text title
+         binding.textViewTitle.setText(medicationName);
+
+        // Create the fragments, passing the medicationId
         historyFragment = MedicationLogsFragment.newInstance(medicationId);
         settingsFragment = MedicationSettingsFragment.newInstance(medicationId);
 
-        // 4. Show the History fragment by default
+        // Show the History fragment by default
         replaceFragment(historyFragment);
 
 
-        // 5. Set button listeners to swap fragments
+        // Set button listeners to swap fragments
         binding.btnHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,7 +73,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
             }
         });
 
-        // 6. Set up the Add button to open the AddAlarmActivity
+        // Set up the Add button to open the AddAlarmActivity
         binding.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

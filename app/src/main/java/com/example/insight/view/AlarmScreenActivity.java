@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.insight.databinding.ActivityAlarmScreenBinding;
 import com.example.insight.receiver.AlarmReceiver;
+import com.example.insight.utility.AlarmSoundHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,6 +39,10 @@ public class AlarmScreenActivity extends AppCompatActivity {
         // Set button click listeners
         binding.btnTaken.setOnClickListener(v -> logMedication("Taken"));
         binding.btnMissed.setOnClickListener(v -> logMedication("Missed"));
+
+        binding.btnStopSound.setOnClickListener(v -> {
+            AlarmSoundHelper.stopAlarmSound();
+        });
     }
 
     // Method to log medication as Taken or Missed
