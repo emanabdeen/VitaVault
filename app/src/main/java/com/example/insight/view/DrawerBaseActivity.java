@@ -90,6 +90,9 @@ public class DrawerBaseActivity extends AppCompatActivity implements NavigationV
         }else if (id == R.id.nav_account) {
             startActivity(new Intent(this, MyProfileActivity.class));
             overridePendingTransition(0, 0);
+        }else if (id == R.id.nav_review) {
+            startActivity(new Intent(this, FeedbackActivity.class));
+            overridePendingTransition(0, 0);
         }else if (id == R.id.nav_logout) {
             FirebaseAuth.getInstance().signOut();
             finish();

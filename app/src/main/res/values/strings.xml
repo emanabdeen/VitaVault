@@ -38,6 +38,7 @@
     <string name="dietaryRestrictionsTitle">Dietary Restrictions</string>
     <string name="SearchSymptoms">Search Symptoms</string>
     <string name="ExportData">Export Data</string>
+    <string name="Feedback">We Appreciate your feedback</string>
 
     <string-array name="gender_array">
         <item>Select option</item>
