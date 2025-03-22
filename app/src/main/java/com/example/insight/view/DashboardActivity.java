@@ -83,6 +83,13 @@ public class DashboardActivity extends DrawerBaseActivity {
                 startActivity(new Intent(DashboardActivity.this, SymptomReportActivity.class));
             }
         });
+
+        binding.btnFAQ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(DashboardActivity.this, FAQActivity.class));
+            }
+        });
     }
 
     @Override

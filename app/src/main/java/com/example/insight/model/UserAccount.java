@@ -5,7 +5,7 @@ public class UserAccount {
     private String ageRange;
     private String gender;
     private String feedback;
-    private int appRating;
+    private String appRating;
 
     public UserAccount() {
     }
@@ -34,11 +34,11 @@ public class UserAccount {
         this.feedback = feedback;
     }
 
-    public int getAppRating() {
+    public String getAppRating() {
         return appRating;
     }
 
-    public void setAppRating(int appRating) {
+    public void setAppRating(String appRating) {
         this.appRating = appRating;
     }
 }

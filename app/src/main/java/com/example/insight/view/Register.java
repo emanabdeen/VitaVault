@@ -87,6 +87,7 @@ public class Register extends AppCompatActivity {
                                 //userData.put("email", email); // Store the email
                                 userData.put("Gender", "");   // Default empty value for Gender
                                 userData.put("AgeRange", ""); // Default empty value for AgeRange
+                                userData.put("Feedback", ""); // Default empty value for feedback
 
                                 // Add the user data to Firestore
                                 db.collection("users").document(userId)

@@ -38,11 +38,15 @@
     <string name="dietaryRestrictionsTitle">Dietary Restrictions</string>
     <string name="SearchSymptoms">Search Symptoms</string>
     <string name="ExportData">Export Data</string>
+    <string name="Feedback">We Appreciate your feedback</string>
 
     <string-array name="gender_array">
         <item>Select option</item>
         <item>Male</item>
         <item>Female</item>
+        <item>Non-Binary</item>
+        <item>Not Listed</item>
+        <item>Prefer not to answer</item>
     </string-array>
     <string-array name="age_array">
         <item>Select option</item>

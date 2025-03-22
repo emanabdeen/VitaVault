@@ -28,6 +28,13 @@
         android:theme="@style/Theme.Insight"
         tools:targetApi="31">
         <activity
+            android:name=".view.FAQActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.FeedbackActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".view.ForgotPasswordActivity"
             android:exported="false" />
 
@@ -98,6 +105,7 @@
             android:exported="false" />
         <activity android:name=".view.MedicationsActivity" />
         <activity android:name=".view.MedicationDetails" />
+
         <activity
             android:name=".view.DashboardActivity"
             android:exported="true">

@@ -37,6 +37,7 @@ public class AccountViewModel extends ViewModel {
     private final MutableLiveData<String> resultMessageData = new MutableLiveData<>();
     String resultMessage = "";
 
+
     public AccountViewModel(FirebaseFirestore db, FirebaseAuth auth) {
         this.db = db;
         this.auth = auth;
@@ -76,8 +77,10 @@ public class AccountViewModel extends ViewModel {
                         try {
                             String userGender = StringHandler.defaultIfNull(document.get("Gender"));
                             String UserAge = StringHandler.defaultIfNull(document.get("AgeRange"));
+                            String userFeedback = StringHandler.defaultIfNull(document.get("Feedback"));
                             userAccount.setGender(userGender);
                             userAccount.setAgeRange(UserAge);
+                            userAccount.setFeedback(userFeedback);
                         } catch (DateTimeParseException e) {
                             Log.e("Error", "Error parsing time: " + e.getMessage());
                             userDataRetrieved.complete(false);
@@ -113,6 +116,8 @@ public class AccountViewModel extends ViewModel {
         Map<String, Object> updates = new HashMap<>();
         updates.put("Gender", updatedUserAccount.getGender());
         updates.put("AgeRange", updatedUserAccount.getAgeRange());
+        updates.put("Feedback", updatedUserAccount.getFeedback());
+        updates.put("Rating", updatedUserAccount.getAppRating());
 
         // Perform the update
         docRef.update(updates)
@@ -133,4 +138,96 @@ public class AccountViewModel extends ViewModel {
         return updateCompleted;
     }
 
+    public CompletableFuture<Boolean> UpdateUserProfileData(UserAccount updatedUserAccount) {
+        CompletableFuture<Boolean> updateCompleted = new CompletableFuture<>();
+
+        // Reference to the user's document
+        DocumentReference docRef = db
+                .collection("users")
+                .document(uid);
+
+        // Create a Map to store the updated fields
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("Gender", updatedUserAccount.getGender());
+        updates.put("AgeRange", updatedUserAccount.getAgeRange());
+
+        // Perform the update
+        docRef.update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("UpdateUserData", "User data updated successfully");
+
+                    resultMessageData.postValue("Updated successfully.");
+                    userAccount =updatedUserAccount;
+                    userAccountData.postValue(updatedUserAccount);
+                    updateCompleted.complete(true); // Update successful
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("UpdateUserData", "Error updating user data: " + e.getMessage());
+                    resultMessageData.postValue("Error updating data");
+                    updateCompleted.complete(false); // Update failed
+                });
+
+        return updateCompleted;
+    }
+
+    public CompletableFuture<Boolean> UpdateUserFeedbackRatingData(UserAccount updatedUserAccount) {
+        CompletableFuture<Boolean> updateCompleted = new CompletableFuture<>();
+
+        // Reference to the user's document
+        DocumentReference docRef = db
+                .collection("users")
+                .document(uid);
+
+        // Create a Map to store the updated fields
+        Map<String, Object> updates = new HashMap<>();
+        if(!updatedUserAccount.getFeedback().isEmpty()){
+            updates.put("Feedback", updatedUserAccount.getFeedback());
+        }
+        if(!updatedUserAccount.getAppRating().isEmpty()){
+            updates.put("Rating", updatedUserAccount.getAppRating());
+        }
+
+        // Perform the update
+        docRef.update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("UpdateUserData", "User data updated successfully");
+
+                    resultMessageData.postValue("Updated successfully.");
+                    userAccount =updatedUserAccount;
+                    userAccountData.postValue(updatedUserAccount);
+                    updateCompleted.complete(true); // Update successful
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("UpdateUserData", "Error updating user data: " + e.getMessage());
+                    resultMessageData.postValue("Error updating data");
+                    updateCompleted.complete(false); // Update failed
+                });
+
+        return updateCompleted;
+    }
+    public CompletableFuture<Boolean> UpdateUserField(String fieldName, String fieldValue) {
+        CompletableFuture<Boolean> updateCompleted = new CompletableFuture<>();
+
+        // Reference to the user's document
+        DocumentReference docRef = db
+                .collection("users")
+                .document(uid);
+
+        // Create a Map to store the updated field
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(fieldName, fieldValue);
+
+        // Perform the update
+        docRef.update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("updateUserField", fieldName+" is updated successfully");
+                    updateCompleted.complete(true); // Update successful
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("updateUserField", "Error updating "+fieldName+" field: " + e.getMessage());
+                    updateCompleted.complete(false); // Update failed
+                });
+
+        return updateCompleted;
+    }
 }

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/vitavault_page_background3"
+    android:orientation="vertical"
+    tools:context=".view.FeedbackActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="25dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/Feedback"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="25dp"
+        android:layout_marginTop="15dp">
+
+        <TextView
+            android:id="@+id/lblRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="What do you think of our App?"
+            android:textStyle="bold" />
+
+        <!-- Face Images for Rating -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Very Unhappy -->
+            <ImageView
+                android:id="@+id/faceVeryUnhappy"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_face_bad"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Very Unhappy"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Unhappy -->
+            <ImageView
+                android:id="@+id/faceUnhappy"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_face_poor"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Unhappy"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Neutral -->
+            <ImageView
+                android:id="@+id/faceNeutral"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_face_medium"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Neutral"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Happy -->
+            <ImageView
+                android:id="@+id/faceHappy"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_face_good"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Happy"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <!-- Very Happy -->
+            <ImageView
+                android:id="@+id/faceVeryHappy"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_face_excellent"
+                android:contentDescription="Very Happy"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/lblReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="What would you like to share with us?"
+            android:textStyle="bold"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txtFeedback"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:gravity="start"
+                android:hint="Share your thoughts"
+                android:textColorHint="@color/light_gray"
+                android:inputType="textMultiLine"
+                android:textSize="12sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/buttonSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</LinearLayout>

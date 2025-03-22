@@ -151,7 +151,9 @@ public class MyProfileActivity extends DrawerBaseActivity {
                 if (gender != null && age != null) {
                     updatedUserAccount.setGender(gender);
                     updatedUserAccount.setAgeRange(age);
-                    viewModel.UpdateUserData(updatedUserAccount)
+                    updatedUserAccount.setFeedback(userAccount.getFeedback());
+                    updatedUserAccount.setAppRating(userAccount.getAppRating());
+                    viewModel.UpdateUserProfileData(updatedUserAccount)
                             .thenAccept(success -> {
                                 if (success) {
                                     Log.d(TAG, "User data updated successfully!");
@@ -166,8 +168,6 @@ public class MyProfileActivity extends DrawerBaseActivity {
                 }
             }
         });
-
-
     }
 
     /**
