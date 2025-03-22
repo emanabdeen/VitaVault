@@ -1,5 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -21,8 +22,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:padding="10dp"
-            android:background="@drawable/glow_white"
-            android:src="@drawable/icon_medications"/>
+            android:src="@drawable/icon_medications" />
 
         <TextView
             android:id="@+id/textViewTitle"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:textSize="22sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Scrollable Content -->
@@ -48,12 +48,13 @@
 
             <!-- Medication Name -->
             <TextView
+                android:id="@+id/txtLabelMedicationName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Medication Name"
+                android:text="@string/medicationName"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp" />
 
             <EditText
                 android:id="@+id/editTextMedicationName"
@@ -63,16 +64,27 @@
                 android:padding="12dp"
                 android:textSize="16sp"
                 android:textColor="@color/black"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="8dp"
+                android:labelFor="@+id/txtMedicationName"/>
+
+            <!-- Error Text for Medication Name -->
+            <TextView
+                android:id="@+id/textErrorMedicationName"
+                android:layout_width="match_parent"
+                android:layout_height="15dp"                android:textColor="@android:color/holo_red_dark"
+                android:textSize="14sp"
+                android:text="Medication Name is required"
+                android:visibility="invisible" />
 
             <!-- Dosage -->
             <TextView
+                android:id="@+id/txtLabelDosage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Dosage"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="8dp" />
 
             <EditText
                 android:id="@+id/editTextDosage"
@@ -82,17 +94,28 @@
                 android:padding="12dp"
                 android:textSize="16sp"
                 android:textColor="@color/black"
-                android:layout_marginBottom="12dp"
-                android:inputType="numberDecimal"/>
+                android:layout_marginBottom="8dp"
+                android:inputType="numberDecimal"
+                android:labelFor="@id/txtLabelDosage"/>
+
+            <!-- Error Text for Dosage -->
+            <TextView
+                android:id="@+id/textErrorDosage"
+                android:layout_width="match_parent"
+                android:layout_height="15dp"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="14sp"
+                android:text="Dosage is required"
+                android:visibility="invisible" />
 
             <!-- Unit Selection -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Unit"
+                android:text="@string/Unit"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="8dp" />
 
             <Spinner
                 android:id="@+id/spinnerUnit"
@@ -100,158 +123,45 @@
                 android:layout_height="50dp"
                 android:background="@drawable/edit_text_background"
                 android:padding="12dp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="16dp" />
 
-            <!-- Reminder Toggle -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Enable Reminders"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="16dp"/>
-
-            <Switch
-                android:id="@+id/switchReminder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reminders"
-                android:textSize="16sp"
-                android:layout_marginBottom="12dp"/>
-
-            <!-- Reminder Fields -->
-            <LinearLayout
-                android:id="@+id/reminderFields"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                android:paddingTop="10dp">
-
-                <!-- Select Reminder Days -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Select Reminder Days"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:padding="8dp">
-
-                    <CheckBox
-                        android:id="@+id/checkMonday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Mon"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkTuesday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tue"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkWednesday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Wed"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkThursday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Thu"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:padding="8dp">
-
-                    <CheckBox
-                        android:id="@+id/checkFriday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Fri"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkSaturday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sat"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-
-                    <CheckBox
-                        android:id="@+id/checkSunday"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sun"
-                        android:textSize="16sp"
-                        android:layout_marginEnd="12dp"/>
-                </LinearLayout>
-
-                <!-- Select Reminder Time -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Select Reminder Time"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"/>
-
-                <Button
-                    android:id="@+id/btnPickTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:text="Pick Time"
-                    android:textSize="16sp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="8dp"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="8dp"/>
-
-                <TextView
-                    android:id="@+id/textSelectedTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="No time selected"
-                    android:textSize="16sp"
-                    android:textStyle="italic"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="5dp"/>
-            </LinearLayout>
-
-            <!-- Save Button -->
+            <!-- Manage Alarms Button -->
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnSave"
+                android:id="@+id/btnManageAlarms"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="SAVE"
+                android:text="@string/addAlarm"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:padding="12dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/button_secondary"/>
+                android:background="@drawable/button_secondary" />
+
+            <!-- Warning message -->
+            <TextView
+                android:id="@+id/textViewAlarmWarning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/addMedicationFirst"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                android:textColor="@android:color/black"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:visibility="invisible" />
+
+            <!-- Save Medication Button -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/save"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:padding="12dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/button_secondary" />
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

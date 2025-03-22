@@ -77,4 +77,6 @@ dependencies {
     // Graphs and other
     implementation(libs.okhttp)
     implementation (libs.mpandroidchart) //implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation ("com.google.android.material:material:1.11.0")
+    implementation ("com.google.code.gson:gson:2.10.1")
 }

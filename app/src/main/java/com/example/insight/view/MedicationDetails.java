@@ -1,14 +1,11 @@
 package com.example.insight.view;
 
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProvider;
 
@@ -19,7 +16,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class MedicationDetails extends DrawerBaseActivity {
@@ -30,11 +26,6 @@ public class MedicationDetails extends DrawerBaseActivity {
     private String pageFunction;
     private String medicationId;
     private Medication medication;
-    private String selectedTime = "08:00 AM"; // Default time
-
-    private final List<String> daysOfWeek = Arrays.asList(
-            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,16 +44,7 @@ public class MedicationDetails extends DrawerBaseActivity {
             startActivity(new Intent(getApplicationContext(), Login.class));
         }
 
-        // Setup Unit Spinner
         setupUnitSpinner();
-
-        // Toggle Reminder Fields Visibility
-        binding.switchReminder.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            binding.reminderFields.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-        });
-
-        // Time Picker Button
-        binding.btnPickTime.setOnClickListener(v -> showTimePickerDialog());
 
         // Handle Intent Data (Editing or Creating New)
         Intent intent = getIntent();
@@ -72,23 +54,38 @@ public class MedicationDetails extends DrawerBaseActivity {
             pageFunction = "editMedication";
             medicationId = intent.getStringExtra("medicationID");
 
-            viewModel.getMedications();
+            viewModel.getMedications(true);
             viewModel.getMedicationsData().observe(this, medications -> {
                 if (medications == null) {
                     Log.d("MedicationDetails", "Waiting for Firestore data...");
                     return;
                 }
-
                 for (Medication m : medications) {
                     if (m.getMedicationId().equals(medicationId)) {
                         medication = m;
+                        Log.d("MedicationDetails", "Loaded medication: " + m.getName());
                         populateFields(m);
                         break;
                     }
                 }
             });
+
+            // In edit mode, enable Manage Alarms button and hide warning
+            binding.btnManageAlarms.setEnabled(true);
+            binding.textViewAlarmWarning.setVisibility(View.GONE);
+            binding.btnManageAlarms.setOnClickListener(v -> {
+                Intent alarmIntent = new Intent(MedicationDetails.this, AddAlarmActivity.class);
+                alarmIntent.putExtra("medicationID", medicationId);
+                alarmIntent.putExtra("medicationName", medication.getName());
+                alarmIntent.putExtra("dosage", medication.getDosage() + " " + medication.getUnit());
+                startActivity(alarmIntent);
+            });
+
         } else {
             pageFunction = "createMedication";
+            binding.btnManageAlarms.setEnabled(false);
+            binding.textViewAlarmWarning.setVisibility(View.VISIBLE);
+            binding.textViewAlarmWarning.setText("Need to add medication first");
         }
 
         // Save Button Click Event
@@ -100,8 +97,17 @@ public class MedicationDetails extends DrawerBaseActivity {
                     editMedication();
                 }
             } catch (Exception e) {
-                Log.e("error", "try-catch error: " + e.getMessage());
+                Log.e("MedicationDetails", "Error saving medication: " + e.getMessage());
             }
+        });
+
+        // Clear errors on focus
+        binding.editTextMedicationName.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) binding.textErrorMedicationName.setVisibility(View.INVISIBLE);
+        });
+
+        binding.editTextDosage.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) binding.textErrorDosage.setVisibility(View.INVISIBLE);
         });
     }
 
@@ -111,124 +117,76 @@ public class MedicationDetails extends DrawerBaseActivity {
         binding.spinnerUnit.setAdapter(adapter);
     }
 
-    private void showTimePickerDialog() {
-        TimePickerDialog timePicker = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-            String amPm = (hourOfDay >= 12) ? "PM" : "AM";
-            int hour = (hourOfDay > 12) ? hourOfDay - 12 : hourOfDay;
-            if (hour == 0) hour = 12;
-
-            selectedTime = String.format("%02d:%02d %s", hour, minute, amPm);
-            binding.textSelectedTime.setText("Selected time: " + selectedTime);
-        }, 8, 0, false); // Default time: 08:00 AM
-
-        timePicker.show();
-    }
-
     private void populateFields(Medication medication) {
         binding.editTextMedicationName.setText(medication.getName());
         binding.editTextDosage.setText(medication.getDosage());
-        binding.switchReminder.setChecked(medication.isReminderEnabled());
-
-        // Set correct unit in spinner
         String unit = medication.getUnit();
         if (unit != null) {
             ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.spinnerUnit.getAdapter();
             int position = adapter.getPosition(unit);
             binding.spinnerUnit.setSelection(position);
         }
-
-        // Set Reminder Days & Time
-        if (medication.isReminderEnabled()) {
-            binding.reminderFields.setVisibility(View.VISIBLE);
-            HashMap<String, List<String>> reminderMap = medication.getReminderMap();
-
-            for (String day : daysOfWeek) {
-                if (reminderMap.containsKey(day)) {
-                    CheckBox checkBox = getCheckBoxForDay(day);
-                    if (checkBox != null) checkBox.setChecked(true);
-                    selectedTime = reminderMap.get(day).get(0);
-                    binding.textSelectedTime.setText("Selected time: " + selectedTime);
-                }
-            }
-        }
     }
 
+    /**
+     * Validate fields and show red error messages if empty
+     */
+    private boolean validateMedicationFields() {
+        boolean isValid = true;
+
+        String name = binding.editTextMedicationName.getText().toString().trim();
+        String dosage = binding.editTextDosage.getText().toString().trim();
+
+        // Reset errors
+        binding.textErrorMedicationName.setVisibility(View.GONE);
+        binding.textErrorDosage.setVisibility(View.GONE);
+
+        if (TextUtils.isEmpty(name)) {
+            binding.textErrorMedicationName.setText("Medication Name is required");
+            binding.textErrorMedicationName.setVisibility(View.VISIBLE);
+            isValid = false;
+        }
+
+        if (TextUtils.isEmpty(dosage)) {
+            binding.textErrorDosage.setText("Dosage is required");
+            binding.textErrorDosage.setVisibility(View.VISIBLE);
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    /**
+     * Save new medication after validation
+     */
     private void createNewMedication() {
-        try {
-            String name = binding.editTextMedicationName.getText().toString();
-            String dosage = binding.editTextDosage.getText().toString();
-            String unit = binding.spinnerUnit.getSelectedItem().toString();
-            boolean reminderEnabled = binding.switchReminder.isChecked();
+        if (!validateMedicationFields()) return;
 
-            if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(dosage)) {
-                Medication newMedication = new Medication(name, dosage, unit, reminderEnabled);
-                if (reminderEnabled) {
-                    newMedication.setReminderMap(collectReminderTimes());
-                }
+        String name = binding.editTextMedicationName.getText().toString().trim();
+        String dosage = binding.editTextDosage.getText().toString().trim();
+        String unit = binding.spinnerUnit.getSelectedItem().toString();
 
-                viewModel.addMedication(newMedication);
-                Toast.makeText(getApplicationContext(), "Saved Successfully", Toast.LENGTH_LONG).show();
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(), "One or more fields are empty.", Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            Log.e("error", "try-catch error: " + e.getMessage());
-        }
+        Medication newMedication = new Medication(name, dosage, unit, false, false);
+        viewModel.addMedication(newMedication);
+        setResult(RESULT_OK);
+        finish();
     }
 
+    /**
+     * Edit existing medication after validation
+     */
     private void editMedication() {
-        try {
-            String name = binding.editTextMedicationName.getText().toString();
-            String dosage = binding.editTextDosage.getText().toString();
-            String unit = binding.spinnerUnit.getSelectedItem().toString();
-            boolean reminderEnabled = binding.switchReminder.isChecked();
+        if (!validateMedicationFields()) return;
 
-            if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(dosage)) {
-                medication.setName(name);
-                medication.setDosage(dosage);
-                medication.setUnit(unit);
-                medication.setReminderEnabled(reminderEnabled);
+        String name = binding.editTextMedicationName.getText().toString().trim();
+        String dosage = binding.editTextDosage.getText().toString().trim();
+        String unit = binding.spinnerUnit.getSelectedItem().toString();
 
-                if (reminderEnabled) {
-                    medication.setReminderMap(collectReminderTimes());
-                } else {
-                    medication.setReminderMap(new HashMap<>()); // Clear reminders if disabled
-                }
-
-                viewModel.updateMedication(medication);
-                Toast.makeText(getApplicationContext(), "Updated Successfully", Toast.LENGTH_LONG).show();
-                finish();
-            } else {
-                Toast.makeText(getApplicationContext(), "One or more fields are empty.", Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e) {
-            Log.e("error", "try-catch error: " + e.getMessage());
-        }
-    }
-
-    private HashMap<String, List<String>> collectReminderTimes() {
-        HashMap<String, List<String>> remindersMap = new HashMap<>();
-
-        for (String day : daysOfWeek) {
-            CheckBox checkBox = getCheckBoxForDay(day);
-            if (checkBox != null && checkBox.isChecked()) {
-                remindersMap.put(day, Arrays.asList(selectedTime));
-            }
-        }
-        return remindersMap;
-    }
-
-    private CheckBox getCheckBoxForDay(String day) {
-        switch (day) {
-            case "Monday": return binding.checkMonday;
-            case "Tuesday": return binding.checkTuesday;
-            case "Wednesday": return binding.checkWednesday;
-            case "Thursday": return binding.checkThursday;
-            case "Friday": return binding.checkFriday;
-            case "Saturday": return binding.checkSaturday;
-            case "Sunday": return binding.checkSunday;
-            default: return null;
-        }
+        medication.setName(name);
+        medication.setDosage(dosage);
+        medication.setUnit(unit);
+        viewModel.updateMedication(medication);
+        setResult(RESULT_OK);
+        finish();
     }
 }
