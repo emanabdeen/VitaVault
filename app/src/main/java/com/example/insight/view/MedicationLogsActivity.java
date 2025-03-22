@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
 import com.example.insight.R;
@@ -19,11 +21,25 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
     private MedicationLogsFragment historyFragment;
     private MedicationSettingsFragment settingsFragment;
 
+    private ActivityResultLauncher<Intent> alarmActivityLauncher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMedicationLogsBinding binding = ActivityMedicationLogsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+
+        alarmActivityLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        if (settingsFragment != null) {
+                            settingsFragment.refreshAlarms(); // 👈 let the fragment handle the logic
+                        }
+                    }
+                }
+        );
 
         // 1. Get medication details from the Intent
         medicationId = getIntent().getStringExtra("medicationID");
@@ -39,6 +55,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
 
         // 4. Show the History fragment by default
         replaceFragment(historyFragment);
+
 
         // 5. Set button listeners to swap fragments
         binding.btnHistory.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +81,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
                 intent.putExtra("medicationID", medicationId);
                 intent.putExtra("medicationName", medicationName);
                 intent.putExtra("dosage", dosage);
-                startActivity(intent);
+                alarmActivityLauncher.launch(intent);
             }
         });
     }
@@ -75,4 +92,6 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
                 .replace(R.id.fragmentLayout, fragment)
                 .commit();
     }
+
+
 }

@@ -1,15 +1,20 @@
 package com.example.insight.view;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.app.NotificationCompat;
 
 import com.example.insight.R;
 import com.example.insight.databinding.ActivityDashboardBinding;
+import com.example.insight.utility.AlarmRescheduler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -26,6 +31,12 @@ public class DashboardActivity extends DrawerBaseActivity {
         binding = ActivityDashboardBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         allocateActivityTitle("Dashboard");
+
+
+        //create notification channel
+        createNotificationChannel();
+        //reschedule alarms
+        AlarmRescheduler.rescheduleAll(this);
 
         //// Disable the back icon for this activity
         //setShowBackIcon(false);
@@ -72,5 +83,23 @@ public class DashboardActivity extends DrawerBaseActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    "alarm_channel", // ⚠️ Make sure this ID matches everywhere
+                    "Medication Reminders",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Reminders for taking medications");
+            channel.enableVibration(true);
+            channel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
     }
 }

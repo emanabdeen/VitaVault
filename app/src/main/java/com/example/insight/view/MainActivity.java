@@ -49,6 +49,7 @@ public class MainActivity extends DrawerBaseActivity {
         btn = binding.button;
         manageAccount = binding.manageAccount;
 
+
         manageAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

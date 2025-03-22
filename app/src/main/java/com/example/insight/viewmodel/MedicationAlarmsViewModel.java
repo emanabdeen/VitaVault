@@ -25,7 +25,20 @@ public class MedicationAlarmsViewModel extends ViewModel {
         return alarms;
     }
 
+    private boolean alarmsFetched = false;
+
+    // Fetch alarms from Firestore only once unless forced
     public void fetchAlarms(String medicationId) {
+        if (alarmsFetched) return;
+        fetchAlarmsFromFirestore(medicationId);
+    }
+
+    // Force a fetch (use when alarm is added/deleted/edited)
+    public void forceRefreshAlarms(String medicationId) {
+        fetchAlarmsFromFirestore(medicationId);
+    }
+
+    public void fetchAlarmsFromFirestore(String medicationId) {
         // Get Firestore instance and current user ID
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -54,6 +67,7 @@ public class MedicationAlarmsViewModel extends ViewModel {
                     Log.d("MedicationAlarmsVM", "Fetched alarms: " + fetchedAlarms.size());
                     // Post the list of alarms to LiveData
                     alarms.postValue(fetchedAlarms);
+                    alarmsFetched = true;
                 })
                 .addOnFailureListener(e -> {
                     // Log or handle the error as needed
@@ -175,7 +189,16 @@ public class MedicationAlarmsViewModel extends ViewModel {
                 .collection("alarms")
                 .document(alarmId)
                 .delete()
-                .addOnSuccessListener(aVoid -> Log.d("MedicationAlarmsVM", "Alarm deleted: " + alarmId))
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("MedicationAlarmsVM", "Alarm deleted: " + alarmId);
+                    // ⚡️ Update local LiveData list manually
+                    List<MedicationAlarm> currentList = alarms.getValue();
+                    if (currentList != null) {
+                        List<MedicationAlarm> updatedList = new ArrayList<>(currentList);
+                        updatedList.removeIf(alarm -> alarm.getAlarmId().equals(alarmId));
+                        alarms.setValue(updatedList); // This triggers the observer
+                    }
+                })
                 .addOnFailureListener(e -> Log.e("MedicationAlarmsVM", "Error deleting alarm", e));
     }
 

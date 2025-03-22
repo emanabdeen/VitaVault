@@ -6,11 +6,24 @@ import static com.example.insight.utility.AlarmStaticUtils.getHour;
 import static com.example.insight.utility.AlarmStaticUtils.getMinute;
 import static com.example.insight.utility.AlarmStaticUtils.getNextAlarmTime;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.insight.databinding.ActivityEditAlarmBinding;
@@ -87,6 +100,62 @@ public class EditAlarmActivity extends DrawerBaseActivity {
     }
 
     private void saveEditedAlarm() {
+
+        //make sure notifications permission is granted for app
+        //android 33 and lower set default is set to enabled
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Always try launching it
+                requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+
+                // THEN check if it's blocked permanently
+                if (!shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Notification Permission Required")
+                            .setMessage("To receive medication reminders, you need to enable notification permission.\n\nPlease enable it manually in app settings to receive reminders.")
+                            .setPositiveButton("Open Settings", (dialog, which) -> {
+                                Intent intent = new Intent();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    // For android 8 (api 26) and above
+                                    // by default it goes to app main page
+                                    intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                                    intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                                } else {
+                                    // for older android it opens the notification page for the app
+                                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                    intent.setData(Uri.parse("package:" + getPackageName()));
+                                }
+                                startActivity(intent);
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                }
+
+                return;
+            }
+        }
+
+        // Make sure channel is enabled too
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = notificationManager.getNotificationChannel("alarm_channel");
+
+        if (channel != null && channel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Medication Reminders Disabled")
+                    .setMessage("The Medication Reminders channel is disabled. Please enable it in settings to receive alarm notifications.")
+                    .setPositiveButton("Open Settings", (dialog, which) -> {
+                        Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                        intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                        intent.putExtra(Settings.EXTRA_CHANNEL_ID, "alarm_channel");
+                        startActivity(intent);
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            return; // Stop saving if channel is off
+        }
+
         String newDay = daySpinner.getSelectedItem().toString();
 
         // Cancel old alarm if details changed
@@ -117,9 +186,18 @@ public class EditAlarmActivity extends DrawerBaseActivity {
         AlarmHelper.setAlarm(EditAlarmActivity.this, newRequestCode, alarmCalendar, medicationId, medicationName, true, dosage);
 
         Toast.makeText(this, "Alarm updated successfully!", Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK); // This signals that changes were made
         finish();
     }
 
+    private final ActivityResultLauncher<String> requestNotificationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Toast.makeText(this, "Notifications enabled! You can now set alarms.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Notification permission denied. Enable it in settings to receive reminders.", Toast.LENGTH_LONG).show();
+                }
+            });
 
 
 }

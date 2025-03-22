@@ -17,6 +17,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.insight.R;
 import com.example.insight.utility.AlarmHelper;
+import com.example.insight.utility.AlarmSoundHelper;
 import com.example.insight.view.AlarmScreenActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
@@ -37,6 +38,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         String medicationId = intent.getStringExtra("medicationId");
         String dosage = intent.getStringExtra("dosage");
+        int requestCode = intent.getIntExtra("requestCode", -1);
 
         // If user presses "DISMISS" button
         if ("STOP_ALARM".equals(action)) {
@@ -50,6 +52,21 @@ public class AlarmReceiver extends BroadcastReceiver {
             return; // Stop further execution
         }
 
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        //Check if entire app notifications are disabled
+        if (!notificationManager.areNotificationsEnabled()) {
+            Log.w("AlarmReceiver", "🚫 All notifications are disabled for the app.");
+            return;
+        }
+
+        //Check if the channel is disabled
+        NotificationChannel channel = notificationManager.getNotificationChannel(CHANNEL_ID);
+        if (channel == null || channel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
+            Log.w("AlarmReceiver", "🚫 Medication Reminders channel is disabled.");
+            return;
+        }
+
         // If normal alarm trigger
         String medicationName = intent.getStringExtra("medicationName");
         boolean repeatWeekly = intent.getBooleanExtra("repeatWeekly", false);
@@ -58,40 +75,29 @@ public class AlarmReceiver extends BroadcastReceiver {
         Log.d("AlarmReceiver", "🚨 AlarmReceiver triggered for: " + medicationName);
 
         // Play alarm sound
-        playAlarmSound(context);
+        AlarmSoundHelper.playAlarmSound(context);
 
 
 
         // Show persistent notification
         showPersistentNotification(context, medicationId, medicationName, dosage);
 
+        //in case in the future we want to add not repeating weekly
         if (repeatWeekly) {
             Calendar nextWeek = Calendar.getInstance();
             nextWeek.setTimeInMillis(System.currentTimeMillis());
             nextWeek.add(Calendar.WEEK_OF_YEAR, 1);
 
-            int requestCode = (medicationId + medicationName).hashCode(); // Same way as when set
 
-            AlarmHelper.setAlarm(context, requestCode, nextWeek, medicationId, medicationName, true, dosage);
-            Log.d("AlarmReceiver", "🔁 Repeating weekly alarm re-scheduled for next week.");
+            if (requestCode != -1) {
+                AlarmHelper.setAlarm(context, requestCode, nextWeek, medicationId, medicationName, true, dosage);
+                Log.d("AlarmReceiver", "🔁 Weekly alarm re-scheduled (code: " + requestCode + ")");
+            } else {
+                Log.w("AlarmReceiver", "⚠️ No requestCode found for rescheduling!");
+            }
         }
     }
 
-    // Play alarm sound
-    private void playAlarmSound(Context context) {
-        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        if (alarmUri == null) {
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        }
-
-        ringtone = RingtoneManager.getRingtone(context, alarmUri);
-        if (ringtone != null) {
-            ringtone.play();
-            Log.d("AlarmReceiver", "✅ Alarm sound is playing...");
-        } else {
-            Log.e("AlarmReceiver", "❌ Failed to play alarm sound!");
-        }
-    }
 
     // Show notification with "DISMISS" button
     private void showPersistentNotification(Context context, String medicationId, String medicationName, String dosage) {
@@ -138,6 +144,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setAutoCancel(false)
                 .setOngoing(true)
+                .addAction(android.R.drawable.ic_menu_info_details, "VIEW", openAppPendingIntent) // 👈 New action
                 .addAction(android.R.drawable.ic_menu_close_clear_cancel, "DISMISS", stopPendingIntent) // Button renamed
                 .setContentIntent(openAppPendingIntent)
                 .setFullScreenIntent(openAppPendingIntent, true); // Optional heads-up popup
@@ -169,10 +176,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     // Stop alarm sound and remove notification
     public static void stopAlarm(Context context) {
-        if (ringtone != null && ringtone.isPlaying()) {
-            ringtone.stop();
-            Log.d("AlarmReceiver", "✅ Alarm sound stopped");
-        }
+        AlarmSoundHelper.stopAlarmSound();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.util.Log;
 
 public class AlarmSoundHelper {
     private static Ringtone ringtone;
@@ -15,7 +16,11 @@ public class AlarmSoundHelper {
         }
 
         ringtone = RingtoneManager.getRingtone(context, alarmUri);
-        ringtone.play();
+        if (ringtone != null) {
+            ringtone.play();
+        } else {
+            Log.e("AlarmSoundHelper", "❌ Failed to get alarm ringtone!");
+        }
     }
 
     public static void stopAlarmSound() {

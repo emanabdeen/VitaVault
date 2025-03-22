@@ -1,5 +1,6 @@
 package com.example.insight.view;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -31,6 +34,7 @@ public class MedicationSettingsFragment extends Fragment {
     private String medicationName;
     private String dosage;
     private MedicationViewModel medicationViewModel;
+    private ActivityResultLauncher<Intent> alarmActivityLauncher;
 
     public static MedicationSettingsFragment newInstance(String medicationId) {
         MedicationSettingsFragment fragment = new MedicationSettingsFragment();
@@ -57,6 +61,17 @@ public class MedicationSettingsFragment extends Fragment {
 
         // Initialize the ViewModel
         viewModel = new ViewModelProvider(this).get(MedicationAlarmsViewModel.class);
+
+        //Set this up so a fetch from database only happens if user actually updated something
+        alarmActivityLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        viewModel.forceRefreshAlarms(medicationId); // Only fetch if something changed
+                    }
+                }
+        );
+
         viewModel.getAlarms().observe(getViewLifecycleOwner(), alarms -> {
             if (alarms != null && !alarms.isEmpty()) {
                 binding.textViewNoAlarms.setVisibility(View.GONE);
@@ -100,7 +115,8 @@ public class MedicationSettingsFragment extends Fragment {
                     intent.putExtra("medicationName", medicationName);
                     intent.putExtra("dosage", dosage);
                     // Optionally, pass additional data if needed.
-                    startActivity(intent);
+                    alarmActivityLauncher.launch(intent);
+
                 } else {
                     Toast.makeText(getContext(), "Unable to retrieve alarm for editing.", Toast.LENGTH_SHORT).show();
                 }
@@ -108,7 +124,23 @@ public class MedicationSettingsFragment extends Fragment {
 
             @Override
             public void OnClickItem(View v, int pos) {
-                // Could make clicking the alarm editable
+                // Retrieve the alarm being edited from the adapter.
+                MedicationAlarm alarm = adapter.getAlarmAt(pos);
+                if (alarm != null) {
+                    Intent intent = new Intent(getActivity(), EditAlarmActivity.class);
+                    // Pass alarm details for editing
+                    intent.putExtra("alarmId", alarm.getAlarmId());
+                    intent.putExtra("medicationId", alarm.getMedicationId());
+                    intent.putExtra("day", alarm.getDay());
+                    intent.putExtra("time", alarm.getTime());
+                    intent.putExtra("medicationName", medicationName);
+                    intent.putExtra("dosage", dosage);
+                    // Optionally, pass additional data if needed.
+                    alarmActivityLauncher.launch(intent);
+
+                } else {
+                    Toast.makeText(getContext(), "Unable to retrieve alarm for editing.", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -121,6 +153,7 @@ public class MedicationSettingsFragment extends Fragment {
                     AlarmHelper.cancelAlarm(getContext(), requestCode, alarm.getMedicationId(), "MedicationName");
                     // Delete the alarm from Firestore via the ViewModel.
                     viewModel.deleteAlarm(alarm.getMedicationId(), alarm.getAlarmId());
+
                     // Remove the alarm from local storage.
                     com.example.insight.utility.AlarmLocalStorageHelper.removeAlarm(getContext(), alarm);
                 } else {
@@ -137,6 +170,12 @@ public class MedicationSettingsFragment extends Fragment {
         super.onResume();
         // Force a fresh fetch of alarms every time the fragment comes into focus
         viewModel.fetchAlarms(medicationId);
+    }
+
+    public void refreshAlarms() {
+        if (viewModel != null && medicationId != null) {
+            viewModel.forceRefreshAlarms(medicationId);
+        }
     }
 
 }

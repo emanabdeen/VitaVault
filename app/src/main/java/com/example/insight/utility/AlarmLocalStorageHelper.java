@@ -2,6 +2,7 @@ package com.example.insight.utility;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.example.insight.model.MedicationAlarm;
 import com.google.gson.Gson;
@@ -45,8 +46,18 @@ public class AlarmLocalStorageHelper {
                     alarm.getTime().equals(alarmToRemove.getTime()) &&
                     alarm.getDosage().equals(alarmToRemove.getDosage())) {
                 iterator.remove();
+                Log.d("AlarmLocalStorageHelper", "Removed alarm for: " + alarm.getMedicationName());
             }
         }
         saveAlarms(context, alarms);
+    }
+
+    // Wipes ALL alarms from local storage
+    public static void clearAll(Context context) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .remove(KEY_ALARMS)
+                .apply();
+        Log.d("AlarmLocalStorageHelper", "✅ All stored alarms cleared.");
     }
 }
