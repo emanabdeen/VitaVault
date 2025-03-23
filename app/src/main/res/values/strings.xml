@@ -92,5 +92,10 @@
     <string name="scanResultDescription">Scanned ingredients matching your restricted ingredients show an ⚠️ icon.\nTap on + to add an ingredient to your restricted list.</string>
     <string name="scanMainActivityDescription">Take a photo of an ingredients list or tap on the camera preview to select an image from your device\nBest results by cropping tightly to the text.</string>
     <string name="cameraControlsDescription">Tap here to start the camera preview\nLong press to select an image from your device\nThe same controls will work when a photo or image are displayed</string>
+    <string name="add_log">add log</string>
+    <string name="log">Log</string>
+    <string name="alarms">Alarms</string>
+    <string name="no_logs_available">No logs available.</string>
+    <string name="no_alarms_set">No alarms set</string>
 
 </resources>
