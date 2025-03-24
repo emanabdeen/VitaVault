@@ -89,8 +89,8 @@
         <item>Other</item>
     </string-array>
 
-    <string name="scanResultDescription">Scanned ingredients matching your restricted ingredients show an ⚠️ icon.\nTap on + to add an ingredient to your restricted list.</string>
-    <string name="scanMainActivityDescription">Take a photo of an ingredients list or tap on the camera preview to select an image from your device\nBest results by cropping tightly to the text.</string>
-    <string name="cameraControlsDescription">Tap here to start the camera preview\nLong press to select an image from your device\nThe same controls will work when a photo or image are displayed</string>
+    <string name="scanResultDescription">Scanned ingredients matching your restricted ingredients show an ⚠️ icon.\n\nTap on + to add an ingredient to your restricted list.</string>
+    <string name="scanMainActivityDescription">Take a photo of an ingredients list or upload an image of one from your device\n\nCrop tightly to the text for best results.</string>
+    <string name="cameraControlsDescription">Tap here to start the camera preview\n\nTap again when an image is displayed to clear it</string>
 
 </resources>

@@ -9,11 +9,14 @@ import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,10 +40,14 @@ import com.example.insight.databinding.ActivityOcrMainBinding;
 import com.example.insight.utility.ImageUtils;
 import com.example.insight.utility.IngredientUtils;
 import com.example.insight.utility.OcrApiClient;
+import com.example.insight.utility.StringHandler;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.mlkit.vision.text.Text;
 import com.yalantis.ucrop.UCrop;
 
@@ -54,17 +61,20 @@ public class OCRMainActivity extends DrawerBaseActivity {
     private static final String TAG = "OCRMainActivity";
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private PreviewView previewView;
+    FirebaseAuth mAuth;
+    FirebaseUser user;
+    FirebaseFirestore db;
 
     private ActivityOcrMainBinding binding;
-    private Button cameraButton, parseIngredientsButton;
-    private TextView baseInstructionsText;
+    private Button parseIngredientsButton;
+    private ImageButton cameraButton;
+    private TextView baseInstructionsText, errorText;
     private ImageView cameraResultImageView;
     private EditText ocrResultText;
     private Bitmap  capturedImageBitmap, croppedImageBitmap;
     // TODO: Use capturedImageBitmap for preview snapshot and fallback if user cancels crop (if crop cancel doesn't update bitmap for ocr)
     // TODO: Clear capturedImageBitmap at start of each action that might change it, then fallback to capturedImageBitmap if null
     private Uri imageUri, savedImageUri, croppedImageUri;
-    private ProcessCameraProvider cameraProvider;
 
     private LifecycleCameraController cameraController;
 
@@ -75,16 +85,28 @@ public class OCRMainActivity extends DrawerBaseActivity {
         binding = ActivityOcrMainBinding.inflate(getLayoutInflater());
         this.setContentView(binding.getRoot());
         allocateActivityTitle("OCR Ingredient Scan");
+
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        // Redirect to login if user is not authenticated
+        if (user == null) {
+            finish();
+            startActivity(new Intent(OCRMainActivity.this, Login.class));
+            return;
+        }
+
         previewView = binding.previewViewCameraX;
         cameraResultImageView = binding.imgViewCameraResult;
         ocrResultText = binding.ocrResultText;
+        errorText = binding.errorText;
         parseIngredientsButton = binding.parseIngredientsButton;
         cameraButton = binding.cameraButton;
         baseInstructionsText = binding.baseInstructionText;
+        resetErrorText();
 
 
         ocrResultText.setMovementMethod(new ScrollingMovementMethod());
-
         baseInstructionsText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,19 +119,23 @@ public class OCRMainActivity extends DrawerBaseActivity {
                 }
             }
         });
-        baseInstructionsText.setOnLongClickListener(new View.OnLongClickListener() {
+        ocrResultText.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onLongClick(View view) {
-                try {
-                    // Launch the photo picker and let the user choose only images.
-                    pickMedia.launch(new PickVisualMediaRequest.Builder()
-                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                            .build());
-                    Log.d(TAG, "onClick: OCR TEST - media picker launched");
-                } catch (Exception e) {
-                    Log.e(TAG, "onClick: " + e.getMessage());
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String editedText = editable.toString();
+                if (!StringHandler.isNullOrEmpty(editedText)) {
+                    Log.d(TAG, "afterTextChanged: editedText contains text, enabling scan button");
+                    parseIngredientsButton.setEnabled(true);
+                } else {
+                    Log.d(TAG, "afterTextChanged: editedText is empty, disabling button");
+                    parseIngredientsButton.setEnabled(false);
                 }
-                return true;
             }
         });
 
@@ -125,23 +151,8 @@ public class OCRMainActivity extends DrawerBaseActivity {
                 }
             }
         });
-        cameraResultImageView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                try {
-                    // Launch the photo picker and let the user choose only images.
-                    pickMedia.launch(new PickVisualMediaRequest.Builder()
-                            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
-                            .build());
-                    Log.d(TAG, "onClick: OCR TEST - media picker launched");
-                } catch (Exception e) {
-                    Log.e(TAG, "onClick: " + e.getMessage());
-                }
-                return true;
-            }
-        });
 
-        previewView.setOnClickListener(new View.OnClickListener() {
+        binding.selectImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
@@ -159,7 +170,8 @@ public class OCRMainActivity extends DrawerBaseActivity {
         parseIngredientsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(OCRMainActivity.this, "Parse Ingredients Button Clicked", Toast.LENGTH_LONG).show();
+                resetErrorText();
+                Toast.makeText(OCRMainActivity.this, "Parsing and scanning ingredients...", Toast.LENGTH_LONG).show();
                 HashMap<String, ArrayList<String>> ingredientsListMap = IngredientUtils.splitIngredientList(ocrResultText.getText().toString());
                 Log.d(TAG, "Ingredients ListMap: " + ingredientsListMap);
                 Intent intent = new Intent(OCRMainActivity.this, OCRResultsActivity.class);
@@ -172,6 +184,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View view) {
                 if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    resetErrorText();
                     if (previewView.getVisibility() != View.VISIBLE) {
                         startCameraX();
                     } else {
@@ -200,14 +213,14 @@ public class OCRMainActivity extends DrawerBaseActivity {
             }).start();
         } catch (Exception e) {
             Log.e(TAG, "onClick: " + e.getMessage());
-            Toast.makeText(OCRMainActivity.this, "Error taking photo", Toast.LENGTH_LONG).show();
+            errorText.setVisibility(View.VISIBLE);
+            errorText.setText("Error taking photo: " + e.getMessage());
         }
         File tempFile = null;
         try {
             tempFile = File.createTempFile("ocr_image_", ".jpg", getCacheDir());
         } catch (IOException e) {
             Log.e(TAG, "capturePhoto: Error creating temp file", e);
-            //Toast.makeText(OCRMainActivity.this, "Error creating temp file", Toast.LENGTH_LONG).show();
         }
         long timestamp = System.currentTimeMillis();
         ContentValues contentValues = new ContentValues();
@@ -215,9 +228,6 @@ public class OCRMainActivity extends DrawerBaseActivity {
         contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
         ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(tempFile).build();
         File finalTempFile = tempFile;
-        //cameraController.takePicture(
-        //outputFileOptions,
-        Uri tempImageUri = FileProvider.getUriForFile(this, "com.example.android.fileprovider", tempFile);
         cameraController.takePicture(
                outputFileOptions,
                 getExecutor(),
@@ -247,7 +257,6 @@ public class OCRMainActivity extends DrawerBaseActivity {
                                 runOnUiThread( () -> startCropActivity(savedPhotoUri));
                             } catch (Exception e) {
                                 Log.e(TAG, "onClick: " + e.getMessage());
-                                runOnUiThread( () -> Toast.makeText(OCRMainActivity.this, "Error taking photo", Toast.LENGTH_LONG).show());
                             }
 
                             Log.d(TAG, "onImageSaved: image saved");
@@ -256,7 +265,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
                     @Override
                     public void onError(ImageCaptureException error) {
                         Log.d(TAG, "onError: " + error.getMessage());
-                        Toast.makeText(OCRMainActivity.this, "Error taking photo", Toast.LENGTH_LONG).show();
+                        setErrorText("Error taking photo: " + error.getMessage());
                     }
                 }
         );
@@ -265,7 +274,6 @@ public class OCRMainActivity extends DrawerBaseActivity {
 
     private void detectText(){
         Log.d(TAG, "Running OcrApiClient.detectText");
-        Log.d(TAG, "Please wait for result text...");
         if (croppedImageBitmap != null) {
             OcrApiClient.detectText(croppedImageBitmap)
                     .addOnCompleteListener(new OnCompleteListener<Text>() {
@@ -277,8 +285,8 @@ public class OCRMainActivity extends DrawerBaseActivity {
                                     ocrResultText.setText(task.getResult().getText());
                                 });
                             } else {
-                                Toast.makeText(OCRMainActivity.this, "Error detecting text: view log ", Toast.LENGTH_LONG).show();
                                 Log.d(TAG, "An error occurred while detecting text...");
+                                setErrorText("An error occurred while detecting text from the image. Please try again...");
                                 if (task.getException().getMessage() != null ) {
                                     Log.e(TAG, "detectText exception: " + task.getException().getMessage());
                                 }
@@ -291,7 +299,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
     }
 
     private void startCropActivity(Uri imageUri) {
-
+        resetErrorText();
         croppedImageUri = Uri.fromFile(new File(getCacheDir(), "cropped_image.jpg"));
         Log.d(TAG, "startCropActivity: cropped image uri: " + croppedImageUri);
 
@@ -321,12 +329,14 @@ public class OCRMainActivity extends DrawerBaseActivity {
                                 cameraController.unbind();
                             }
                             // Delete original image file
-                            File finalTempFile = new File(savedImageUri.getPath());
-                            if (finalTempFile.delete()) {
-                                if (finalTempFile.exists()) {
-                                    Log.e(TAG, "Captured image file failed to delete.");
-                                } else {
-                                    Log.d(TAG, "Captured image file deleted.");
+                            if (savedImageUri != null) {
+                                File finalTempFile = new File(savedImageUri.getPath());
+                                if (finalTempFile.delete()) {
+                                    if (finalTempFile.exists()) {
+                                        Log.e(TAG, "Captured image file failed to delete.");
+                                    } else {
+                                        Log.d(TAG, "Captured image file deleted.");
+                                    }
                                 }
                             }
                             // Delete cropped image file
@@ -340,6 +350,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
                             }
                         }
                     } else if (o.getResultCode() == UCrop.RESULT_ERROR) {
+                        setErrorText("Error cropping image: " + UCrop.getError(o.getData()).getMessage());
                         Log.e(TAG, "onActivityResult: UCrop error");
                     }
                 }
@@ -348,13 +359,14 @@ public class OCRMainActivity extends DrawerBaseActivity {
 
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                resetErrorText();
                 if (isGranted) {
                     Log.d(TAG, "requestPermissionLauncher: permission granted");
                     Toast.makeText(OCRMainActivity.this, "Camera permission granted, photos can be taken for OCR...", Toast.LENGTH_LONG).show();
                     startCameraX();
                 } else {
-                    Log.d(TAG, "checkPermissions: permission denied");
-                    Toast.makeText(OCRMainActivity.this, "Camera permission denied!\nEnable camera permission in app settings to take photos for OCR...", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "checkPermissions: camera permission denied");
+                    setErrorText("Camera permission was denied, enable camera permission in app settings to take photos for OCR...");
                 }
             });
 
@@ -375,9 +387,23 @@ public class OCRMainActivity extends DrawerBaseActivity {
             previewView.setVisibility(View.INVISIBLE);
         });
     }
+    private void resetErrorText() {
+        runOnUiThread(() -> {
+            errorText.setVisibility(View.GONE);
+            errorText.setText("");
+        });
+    }
+    private void setErrorText(String errorText) {
+        runOnUiThread(() -> {
+            this.errorText.setVisibility(View.VISIBLE);
+            this.errorText.setText(errorText);
+        });
+    }
+
     // Registers a photo picker activity launcher in single-select mode.
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                resetErrorText();
                 // Callback is invoked after the user selects a media item or closes the photo picker.
                 if (uri != null) {
                     Log.d("PhotoPicker", "Selected URI: " + uri);
@@ -422,6 +448,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
     }
 
     private void startCameraX() {
+        resetErrorText();
         // Initialize camera
         showCameraPreview();
         cameraController = new LifecycleCameraController(this.getBaseContext());

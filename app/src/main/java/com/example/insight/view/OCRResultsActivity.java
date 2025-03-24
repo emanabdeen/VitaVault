@@ -47,7 +47,7 @@ public class OCRResultsActivity extends DrawerBaseActivity {
         EdgeToEdge.enable(this);
         binding = ActivityOcrResultsBinding.inflate(getLayoutInflater());
         this.setContentView(binding.getRoot());
-        allocateActivityTitle("Ingredient Scan Results");
+        allocateActivityTitle("OCR Ingredient Scan Results");
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();

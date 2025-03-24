@@ -63,26 +63,32 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.MyProfileActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.SymptomReportActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.SymptomDetails"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.SymptomsMainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.DietaryRestrictionsEditCustomActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.DietaryRestrictionsAddCustomActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.DietaryRestrictionsMainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.VitalDetails"
             android:exported="false"
@@ -95,23 +101,39 @@
             android:exported="false" />
         <activity
             android:name=".view.SymptomActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.MainActivity"
             android:exported="true" />
         <activity
             android:name=".view.VitalsMainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.IntroActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.VitalsActivity"
-            android:exported="false" />
-        <activity android:name=".view.MedicationsActivity" />
-        <activity android:name=".view.MedicationDetails" />
-        <activity android:name=".view.AddAlarmActivity" />
-        <activity android:name=".view.EditAlarmActivity" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".view.MedicationsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".view.MedicationDetails"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".view.AddAlarmActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".view.EditAlarmActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name=".view.DashboardActivity"

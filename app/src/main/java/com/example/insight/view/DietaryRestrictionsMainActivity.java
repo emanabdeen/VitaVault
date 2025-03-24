@@ -38,6 +38,7 @@ public class DietaryRestrictionsMainActivity extends DrawerBaseActivity implemen
 
         binding = ActivityDietaryRestrictionsMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        allocateActivityTitle("Dietary Restrictions");
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
