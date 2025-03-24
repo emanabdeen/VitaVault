@@ -63,7 +63,7 @@ public class DietaryRestrictionsEditCustomActivity extends DrawerBaseActivity {
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                showError(binding.errorIngredient, "", false);
                 try {
                     DietaryRestrictionIngredientViewModel viewModel = new DietaryRestrictionIngredientViewModel();
                     String uid = user.getUid();
@@ -86,13 +86,16 @@ public class DietaryRestrictionsEditCustomActivity extends DrawerBaseActivity {
                             if (result != null) {
                                 //checking if it's the object itself, as firebase doesn't allow comparing equals and notEquals in the same query.
                                 if (!result.equals(ingredient.getIngredientId())) {
-                                    Toast.makeText(DietaryRestrictionsEditCustomActivity.this, "Cannot add duplicated ingredient: " + ingredient.getIngredientName(), Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(DietaryRestrictionsEditCustomActivity.this, "Cannot add duplicated ingredient: " + ingredient.getIngredientName(), Toast.LENGTH_SHORT).show();
+                                    showError(binding.errorIngredient, "Cannot add duplicated ingredient: " + ingredient.getIngredientName(), true);
                                 }else{
                                     //if it's the object itself, proceed.
+                                    showError(binding.errorIngredient, "", false);
                                     viewModel.updateDietaryRestrictionIngredient(ingredient);
                                     finish();
                                 }
                             } else {
+                                showError(binding.errorIngredient, "", false);
                                 viewModel.updateDietaryRestrictionIngredient(ingredient);
                                 finish();
                             }
