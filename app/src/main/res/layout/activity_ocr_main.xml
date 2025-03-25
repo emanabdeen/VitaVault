@@ -88,6 +88,7 @@
                     android:id="@+id/errorText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:textAlignment="center"
                     android:text=""
                     android:textColor="@color/error"
@@ -107,10 +108,12 @@
                     <Button
                         android:id="@+id/selectImageButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="60dp"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:textSize="16sp"
                         android:layout_toLeftOf="@id/cameraButton"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
                         android:text="Upload image" />
                     <ImageButton
                         android:id="@+id/cameraButton"
@@ -122,12 +125,13 @@
                         android:src="@android:drawable/ic_menu_camera" />
                     <Button
                         android:id="@+id/parseIngredientsButton"
-                        android:layout_toRightOf="@+id/cameraButton"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:enabled="false"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:layout_toRightOf="@+id/cameraButton"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:enabled="false"
                         android:text="Check Ingredients" />
 
                 </RelativeLayout>
@@ -137,6 +141,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/light_gray"
                     android:scrollbars="vertical"
                     android:background="@drawable/edit_text_background"
                     android:hint="Enter ingredients here or select an \nimage to extract text from it..."

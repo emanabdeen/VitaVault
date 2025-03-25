@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -32,6 +33,8 @@ public class IngredientScanViewModel extends ViewModel {
     private final MutableLiveData<HashMap<String, ArrayList<OcrIngredient>>> ocrIngredientsData = new MutableLiveData<>();
     private HashMap<String, ArrayList<OcrIngredient>> ocrIngredientsList = new HashMap<>();
 
+
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<List<DietaryRestrictionIngredient>> dietaryRestrictionIngredientsData = new MutableLiveData<>();
     private List<DietaryRestrictionIngredient> dietaryRestrictionIngredientsList = new ArrayList<>();
 
@@ -48,6 +51,10 @@ public class IngredientScanViewModel extends ViewModel {
         ocrIngredientsData.postValue(ocrIngredientsList);
         dietaryRestrictionIngredientsData.postValue(dietaryRestrictionIngredientsList);
         matchedIngredientsData.postValue(matchedIngredientsList);
+    }
+
+    public LiveData<Boolean> getIsLoading() {
+        return isLoading;
     }
 
     // Setters
@@ -101,7 +108,7 @@ public class IngredientScanViewModel extends ViewModel {
         });
         CompletableFuture.allOf(ocrIngredientListFuture, restrictedIngredientListFuture).whenComplete((result, error) -> {
             if (error != null) {
-                Log.e(TAG, "Latch countdown timed out: " + error.getMessage());
+                isLoading.postValue(false);
                 future.complete(false);
             }
             else {
@@ -109,6 +116,7 @@ public class IngredientScanViewModel extends ViewModel {
                 matchedIngredientsList = IngredientUtils.getMatchedIngredients(ocrIngredientsList, dietaryRestrictionIngredientsList);
                 matchedIngredientsList.forEach(ingredient -> Log.d(TAG, "Matched ingredient: " + ingredient.toString()));
                 matchedIngredientsData.postValue(matchedIngredientsList);
+                isLoading.postValue(false);
                 future.complete(true);
             }
         });
@@ -118,6 +126,7 @@ public class IngredientScanViewModel extends ViewModel {
 
     // Get ingredients map from intent
     public CompletableFuture<Boolean> getOcrIngredientsMapFromIntent(Intent ocrScanIntent) {
+        isLoading.postValue(true);
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         if (ocrScanIntent != null) {
             HashMap<String, ArrayList<String>> ingredientsListMap = (HashMap<String, ArrayList<String>>) ocrScanIntent.getSerializableExtra("ocrIngredients");

@@ -1,7 +1,9 @@
 package com.example.insight.view;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -72,6 +74,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
     private ImageView cameraResultImageView;
     private EditText ocrResultText;
     private Bitmap  capturedImageBitmap, croppedImageBitmap;
+    private AlertDialog.Builder dialogBuilder;
     // TODO: Use capturedImageBitmap for preview snapshot and fallback if user cancels crop (if crop cancel doesn't update bitmap for ocr)
     // TODO: Clear capturedImageBitmap at start of each action that might change it, then fallback to capturedImageBitmap if null
     private Uri imageUri, savedImageUri, croppedImageUri;
@@ -170,13 +173,43 @@ public class OCRMainActivity extends DrawerBaseActivity {
         parseIngredientsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                resetErrorText();
-                Toast.makeText(OCRMainActivity.this, "Parsing and scanning ingredients...", Toast.LENGTH_LONG).show();
-                HashMap<String, ArrayList<String>> ingredientsListMap = IngredientUtils.splitIngredientList(ocrResultText.getText().toString());
-                Log.d(TAG, "Ingredients ListMap: " + ingredientsListMap);
-                Intent intent = new Intent(OCRMainActivity.this, OCRResultsActivity.class);
-                intent.putExtra("ocrIngredients", ingredientsListMap);
-                startActivity(intent);
+                if (!OcrApiClient.detectLanguage(ocrResultText.getText().toString())) {
+                    Log.d(TAG, "detectText: language is not primarily english");
+                    dialogBuilder = new AlertDialog.Builder(OCRMainActivity.this);
+                    dialogBuilder.setMessage("The language of the ingredients list is not primarily english.\n\nThe results may be inaccurate for ingredients in other langauges.");
+                    dialogBuilder.setTitle("Warning");
+                    dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                            resetErrorText();
+                            Toast.makeText(OCRMainActivity.this, "Parsing and scanning ingredients...", Toast.LENGTH_LONG).show();
+                            HashMap<String, ArrayList<String>> ingredientsListMap = IngredientUtils.splitIngredientList(ocrResultText.getText().toString());
+                            Log.d(TAG, "Ingredients ListMap: " + ingredientsListMap);
+                            Intent intent = new Intent(OCRMainActivity.this, OCRResultsActivity.class);
+                            intent.putExtra("ocrIngredients", ingredientsListMap);
+                            startActivity(intent);
+                        }
+                    });
+                    runOnUiThread(() -> {
+                        AlertDialog alertDialog = dialogBuilder.create();
+                        alertDialog.show();
+                    });
+                } else {
+                    resetErrorText();
+                    Toast.makeText(OCRMainActivity.this, "Parsing and scanning ingredients...", Toast.LENGTH_LONG).show();
+                    HashMap<String, ArrayList<String>> ingredientsListMap = IngredientUtils.splitIngredientList(ocrResultText.getText().toString());
+                    Log.d(TAG, "Ingredients ListMap: " + ingredientsListMap);
+                    Intent intent = new Intent(OCRMainActivity.this, OCRResultsActivity.class);
+                    intent.putExtra("ocrIngredients", ingredientsListMap);
+                    startActivity(intent);
+                }
             }
         });
 

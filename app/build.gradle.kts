@@ -58,7 +58,8 @@ dependencies {
     implementation(libs.firebase.firestore)
 
     // ML Kit OCR
-    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation(libs.text.recognition)
+    implementation(libs.language.id)
 
     // Camerax
     implementation("androidx.camera:camera-core:1.4.1")

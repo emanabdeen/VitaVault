@@ -1,12 +1,12 @@
 package com.example.insight.view;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.insight.R;
 import com.example.insight.databinding.FragmentOcringredientListBinding;
 import com.example.insight.adapter.OcrIngredientListAdapter;
 import com.example.insight.model.DietaryRestrictionIngredient;
@@ -29,8 +28,9 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
     private static final String TAG = "OcrIngredientsListFragment";
     private FragmentOcringredientListBinding binding;
     private IngredientScanViewModel ingredientScanViewModel;
+    private boolean isLoading = false;
     private DietaryRestrictionIngredientViewModel dietaryRestrictionsViewModel;
-    private List<OcrIngredient> matchedIngredientsList;
+    private List<OcrIngredient> allIngredientsList, currentIngredientsList;
     private OcrIngredientListAdapter ocrIngredientListAdapter;
 
     @Override
@@ -58,8 +58,9 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
         ingredientScanViewModel.getMatchedIngredientsData().observe(getViewLifecycleOwner(), matchedIngredients -> {
             Log.d(TAG, "matched ingredients retrieved" + matchedIngredients);
             if (matchedIngredients != null && !matchedIngredients.isEmpty()) {
-                matchedIngredientsList = matchedIngredients;
-                ocrIngredientListAdapter.updateData(matchedIngredientsList);
+                allIngredientsList = matchedIngredients;
+                currentIngredientsList = new ArrayList<>(allIngredientsList);
+                ocrIngredientListAdapter.updateData(currentIngredientsList);
                 binding.ocrResultListView.setVisibility(View.VISIBLE);
                 binding.emptyMessage.setVisibility(View.GONE);
                 binding.progressBar.setVisibility(View.GONE);
@@ -73,22 +74,58 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
                 filterIngredients(query);
             }
         });
+        ingredientScanViewModel.getIsLoading().observe(getViewLifecycleOwner(), loading -> {
+            isLoading = loading;
+            updateUIState();
+        });
+
+        binding.searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { /* No op */ }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // If text exists, show the clear button; if not, hide it and restore full list.
+                if (s.length() > 0) {
+                    binding.btnClearSearch.setVisibility(View.VISIBLE);
+                } else {
+                    binding.btnClearSearch.setVisibility(View.INVISIBLE);
+                    resetIngredientsList();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { /* No op */ }
+        });
+        binding.btnClearSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearFilter();
+            }
+        });
+    }
+
+    // Reset the displayed list to the full ingredients list.
+    private void resetIngredientsList() {
+        currentIngredientsList = new ArrayList<>(allIngredientsList);
+        ocrIngredientListAdapter.updateData(currentIngredientsList);
+        ocrIngredientListAdapter.notifyDataSetChanged();
+        updateUIState();
     }
 
     @Override
     public void OnClickItem(View v, int pos) {
         // add ingredient to custom ingredients from list
         DietaryRestrictionIngredient newCustomIngredient = new DietaryRestrictionIngredient();
-        newCustomIngredient.setIngredientName(matchedIngredientsList.get(pos).getIngredientName());
+        newCustomIngredient.setIngredientName(allIngredientsList.get(pos).getIngredientName());
         newCustomIngredient.setIngredientCategory("custom");
 
         dietaryRestrictionsViewModel.addDietaryRestrictionIngredient(newCustomIngredient);
         Log.d(TAG, "added new custom ingredient from ocr scan result list" + newCustomIngredient.getIngredientName());
 
         // Change icon to checkmark to show that ingredient has been added
-        matchedIngredientsList.get(pos).setAddedAsCustom(true);
-        ocrIngredientListAdapter.updateData(matchedIngredientsList);
-        ocrIngredientListAdapter.notifyDataSetChanged();
+        allIngredientsList.get(pos).setAddedAsCustom(true);
+        updateIngredientsList(allIngredientsList);
 
     }
 
@@ -102,7 +139,7 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
      */
     public void updateIngredientsList(List<OcrIngredient> ingredients) {
         if (ingredients != null) {
-            matchedIngredientsList = ingredients;
+            allIngredientsList = ingredients;
             ocrIngredientListAdapter.updateData(ingredients);
             ocrIngredientListAdapter.notifyDataSetChanged(); // Ensure UI refresh
         }
@@ -112,25 +149,49 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
     }
 
     private void filterIngredients(String query) {
-        List<OcrIngredient> filteredList = new ArrayList<>();
+        currentIngredientsList = new ArrayList<>();
 
-        if (matchedIngredientsList != null) {
-            for (OcrIngredient ingredient : matchedIngredientsList) {
+        if (allIngredientsList != null) {
+            for (OcrIngredient ingredient : allIngredientsList) {
                 if (ingredient.getIngredientName().toLowerCase().contains(query.toLowerCase())) {
-                    filteredList.add(ingredient);
+                    currentIngredientsList.add(ingredient);
                 }
             }
         }
-        ocrIngredientListAdapter.updateData(filteredList);
+        ocrIngredientListAdapter.updateData(currentIngredientsList);
 
         // Show/hide the "No ingredients found" message
-        if (filteredList.isEmpty()) {
+        if (currentIngredientsList.isEmpty()) {
             binding.ocrIngredientRecyclerView.setVisibility(View.GONE);
             binding.emptyMessage.setVisibility(View.VISIBLE);
             binding.emptyMessage.setText("No ingredients match your search.");
         } else {
             binding.ocrIngredientRecyclerView.setVisibility(View.VISIBLE);
             binding.emptyMessage.setVisibility(View.GONE);
+        }
+    }
+
+    public void clearFilter() {
+        binding.searchText.setText("");
+        resetIngredientsList();
+    }
+
+    // Update UI elements based on loading state and data availability.
+    private void updateUIState() {
+        if (isLoading) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            binding.ocrIngredientRecyclerView.setVisibility(View.GONE);
+            binding.emptyMessage.setVisibility(View.GONE);
+        } else {
+            binding.progressBar.setVisibility(View.GONE);
+            if (currentIngredientsList != null && !currentIngredientsList.isEmpty()) {
+                binding.ocrIngredientRecyclerView.setVisibility(View.VISIBLE);
+                binding.emptyMessage.setVisibility(View.GONE);
+            } else {
+                binding.ocrIngredientRecyclerView.setVisibility(View.GONE);
+                binding.emptyMessage.setVisibility(View.VISIBLE);
+                binding.emptyMessage.setText("No ingredients found.");
+            }
         }
     }
 }
