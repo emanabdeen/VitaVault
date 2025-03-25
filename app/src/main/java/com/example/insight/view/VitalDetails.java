@@ -19,7 +19,11 @@ import com.example.insight.utility.StringHandler;
 import com.example.insight.utility.TimeValidator;
 import com.example.insight.utility.VitalsCategories;
 import com.example.insight.viewmodel.VitalViewModel;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -238,7 +242,6 @@ public class VitalDetails extends DrawerBaseActivity {
             Log.e("error", "try-catch error: "+ e.getMessage());
         }
     }
-
     private void EditVital(){
         try{
             VitalViewModel vitalViewModel = new VitalViewModel();
@@ -311,8 +314,69 @@ public class VitalDetails extends DrawerBaseActivity {
             Log.e("error", "try-catch error: "+ e.getMessage());
         }
     }
-
     private void showDatePicker(TextInputEditText dateInput) {
+        // Get current date
+        Calendar calendar = Calendar.getInstance();
+
+        // Create constraints for date selection (optional)
+        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+
+        // Create MaterialDatePicker
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select Date")
+                .setSelection(calendar.getTimeInMillis()) // Set current date as default
+                .setCalendarConstraints(constraintsBuilder.build())
+                .build();
+
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            // Convert milliseconds to Calendar
+            Calendar selectedCalendar = Calendar.getInstance();
+            selectedCalendar.setTimeInMillis(selection);
+
+            // Format the selected date (YYYY-MM-DD)
+            int year = selectedCalendar.get(Calendar.YEAR);
+            int month = selectedCalendar.get(Calendar.MONTH) + 1; // +1 because months are 0-based
+            int day = selectedCalendar.get(Calendar.DAY_OF_MONTH);
+
+            String selectedDate = String.format("%04d-%02d-%02d", year, month, day);
+            dateInput.setText(selectedDate);
+        });
+
+        datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+    }
+    private void showTimePicker(TextInputEditText timeInput) {
+        // Get current time
+        Calendar calendar = Calendar.getInstance();
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        // Create MaterialTimePicker with 24-hour format
+        MaterialTimePicker picker = new MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_24H) // Use 24-hour format
+                .setHour(hour)
+                .setMinute(minute)
+                .setTitleText("Select Time")
+                .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK) // Forces clock view
+                .build();
+
+        picker.addOnPositiveButtonClickListener(view -> {
+            // Format the selected time in 24-hour format and set it to the input field
+            String selectedTime = String.format("%02d:%02d", picker.getHour(), picker.getMinute());
+            timeInput.setText(selectedTime);
+        });
+
+        picker.show(getSupportFragmentManager(), "TIME_PICKER");
+    }
+    private void showError(TextView errorView, String message, boolean isVisible) {
+        if (isVisible) {
+            errorView.setText(message);
+            errorView.setVisibility(View.VISIBLE);
+        } else {
+            errorView.setVisibility(View.GONE);
+        }
+    }
+
+    /*private void showDatePicker(TextInputEditText dateInput) {
         // Get current date
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -330,9 +394,9 @@ public class VitalDetails extends DrawerBaseActivity {
                 year, month, day
         );
         datePickerDialog.show();
-    }
+    }*/
 
-    private void showTimePicker(TextInputEditText timeInput) {
+    /*private void showTimePicker(TextInputEditText timeInput) {
         // Get current time
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -349,16 +413,6 @@ public class VitalDetails extends DrawerBaseActivity {
                 hour, minute, true // true for 24-hour format
         );
         timePickerDialog.show();
-    }
-
-    private void showError(TextView errorView, String message, boolean isVisible) {
-        if (isVisible) {
-            errorView.setText(message);
-            errorView.setVisibility(View.VISIBLE);
-        } else {
-            errorView.setVisibility(View.GONE);
-        }
-    }
-
+    }*/
 
 }

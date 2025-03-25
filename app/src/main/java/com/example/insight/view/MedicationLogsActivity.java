@@ -28,6 +28,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         ActivityMedicationLogsBinding binding = ActivityMedicationLogsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        allocateActivityTitle("Medications");
 
 
         alarmActivityLauncher = registerForActivityResult(

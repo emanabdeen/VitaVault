@@ -21,7 +21,9 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChartHelper {
 
@@ -72,7 +74,7 @@ public class ChartHelper {
             xAxisLabelsInterval1.add(String.format("%02d", i));
         }
 
-        // Populate entries for all days in the VitalRecord list
+        /*// Populate entries for all days in the VitalRecord list
         for (VitalRecord record : records) {
             int dayOfMonth = record.getDayOfMonth();
             int xIndex = (dayOfMonth - 1);
@@ -86,7 +88,52 @@ public class ChartHelper {
                 measure2Entries.add(new Entry(xIndex, record.getMeasure2()));
                 Log.d("ChartDebug", "Measure2 - Day: " + dayOfMonth + ", Value: " + record.getMeasure2());
             }
+        }*/
+
+        // Create maps to store sums and counts for each day
+        Map<Integer, Float> measure1SumByDay = new HashMap<>();
+        Map<Integer, Integer> measure1CountByDay = new HashMap<>();
+        Map<Integer, Float> measure2SumByDay = new HashMap<>();
+        Map<Integer, Integer> measure2CountByDay = new HashMap<>();
+
+        // Calculate sums and counts for each day
+        for (VitalRecord record : records) {
+            int dayOfMonth = record.getDayOfMonth();
+
+            if (record.getMeasure1() != null) {
+                measure1SumByDay.put(dayOfMonth, measure1SumByDay.getOrDefault(dayOfMonth, 0f) + record.getMeasure1());
+                measure1CountByDay.put(dayOfMonth, measure1CountByDay.getOrDefault(dayOfMonth, 0) + 1);
+            }
+
+            if (record.getMeasure2() != null) {
+                measure2SumByDay.put(dayOfMonth, measure2SumByDay.getOrDefault(dayOfMonth, 0f) + record.getMeasure2());
+                measure2CountByDay.put(dayOfMonth, measure2CountByDay.getOrDefault(dayOfMonth, 0) + 1);
+            }
         }
+
+        // Calculate averages and create entries
+        for (Map.Entry<Integer, Float> entry : measure1SumByDay.entrySet()) {
+            int dayOfMonth = entry.getKey();
+            int count = measure1CountByDay.get(dayOfMonth);
+            float average = entry.getValue() / count;
+            int xIndex = (dayOfMonth - 1);
+            measure1Entries.add(new Entry(xIndex, average));
+            Log.d("ChartDebug", measureName1 + " - Day: " + dayOfMonth + ", Avg Value: " + average);
+        }
+
+        for (Map.Entry<Integer, Float> entry : measure2SumByDay.entrySet()) {
+            int dayOfMonth = entry.getKey();
+            int count = measure2CountByDay.get(dayOfMonth);
+            float average = entry.getValue() / count;
+            int xIndex = (dayOfMonth - 1);
+            measure2Entries.add(new Entry(xIndex, average));
+            Log.d("ChartDebug", "Measure2 - Day: " + dayOfMonth + ", Avg Value: " + average);
+        }
+
+        // Sort entries by day (x value)
+        measure1Entries.sort(Comparator.comparing(Entry::getX));
+        measure2Entries.sort(Comparator.comparing(Entry::getX));
+
 
         // Create LineDataSet for measure1
         LineDataSet measure1DataSet = new LineDataSet(measure1Entries, measureName1);
