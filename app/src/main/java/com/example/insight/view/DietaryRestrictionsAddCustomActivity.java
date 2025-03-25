@@ -69,6 +69,7 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showError(binding.errorIngredient, "", false);
 
                     try {
                         DietaryRestrictionIngredientViewModel viewModel = new DietaryRestrictionIngredientViewModel();
@@ -91,7 +92,8 @@ public class DietaryRestrictionsAddCustomActivity extends DrawerBaseActivity imp
 
                                 if(result !=  null){
                                     if(!result.equals(ingredient.getIngredientId())) {
-                                        Toast.makeText(DietaryRestrictionsAddCustomActivity.this, "Cannot add duplicated ingredient: " + ingredient.getIngredientName(), Toast.LENGTH_SHORT).show();
+                                       // Toast.makeText(DietaryRestrictionsAddCustomActivity.this, "Cannot add duplicated ingredient: " + ingredient.getIngredientName(), Toast.LENGTH_SHORT).show();
+                                        showError(binding.errorIngredient, "Cannot add duplicated ingredient: " + ingredient.getIngredientName(), true);
                                     }
                                 }else{
                                     viewModel.addDietaryRestrictionIngredient(ingredient);
