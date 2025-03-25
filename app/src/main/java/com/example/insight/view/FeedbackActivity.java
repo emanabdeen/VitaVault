@@ -39,7 +39,7 @@ public class FeedbackActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityFeedbackBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        allocateActivityTitle("Feedback");
+        allocateActivityTitle("Review");
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(AccountViewModel.class);

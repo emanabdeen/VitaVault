@@ -38,8 +38,7 @@
                 android:text="@string/medicationName"
                 android:textColor="@color/white"
                 android:layout_gravity="center"
-                android:textStyle="italic"
-                />
+                android:textStyle="italic"/>
 
 
         </LinearLayout>
@@ -53,6 +52,7 @@
             android:drawableStart="@drawable/baseline_add_primary"
             android:paddingStart="15dp"
             android:paddingEnd="5dp"
+            android:layout_marginBottom="8dp"
             android:text="Add Alarm"
             android:textSize="18sp"
             android:textColor="@color/primary"

@@ -52,10 +52,11 @@
             <!-- Very Unhappy -->
             <ImageView
                 android:id="@+id/faceVeryUnhappy"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:padding="5dp"
                 android:src="@drawable/ic_face_bad"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="5dp"
                 android:contentDescription="Very Unhappy"
                 android:clickable="true"
                 android:focusable="true"/>
@@ -63,10 +64,11 @@
             <!-- Unhappy -->
             <ImageView
                 android:id="@+id/faceUnhappy"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:padding="5dp"
                 android:src="@drawable/ic_face_poor"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="5dp"
                 android:contentDescription="Unhappy"
                 android:clickable="true"
                 android:focusable="true"/>
@@ -74,10 +76,11 @@
             <!-- Neutral -->
             <ImageView
                 android:id="@+id/faceNeutral"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:padding="5dp"
                 android:src="@drawable/ic_face_medium"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="5dp"
                 android:contentDescription="Neutral"
                 android:clickable="true"
                 android:focusable="true"/>
@@ -85,10 +88,11 @@
             <!-- Happy -->
             <ImageView
                 android:id="@+id/faceHappy"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:padding="5dp"
                 android:src="@drawable/ic_face_good"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="5dp"
                 android:contentDescription="Happy"
                 android:clickable="true"
                 android:focusable="true"/>
@@ -96,8 +100,9 @@
             <!-- Very Happy -->
             <ImageView
                 android:id="@+id/faceVeryHappy"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:padding="5dp"
                 android:src="@drawable/ic_face_excellent"
                 android:contentDescription="Very Happy"
                 android:clickable="true"
