@@ -50,6 +50,8 @@ public class AddAlarmActivity extends DrawerBaseActivity {
         binding = ActivityAddAlarmBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        allocateActivityTitle("Add Alarm");
+
         // Retrieve medicationID (and optionally medicationName, dosage) from Intent
         medicationId = getIntent().getStringExtra("medicationID");
         String medicationName = getIntent().getStringExtra("medicationName");
@@ -64,21 +66,39 @@ public class AddAlarmActivity extends DrawerBaseActivity {
         checkMedicationReminderChannel();
 
         // Set up the time picker button
+//        binding.btnPickTime.setOnClickListener(v -> {
+//            MaterialTimePicker picker = new MaterialTimePicker.Builder()
+//                    .setTimeFormat(TimeFormat.CLOCK_12H)
+//                    .setHour(8)
+//                    .setMinute(0)
+//                    .setTitleText("Select Alarm Time")
+//                    .build();
+//            picker.show(getSupportFragmentManager(), "TIME_PICKER");
+//            picker.addOnPositiveButtonClickListener(view -> {
+//                int hour = picker.getHour();
+//                int minute = picker.getMinute();
+//                String amPm = (hour >= 12) ? "PM" : "AM";
+//                int displayHour = hour % 12;
+//                if (displayHour == 0) displayHour = 12;
+//                selectedTime = String.format("%02d:%02d %s", displayHour, minute, amPm);
+//                binding.textSelectedTime.setText("Selected time: " + selectedTime);
+//            });
+//        });
+
         binding.btnPickTime.setOnClickListener(v -> {
             MaterialTimePicker picker = new MaterialTimePicker.Builder()
-                    .setTimeFormat(TimeFormat.CLOCK_12H)
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
                     .setHour(8)
                     .setMinute(0)
                     .setTitleText("Select Alarm Time")
                     .build();
+
             picker.show(getSupportFragmentManager(), "TIME_PICKER");
+
             picker.addOnPositiveButtonClickListener(view -> {
                 int hour = picker.getHour();
                 int minute = picker.getMinute();
-                String amPm = (hour >= 12) ? "PM" : "AM";
-                int displayHour = hour % 12;
-                if (displayHour == 0) displayHour = 12;
-                selectedTime = String.format("%02d:%02d %s", displayHour, minute, amPm);
+                selectedTime = String.format("%02d:%02d", hour, minute);
                 binding.textSelectedTime.setText("Selected time: " + selectedTime);
             });
         });

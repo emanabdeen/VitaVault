@@ -29,6 +29,8 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
         ActivityMedicationLogsBinding binding = ActivityMedicationLogsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        allocateActivityTitle("Logs");
+
 
         //this gets rid of unnecessary firebase calls
         alarmActivityLauncher = registerForActivityResult(
@@ -67,6 +69,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
                 replaceFragment(logsFragment);
                 binding.btnAddAlarm.setVisibility(View.GONE);
                 binding.btnAddLog.setVisibility(View.VISIBLE);
+                allocateActivityTitle("Logs");
 
             }
         });
@@ -78,6 +81,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
                 replaceFragment(alarmsFragment);
                 binding.btnAddLog.setVisibility(View.GONE);
                 binding.btnAddAlarm.setVisibility(View.VISIBLE);
+                allocateActivityTitle("Alarms");
             }
         });
 
@@ -85,6 +89,11 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
             @Override
             public void onClick(View v) {
                 //todo add log intent to add a log
+                Intent intent = new Intent(MedicationLogsActivity.this, AddLogActivity.class);
+                intent.putExtra("medicationID", medicationId);
+                intent.putExtra("medicationName", medicationName);
+                intent.putExtra("dosage", dosage);
+                startActivity(intent);
             }
         });
 

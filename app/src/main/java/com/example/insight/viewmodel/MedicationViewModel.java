@@ -161,6 +161,16 @@ public class MedicationViewModel extends ViewModel {
         medicationRef.set(medication)
                 .addOnSuccessListener(aVoid -> {
                     Log.d(TAG, "Medication updated successfully");
+                    for (int i = 0; i < medicationsList.size(); i++) {
+                        if (medicationsList.get(i).getMedicationId().equals(medication.getMedicationId())) {
+                            medicationsList.set(i, medication);
+                            break;
+                        }
+                    }
+                    // Sort alphabetically by name (just in case)
+                    medicationsList.sort((m1, m2) -> m1.getName().compareToIgnoreCase(m2.getName()));
+                    medicationsData.postValue(new ArrayList<>(medicationsList));
+
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error updating medication", e);

@@ -125,30 +125,7 @@
                 android:padding="12dp"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Manage Alarms Button -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnManageAlarms"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="@string/addAlarm"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:padding="12dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/button_secondary" />
 
-            <!-- Warning message -->
-            <TextView
-                android:id="@+id/textViewAlarmWarning"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/addMedicationFirst"
-                android:textSize="12sp"
-                android:textStyle="italic"
-                android:textColor="@android:color/black"
-                android:gravity="center"
-                android:layout_marginTop="8dp"
-                android:visibility="invisible" />
 
             <!-- Save Medication Button -->
             <androidx.appcompat.widget.AppCompatButton

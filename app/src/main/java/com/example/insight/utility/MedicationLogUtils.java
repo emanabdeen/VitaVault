@@ -1,0 +1,73 @@
+package com.example.insight.utility;
+
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.example.insight.receiver.AlarmReceiver;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+public class MedicationLogUtils {
+
+    public interface MedicationLogCallback {
+        void onSuccess();
+        void onFailure(Exception e);
+    }
+
+    public static void logMedicationStatus(Context context,
+                                           String medicationId,
+                                           String dosage,
+                                           String status,
+                                           @Nullable Date timestamp,
+                                           boolean stopAlarmAfterLog,
+                                           MedicationLogCallback callback) {
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        String uid = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
+
+        if (uid == null) {
+            callback.onFailure(new Exception("User not logged in"));
+            return;
+        }
+
+        Map<String, Object> log = new HashMap<>();
+        log.put("medicationId", medicationId);
+        log.put("status", status);
+        log.put("dosage", dosage);
+
+        if (timestamp != null) {
+            log.put("timestamp", timestamp); // manual log
+        } else {
+            log.put("timestamp", FieldValue.serverTimestamp()); // automatic log from notification
+        }
+
+        db.collection("users").document(uid)
+                .collection("medications")
+                .document(medicationId)
+                .collection("logs")
+                .add(log)
+                .addOnSuccessListener(docRef -> {
+                    Log.d("MedicationLogUtils", "✅ Logged as " + status);
+
+                    if (stopAlarmAfterLog) {
+                        AlarmReceiver.stopAlarm(context);
+                    }
+
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("MedicationLogUtils", "❌ Failed to log", e);
+                    callback.onFailure(e);
+                });
+    }
+}

@@ -29,17 +29,18 @@
                 android:layout_height="70dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_medical_record"
+                android:background="@drawable/glow_white"
                 android:padding="10dp" />
+
 
             <TextView
                 android:id="@+id/textViewTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/medicationName"
-                android:textColor="@color/white"
                 android:layout_gravity="center"
-                android:textStyle="italic"
-                />
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:text="@string/medicationName" />
 
 
         </LinearLayout>

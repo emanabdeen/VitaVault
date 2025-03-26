@@ -168,7 +168,8 @@ public class MedicationAlarmsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Force a fresh fetch of alarms every time the fragment comes into focus
+        // Only reloads if alarms aren't already up to date
+        // For example, user just added a new alarm
         viewModel.fetchAlarms(medicationId);
     }
 

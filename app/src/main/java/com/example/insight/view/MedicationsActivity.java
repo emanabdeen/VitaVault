@@ -4,6 +4,9 @@ import static com.example.insight.utility.AlarmHelper.cancelAllAlarmsForMedicati
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -27,6 +30,8 @@ public class MedicationsActivity extends DrawerBaseActivity {
     private MedicationsListFragment medicationsListFragment;
     private boolean medicationChanged = false;
     private static final int REQUEST_CODE_MEDICATION_DETAILS = 101;
+    private ActivityResultLauncher<Intent> medicationDetailsLauncher;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +86,22 @@ public class MedicationsActivity extends DrawerBaseActivity {
         // Add Medication Button Click Listener
         binding.btnAddMedication.setOnClickListener(v -> {
             Intent intent = new Intent(MedicationsActivity.this, MedicationDetails.class);
-            startActivityForResult(intent, REQUEST_CODE_MEDICATION_DETAILS);
+            medicationDetailsLauncher.launch(intent);
+
         });
+
+        medicationDetailsLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        if (medicationsListFragment != null) {
+                            medicationsListFragment.clearFilter();
+                            medicationViewModel.getMedications(false);
+                        }
+                    }
+                }
+        );
+
     }
     @Override
     protected void onResume() {
@@ -113,17 +132,19 @@ public class MedicationsActivity extends DrawerBaseActivity {
     }
 
     //state management to see if we should refresh list or not
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_MEDICATION_DETAILS && resultCode == RESULT_OK) {
-            // Medication was added/updated, so clear the filter and refresh the list.
-            // For instance, tell your fragment to clear its filter:
-            if (medicationsListFragment != null) {
-                medicationsListFragment.clearFilter();
-            }
-            medicationChanged = true;
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == REQUEST_CODE_MEDICATION_DETAILS && resultCode == RESULT_OK) {
+//            // Medication was added/updated, so clear the filter and refresh the list.
+//            // For instance, tell your fragment to clear its filter:
+//            if (medicationsListFragment != null) {
+//                medicationsListFragment.clearFilter();
+//                medicationChanged = true;
+//            }
+//            medicationViewModel.getMedications(false);
+//            medicationChanged = true;
+//        }
+//    }
 
 }

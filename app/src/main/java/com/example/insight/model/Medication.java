@@ -45,8 +45,15 @@ public class Medication {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (name != null && !name.trim().isEmpty()) {
+            name = name.trim(); // Remove leading/trailing spaces
+            // Capitalize first letter, lowercase the rest
+            this.name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+        } else {
+            this.name = name;
+        }
     }
+
 
     public String getDosage() {
         return dosage;

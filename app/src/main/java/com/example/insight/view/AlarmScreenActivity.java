@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.insight.databinding.ActivityAlarmScreenBinding;
 import com.example.insight.receiver.AlarmReceiver;
 import com.example.insight.utility.AlarmSoundHelper;
+import com.example.insight.utility.MedicationLogUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -47,33 +48,35 @@ public class AlarmScreenActivity extends AppCompatActivity {
 
     // Method to log medication as Taken or Missed
     private void logMedication(String status) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Map<String, Object> log = new HashMap<>();
-        log.put("medicationId", medicationId);
-        log.put("status", status);
-        log.put("timestamp", FieldValue.serverTimestamp());
-        log.put("dosage", dosage);
+        MedicationLogUtils.logMedicationStatus(
+                this,
+                medicationId,
+                dosage,
+                status,
+                null,
+                true, // stop alarm after log
+                new MedicationLogUtils.MedicationLogCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(AlarmScreenActivity.this, "Logged as: " + status, Toast.LENGTH_SHORT).show();
+                        navigateToDashboard();
+                    }
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String uid = mAuth.getCurrentUser().getUid();
-
-        db.collection("users").document(uid).collection("medications")
-                .document(medicationId).collection("logs").add(log)
-                .addOnSuccessListener(doc -> {
-                    Toast.makeText(this, "Logged as: " + status, Toast.LENGTH_SHORT).show();
-
-                    //stop alarm
-                    AlarmReceiver.stopAlarm(this);
-
-                    Intent intent = new Intent(this, DashboardActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    startActivity(intent);
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to log", Toast.LENGTH_SHORT).show();
-                });
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(AlarmScreenActivity.this, "Failed to log", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
+
+    private void navigateToDashboard() {
+        Intent intent = new Intent(this, DashboardActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
+    }
+
 
     // Optionally prevent back button to force choice
     @Override
