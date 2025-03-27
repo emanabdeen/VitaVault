@@ -40,24 +40,28 @@ public class MedicationLogUtils {
             return;
         }
 
+        // Generate document reference with unique ID
+        var logRef = db.collection("users").document(uid)
+                .collection("medications").document(medicationId)
+                .collection("logs").document();
+
+        String logId = logRef.getId();
+
         Map<String, Object> log = new HashMap<>();
+        log.put("logId", logId);  // ⬅ Include the ID in the document
         log.put("medicationId", medicationId);
         log.put("status", status);
         log.put("dosage", dosage);
 
         if (timestamp != null) {
-            log.put("timestamp", timestamp); // manual log
+            log.put("timestamp", timestamp);
         } else {
-            log.put("timestamp", FieldValue.serverTimestamp()); // automatic log from notification
+            log.put("timestamp", FieldValue.serverTimestamp());
         }
 
-        db.collection("users").document(uid)
-                .collection("medications")
-                .document(medicationId)
-                .collection("logs")
-                .add(log)
-                .addOnSuccessListener(docRef -> {
-                    Log.d("MedicationLogUtils", "✅ Logged as " + status);
+        logRef.set(log)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("MedicationLogUtils", "✅ Logged as " + status + " with ID: " + logId);
 
                     if (stopAlarmAfterLog) {
                         AlarmReceiver.stopAlarm(context);
@@ -70,4 +74,5 @@ public class MedicationLogUtils {
                     callback.onFailure(e);
                 });
     }
+
 }
