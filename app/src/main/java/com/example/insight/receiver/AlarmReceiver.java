@@ -39,6 +39,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        Log.d("AlarmReceiver", "🚨 onReceive triggered with action: " + action);
+
 
         String medicationId = intent.getStringExtra("medicationId");
         String dosage = intent.getStringExtra("dosage");

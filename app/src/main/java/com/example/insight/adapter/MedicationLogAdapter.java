@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insight.R;
 import com.example.insight.model.MedicationLog;
+import com.example.insight.view.EditItemClickListener;
 
 import java.util.List;
 
@@ -20,10 +22,14 @@ public class MedicationLogAdapter extends RecyclerView.Adapter<MedicationLogAdap
 
     private Context context;
     private List<MedicationLog> logList;
+    private final EditItemClickListener listener;
+    private String medicationId;
 
-    public MedicationLogAdapter(Context context, List<MedicationLog> logList) {
+    public MedicationLogAdapter(Context context, List<MedicationLog> logList, String medicationId, EditItemClickListener listener) {
         this.context = context;
         this.logList = logList;
+        this.medicationId = medicationId;
+        this.listener = listener;
     }
 
     @NonNull
@@ -68,27 +74,54 @@ public class MedicationLogAdapter extends RecyclerView.Adapter<MedicationLogAdap
             holder.timestamp.setTextColor(ContextCompat.getColor(context, R.color.lighter_gray));
             holder.dosage.setTextColor(ContextCompat.getColor(context, R.color.white));
         }
+
+        holder.btnDelete.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.OnClickDelete(v, position);
+            }
+        });
+
+        holder.btnEdit.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.OnClickEdit(v, position);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return logList.size();
     }
+    public MedicationLog getLogAt(int pos) {
+        return logList.get(pos);
+    }
+
+    public void removeLogAt(int position) {
+        logList.remove(position);
+        notifyItemRemoved(position);
+    }
 
     public void updateLogs(List<MedicationLog> logs) {
         this.logList = logs;
         notifyDataSetChanged();
     }
+    public String getMedicationId() {
+        return medicationId;
+    }
 
     static class MedicationLogViewHolder extends RecyclerView.ViewHolder {
 
         TextView dosage, status, timestamp;
+        ImageButton btnDelete, btnEdit;
 
         public MedicationLogViewHolder(@NonNull View itemView) {
             super(itemView);
             dosage = itemView.findViewById(R.id.textViewLogDosage);
             status = itemView.findViewById(R.id.textViewLogStatus);
             timestamp = itemView.findViewById(R.id.textViewLogTimestamp);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnEdit = itemView.findViewById(R.id.btnEdit);
+
         }
     }
 }

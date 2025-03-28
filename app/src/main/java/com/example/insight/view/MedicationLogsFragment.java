@@ -1,9 +1,11 @@
 package com.example.insight.view;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.insight.adapter.MedicationLogAdapter;
 import com.example.insight.databinding.FragmentMedicationLogsBinding;
+import com.example.insight.model.MedicationLog;
+import com.example.insight.utility.MedicationLogUtils;
 import com.example.insight.viewmodel.MedicationLogsViewModel;
 
 import java.util.ArrayList;
@@ -64,10 +68,56 @@ public class MedicationLogsFragment extends Fragment {
         return binding.getRoot();
     }
 
+//    private void setupRecyclerView() {
+//        adapter = new MedicationLogAdapter(requireContext(), new ArrayList<>());
+//        binding.recyclerViewLogs.setAdapter(adapter);
+//        binding.recyclerViewLogs.setLayoutManager(new LinearLayoutManager(requireContext()));
+//    }
+
     private void setupRecyclerView() {
-        adapter = new MedicationLogAdapter(requireContext(), new ArrayList<>());
-        binding.recyclerViewLogs.setAdapter(adapter);
+        adapter = new MedicationLogAdapter(requireContext(), new ArrayList<>(), medicationId, new EditItemClickListener() {
+            @Override
+            public void OnClickEdit(View v, int pos) {
+                MedicationLog log = adapter.getLogAt(pos);
+                if (log != null) {
+                    // TODO: Launch edit dialog/screen if needed
+                    Log.d("logAdapter", "Edit clicked for" + log.getDosage());
+                }
+            }
+
+            @Override
+            public void OnClickDelete(View v, int pos) {
+                MedicationLog log = adapter.getLogAt(pos);
+                if (log != null) {
+                    viewModel.deleteLog(adapter.getMedicationId(), log.getLogId(), new MedicationLogUtils.MedicationLogCallback() {
+                        @Override
+                        public void onSuccess() {
+                            adapter.removeLogAt(pos); // ✅ Only remove after Firestore confirms
+                            Log.d("logAdapter", "Delete clicked for" + log.getDosage());                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            Toast.makeText(requireContext(), "Failed to delete log", Toast.LENGTH_SHORT).show();
+                            Log.e("LogAdapter", "❌ Firestore deletion failed", e);
+                        }
+                    });
+                    // Optionally show confirmation
+
+                }
+            }
+
+            @Override
+            public void OnClickItem(View v, int pos) {
+                MedicationLog log = adapter.getLogAt(pos);
+                if (log != null) {
+                    // Optional: show detail view
+                    Log.d("logAdapter", "Item clicked for" + log.getDosage());
+                }
+            }
+        });
+
         binding.recyclerViewLogs.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.recyclerViewLogs.setAdapter(adapter);
     }
 
     @Override
