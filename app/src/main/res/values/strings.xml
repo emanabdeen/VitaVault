@@ -35,8 +35,8 @@
     <string name="BloodPressure">Blood Pressure</string>
     <string name="BodyTemperature">Body Temperature</string>
     <string name="Weight">Weight</string>
-    <string name="taken">taken</string>
-    <string name="missed">missed</string>
+    <string name="taken">Taken</string>
+    <string name="missed">Missed</string>
     <string name="medication_reminder">Medication Reminder</string>
     <string name="medication_icon">medication icon</string>
     <string name="Mon">Mon</string>
@@ -97,5 +97,6 @@
     <string name="alarms">Alarms</string>
     <string name="no_logs_available">No logs available.</string>
     <string name="no_alarms_set">No alarms set</string>
+    <string name="mute_alarm">Mute Alarm</string>
 
 </resources>
