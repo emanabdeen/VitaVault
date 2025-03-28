@@ -1,6 +1,7 @@
 package com.example.insight.adapter;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,12 +42,31 @@ public class MedicationLogAdapter extends RecyclerView.Adapter<MedicationLogAdap
 
         // Set text color based on status
         String status = log.getStatus();
-        if (status.equalsIgnoreCase("dismissed")) {
-            holder.status.setTextColor(ContextCompat.getColor(context, R.color.accent));
-        } else if (status.equalsIgnoreCase("taken")) {
-            holder.status.setTextColor(ContextCompat.getColor(context, R.color.graphLine_light));
-        } else if (status.equalsIgnoreCase("missed")) {
-            holder.status.setTextColor(ContextCompat.getColor(context, R.color.error));
+
+        int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        boolean isNight = (nightModeFlags == Configuration.UI_MODE_NIGHT_YES);
+
+        if(!isNight) {
+            if (status.equalsIgnoreCase("dismissed")) {
+                holder.status.setTextColor(ContextCompat.getColor(context, R.color.accent));
+            } else if (status.equalsIgnoreCase("taken")) {
+                holder.status.setTextColor(ContextCompat.getColor(context, R.color.graphLine_light));
+            } else if (status.equalsIgnoreCase("missed")) {
+                holder.status.setTextColor(ContextCompat.getColor(context, R.color.error));
+            }
+            holder.timestamp.setTextColor(ContextCompat.getColor(context, R.color.darker_gray));
+            holder.dosage.setTextColor(ContextCompat.getColor(context, R.color.black));
+        }
+        else{
+            if (status.equalsIgnoreCase("dismissed")) {
+                holder.status.setTextColor(ContextCompat.getColor(context, R.color.accent));
+            } else if (status.equalsIgnoreCase("taken")) {
+                holder.status.setTextColor(ContextCompat.getColor(context, R.color.takenLogStatus));
+            } else if (status.equalsIgnoreCase("missed")) {
+                holder.status.setTextColor(ContextCompat.getColor(context, R.color.error));
+            }
+            holder.timestamp.setTextColor(ContextCompat.getColor(context, R.color.lighter_gray));
+            holder.dosage.setTextColor(ContextCompat.getColor(context, R.color.white));
         }
     }
 

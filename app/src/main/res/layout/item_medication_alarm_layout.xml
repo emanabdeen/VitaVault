@@ -16,8 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:cardBackgroundColor="@android:color/white">
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,16 +37,14 @@
                     android:layout_height="wrap_content"
                     android:text="Monday"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/alarm_time_txt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="08:00 AM"
-                    android:textSize="14sp"
-                    android:textColor="@color/black"/>
+                    android:textSize="14sp"/>
 
 
             </LinearLayout>

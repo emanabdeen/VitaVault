@@ -96,7 +96,7 @@
     <string name="log">Log</string>
     <string name="alarms">Alarms</string>
     <string name="no_logs_available">No logs available.</string>
-    <string name="no_alarms_set">No alarms set</string>
+    <string name="no_alarms_set">No alarms set.</string>
     <string name="mute_alarm">Mute Alarm</string>
 
 </resources>
