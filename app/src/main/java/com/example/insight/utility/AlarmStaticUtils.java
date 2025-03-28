@@ -32,18 +32,14 @@ public class AlarmStaticUtils {
         }
     }
 
-    // Parse hour from "hh:mm AM/PM" format
+    // Parse hour from "HH:mm" format (24-hour)
     public static int getHour(String time) {
-        String[] parts = time.split("[: ]");
-        int hour = Integer.parseInt(parts[0]);
-        if (parts[2].equals("PM") && hour != 12) hour += 12;
-        if (parts[2].equals("AM") && hour == 12) hour = 0;
-        return hour;
+        return Integer.parseInt(time.split(":")[0]);
     }
 
-    // Parse minute from "hh:mm AM/PM" format
+    // Parse minute from "HH:mm" format (24-hour)
     public static int getMinute(String time) {
-        return Integer.parseInt(time.split("[: ]")[1]);
+        return Integer.parseInt(time.split(":")[1]);
     }
 
     // Generate unique request code based on medication and alarm details
@@ -51,24 +47,24 @@ public class AlarmStaticUtils {
         return (medicationId + day + time).hashCode();
     }
 
-    // Get next alarm time Calendar object
+    // Get next alarm time Calendar object from "HH:mm" format
     public static Calendar getNextAlarmTime(String day, String time) {
         Calendar calendar = Calendar.getInstance();
-        String[] timeParts = time.split(" ");
-        String[] hourMin = timeParts[0].split(":");
-        int hour = Integer.parseInt(hourMin[0]);
-        int minute = Integer.parseInt(hourMin[1]);
-        String amPm = timeParts[1];
-        if (amPm.equals("PM") && hour != 12) hour += 12;
-        if (amPm.equals("AM") && hour == 12) hour = 0;
+
+        int hour = getHour(time);
+        int minute = getMinute(time);
+
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         calendar.set(Calendar.DAY_OF_WEEK, getDayOfWeek(day));
+
+        // If the scheduled time has already passed this week, push to next week
         if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.WEEK_OF_YEAR, 1);
         }
+
         return calendar;
     }
 }

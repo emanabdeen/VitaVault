@@ -16,6 +16,8 @@ import android.Manifest;
 
 
 import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
@@ -41,7 +43,7 @@ public class AddAlarmActivity extends DrawerBaseActivity {
     private ActivityAddAlarmBinding binding;
     private MedicationAlarmsViewModel viewModel;
     private String medicationId;
-    private String selectedTime = "08:00 AM"; // Default time
+    private String selectedTime = null; // Default time
 
 
     @Override
@@ -85,6 +87,9 @@ public class AddAlarmActivity extends DrawerBaseActivity {
 //            });
 //        });
 
+        binding.textSelectedTime.setText("No time selected");
+
+
         binding.btnPickTime.setOnClickListener(v -> {
             MaterialTimePicker picker = new MaterialTimePicker.Builder()
                     .setTimeFormat(TimeFormat.CLOCK_24H)
@@ -106,6 +111,8 @@ public class AddAlarmActivity extends DrawerBaseActivity {
 
         // Set up the Save Alarm button
         binding.btnSaveAlarm.setOnClickListener(v -> {
+
+            if (hasValidationError()) return;
 
             //make sure notifications permission is granted for app
             //android 33 and lower set default is set to enabled
@@ -174,10 +181,6 @@ public class AddAlarmActivity extends DrawerBaseActivity {
             if (binding.checkSaturday.isChecked()) alarmsToProcess.add(createAlarm("Saturday"));
             if (binding.checkSunday.isChecked()) alarmsToProcess.add(createAlarm("Sunday"));
 
-            if (alarmsToProcess.isEmpty()) {
-                Toast.makeText(AddAlarmActivity.this, "Please select at least one day for the alarm.", Toast.LENGTH_SHORT).show();
-                return;
-            }
 
             // Get the current locally stored alarms
             List<MedicationAlarm> localAlarms = AlarmLocalStorageHelper.getAlarms(AddAlarmActivity.this);
@@ -187,6 +190,11 @@ public class AddAlarmActivity extends DrawerBaseActivity {
 
                 alarm.setMedicationName(medicationName);
                 alarm.setDosage(dosage);
+                Log.d("AddAlarmActivity", "Saving alarm: " +
+                        "Day=" + alarm.getDay() +
+                        ", Time=" + alarm.getTime() +
+                        ", MedID=" + alarm.getMedicationId() +
+                        ", AlarmID=" + alarm.getAlarmId());
                 viewModel.addAlarm(medicationId, alarm);
                 localAlarms.add(alarm);
 
@@ -236,6 +244,42 @@ public class AddAlarmActivity extends DrawerBaseActivity {
         alarm.setMedicationName(getIntent().getStringExtra("medicationName"));
         alarm.setDosage(getIntent().getStringExtra("dosage"));
         return alarm;
+    }
+
+    private boolean hasValidationError(){
+        boolean hasError = false;
+
+// Reset visibility
+        binding.textErrorDays.setVisibility(View.INVISIBLE);
+        binding.textErrorTime.setVisibility(View.GONE);
+
+// Validate time
+        if (selectedTime == null) {
+            binding.textSelectedTime.setVisibility(View.GONE);
+            binding.textErrorTime.setVisibility(View.VISIBLE);
+            hasError = true;
+        }
+        else{
+            binding.textSelectedTime.setVisibility(View.VISIBLE);
+        }
+
+
+// Validate day selection
+        boolean anyDayChecked =
+                binding.checkMonday.isChecked() || binding.checkTuesday.isChecked() ||
+                        binding.checkWednesday.isChecked() || binding.checkThursday.isChecked() ||
+                        binding.checkFriday.isChecked() || binding.checkSaturday.isChecked() ||
+                        binding.checkSunday.isChecked();
+
+        if (!anyDayChecked) {
+            binding.textErrorDays.setVisibility(View.VISIBLE);
+            hasError = true;
+        }
+        else{
+            binding.textErrorDays.setVisibility(View.INVISIBLE);
+        }
+
+        return hasError;
     }
 
     private final ActivityResultLauncher<String> requestNotificationPermissionLauncher =

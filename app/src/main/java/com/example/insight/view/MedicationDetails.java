@@ -153,11 +153,8 @@ public class MedicationDetails extends DrawerBaseActivity {
         String dosage = binding.editTextDosage.getText().toString().trim();
         String unit = binding.spinnerUnit.getSelectedItem().toString();
 
-        medication.setName(name);
-        medication.setDosage(dosage);
-        medication.setUnit(unit);
 
-        Medication newMedication = new Medication(medication.getName(), medication.getDosage(), medication.getUnit(), false, false);
+        Medication newMedication = new Medication(name, dosage, unit);
         viewModel.addMedication(newMedication);
         setResult(RESULT_OK);
         finish();
