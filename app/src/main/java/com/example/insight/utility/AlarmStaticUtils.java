@@ -6,28 +6,31 @@ public class AlarmStaticUtils {
 
     // Convert day string to index for spinner
     public static int getDayIndex(String day) {
-        switch (day) {
-            case "Monday": return 0;
-            case "Tuesday": return 1;
-            case "Wednesday": return 2;
-            case "Thursday": return 3;
-            case "Friday": return 4;
-            case "Saturday": return 5;
-            case "Sunday": return 6;
+        if (day == null) return 0;
+
+        switch (day.trim().toLowerCase()) {
+            case "monday": return 0;
+            case "tuesday": return 1;
+            case "wednesday": return 2;
+            case "thursday": return 3;
+            case "friday": return 4;
+            case "saturday": return 5;
+            case "sunday": return 6;
             default: return 0;
         }
     }
 
     // Get Calendar constant for day of week
     public static int getDayOfWeek(String day) {
-        switch (day) {
-            case "Sunday": return Calendar.SUNDAY;
-            case "Monday": return Calendar.MONDAY;
-            case "Tuesday": return Calendar.TUESDAY;
-            case "Wednesday": return Calendar.WEDNESDAY;
-            case "Thursday": return Calendar.THURSDAY;
-            case "Friday": return Calendar.FRIDAY;
-            case "Saturday": return Calendar.SATURDAY;
+
+        switch (day.trim().toLowerCase()) {
+            case "sunday": return Calendar.SUNDAY;
+            case "monday": return Calendar.MONDAY;
+            case "tuesday": return Calendar.TUESDAY;
+            case "wednesday": return Calendar.WEDNESDAY;
+            case "thursday": return Calendar.THURSDAY;
+            case "friday": return Calendar.FRIDAY;
+            case "saturday": return Calendar.SATURDAY;
             default: return Calendar.MONDAY;
         }
     }

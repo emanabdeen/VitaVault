@@ -71,6 +71,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
                 binding.btnAddLog.setVisibility(View.VISIBLE);
                 allocateActivityTitle("Logs");
 
+                binding.image.setImageResource(R.drawable.ic_medical_record);
             }
         });
 
@@ -82,6 +83,8 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
                 binding.btnAddLog.setVisibility(View.GONE);
                 binding.btnAddAlarm.setVisibility(View.VISIBLE);
                 allocateActivityTitle("Alarms");
+
+                binding.image.setImageResource(R.drawable.ic_alarm_clock);
             }
         });
 
