@@ -98,5 +98,8 @@
     <string name="no_logs_available">No logs available.</string>
     <string name="no_alarms_set">No alarms set.</string>
     <string name="mute_alarm">Mute Alarm</string>
+    <string name="time">Time</string>
+    <string name="status">Status</string>
+    <string name="please_select_a_status">Please select a status</string>
 
 </resources>
