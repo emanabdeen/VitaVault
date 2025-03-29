@@ -1,5 +1,6 @@
 package com.example.insight.view;
 
+import android.media.Image;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -14,17 +15,19 @@ public class MedicationsViewHolder extends RecyclerView.ViewHolder {
     private TextView medicationName;
     private TextView medicationDosage;
     private TextView medicationDate;
-    private EditItemClickListener clickListener;
+    private MedicationItemClickListener clickListener;
     private ImageButton btnDelete;
     private ImageButton btnEdit;
+    private ImageButton btnAlarm;
 
-    public MedicationsViewHolder(@NonNull View itemView, EditItemClickListener clickListener) {
+    public MedicationsViewHolder(@NonNull View itemView, MedicationItemClickListener clickListener) {
         super(itemView);
         medicationName = itemView.findViewById(R.id.medication_name_txt);
         medicationDosage = itemView.findViewById(R.id.medication_dosage_txt);
         this.clickListener = clickListener;
         btnDelete = itemView.findViewById(R.id.btnDelete);
         btnEdit = itemView.findViewById(R.id.btnEdit);
+        btnAlarm = itemView.findViewById(R.id.btnAlarm);
 
         // Passing the clicked view and its position in the adapter
         itemView.setOnClickListener(new View.OnClickListener() {
@@ -43,6 +46,13 @@ public class MedicationsViewHolder extends RecyclerView.ViewHolder {
         });
 
         btnEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.OnClickItem(v, getAdapterPosition());
+            }
+        });
+
+        btnAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickListener.OnClickItem(v, getAdapterPosition());
@@ -81,5 +91,9 @@ public class MedicationsViewHolder extends RecyclerView.ViewHolder {
 
     public ImageButton getBtnDelete() {
         return btnDelete;
+    }
+
+    public ImageButton getBtnAlarm() {
+        return btnAlarm;
     }
 }

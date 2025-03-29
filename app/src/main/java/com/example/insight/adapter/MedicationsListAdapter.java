@@ -4,14 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.insight.R;
 import com.example.insight.model.Medication;
 import com.example.insight.view.EditItemClickListener;
-import com.example.insight.view.ItemClickListener;
+import com.example.insight.view.MedicationItemClickListener;
 import com.example.insight.view.MedicationsViewHolder;
 
 import java.util.List;
@@ -20,10 +18,10 @@ public class MedicationsListAdapter extends RecyclerView.Adapter<MedicationsView
 
     private final Context context;
     private List<Medication> medications;
-    private final EditItemClickListener clickListener;
+    private final MedicationItemClickListener clickListener;
 
-    // ✅ Pass clickListener via constructor directly (cleaner approach)
-    public MedicationsListAdapter(Context context, List<Medication> medications, EditItemClickListener clickListener) {
+    // Pass clickListener via constructor directly (cleaner approach)
+    public MedicationsListAdapter(Context context, List<Medication> medications, MedicationItemClickListener clickListener) {
         this.context = context;
         this.medications = medications;
         this.clickListener = clickListener;
@@ -50,6 +48,9 @@ public class MedicationsListAdapter extends RecyclerView.Adapter<MedicationsView
 
         // Delete button click
         holder.getBtnDelete().setOnClickListener(v -> clickListener.OnClickDelete(v, position));
+
+        // Alarm button click
+        holder.getBtnAlarm().setOnClickListener(v -> clickListener.OnClickAlarm(v, position));
     }
 
     @Override

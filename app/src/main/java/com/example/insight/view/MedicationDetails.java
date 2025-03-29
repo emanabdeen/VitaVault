@@ -70,22 +70,9 @@ public class MedicationDetails extends DrawerBaseActivity {
                 }
             });
 
-            // In edit mode, enable Manage Alarms button and hide warning
-            binding.btnManageAlarms.setEnabled(true);
-            binding.textViewAlarmWarning.setVisibility(View.GONE);
-            binding.btnManageAlarms.setOnClickListener(v -> {
-                Intent alarmIntent = new Intent(MedicationDetails.this, AddAlarmActivity.class);
-                alarmIntent.putExtra("medicationID", medicationId);
-                alarmIntent.putExtra("medicationName", medication.getName());
-                alarmIntent.putExtra("dosage", medication.getDosage() + " " + medication.getUnit());
-                startActivity(alarmIntent);
-            });
 
         } else {
             pageFunction = "createMedication";
-            binding.btnManageAlarms.setEnabled(false);
-            binding.textViewAlarmWarning.setVisibility(View.VISIBLE);
-            binding.textViewAlarmWarning.setText("Need to add medication first");
         }
 
         // Save Button Click Event
@@ -166,7 +153,8 @@ public class MedicationDetails extends DrawerBaseActivity {
         String dosage = binding.editTextDosage.getText().toString().trim();
         String unit = binding.spinnerUnit.getSelectedItem().toString();
 
-        Medication newMedication = new Medication(name, dosage, unit, false, false);
+
+        Medication newMedication = new Medication(name, dosage, unit);
         viewModel.addMedication(newMedication);
         setResult(RESULT_OK);
         finish();

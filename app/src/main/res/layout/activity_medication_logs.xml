@@ -29,31 +29,49 @@
                 android:layout_height="70dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_medical_record"
+                android:background="@drawable/glow_white"
                 android:padding="10dp" />
+
 
             <TextView
                 android:id="@+id/textViewTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/medicationName"
-                android:textColor="@color/white"
                 android:layout_gravity="center"
-                android:textStyle="italic"/>
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:text="@string/medicationName" />
 
 
         </LinearLayout>
 
         <!-- Add Button: Positioned below the header -->
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnAdd"
+            android:id="@+id/btnAddAlarm"
             android:layout_width="200dp"
             android:layout_height="40dp"
             android:background="@drawable/button_custom2"
             android:drawableStart="@drawable/baseline_add_primary"
             android:paddingStart="15dp"
             android:paddingEnd="5dp"
-            android:layout_marginBottom="8dp"
-            android:text="Add Alarm"
+            android:text="@string/addAlarm"
+            android:textSize="18sp"
+            android:textColor="@color/primary"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.1"
+            android:visibility="gone"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnAddLog"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:background="@drawable/button_custom2"
+            android:drawableStart="@drawable/baseline_add_primary"
+            android:paddingStart="15dp"
+            android:paddingEnd="5dp"
+            android:text="@string/add_log"
             android:textSize="18sp"
             android:textColor="@color/primary"
             app:layout_constraintTop_toBottomOf="@id/image"
@@ -68,22 +86,22 @@
             android:layout_height="50dp">
 
             <Button
-                android:id="@+id/btnHistory"
+                android:id="@+id/btnLog"
                 android:layout_width="150dp"
                 android:layout_height="50dp"
-                android:text="History"
+                android:text="@string/log"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnReminderSettings" />
+                app:layout_constraintEnd_toStartOf="@+id/btnAlarms" />
 
             <Button
-                android:id="@+id/btnReminderSettings"
+                android:id="@+id/btnAlarms"
                 android:layout_width="150dp"
                 android:layout_height="50dp"
-                android:text="Settings"
+                android:text="@string/alarms"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/btnHistory"
+                app:layout_constraintStart_toEndOf="@+id/btnLog"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>

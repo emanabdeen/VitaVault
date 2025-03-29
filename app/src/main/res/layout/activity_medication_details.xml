@@ -60,10 +60,9 @@
                 android:id="@+id/editTextMedicationName"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:textColor="@color/black"
                 android:layout_marginBottom="8dp"
                 android:labelFor="@+id/txtMedicationName"/>
 
@@ -90,10 +89,9 @@
                 android:id="@+id/editTextDosage"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:textColor="@color/black"
                 android:layout_marginBottom="8dp"
                 android:inputType="numberDecimal"
                 android:labelFor="@id/txtLabelDosage"/>
@@ -121,34 +119,13 @@
                 android:id="@+id/spinnerUnit"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/edit_text_background"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/dynamic_background"
+                android:spinnerMode="dropdown"
+                style="@style/MySpinnerStyle"
+                />
 
-            <!-- Manage Alarms Button -->
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnManageAlarms"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="@string/addAlarm"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:padding="12dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/button_secondary" />
 
-            <!-- Warning message -->
-            <TextView
-                android:id="@+id/textViewAlarmWarning"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/addMedicationFirst"
-                android:textSize="12sp"
-                android:textStyle="italic"
-                android:textColor="@android:color/black"
-                android:gravity="center"
-                android:layout_marginTop="8dp"
-                android:visibility="invisible" />
 
             <!-- Save Medication Button -->
             <androidx.appcompat.widget.AppCompatButton

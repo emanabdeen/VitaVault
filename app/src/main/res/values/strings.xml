@@ -35,8 +35,8 @@
     <string name="BloodPressure">Blood Pressure</string>
     <string name="BodyTemperature">Body Temperature</string>
     <string name="Weight">Weight</string>
-    <string name="taken">taken</string>
-    <string name="missed">missed</string>
+    <string name="taken">Taken</string>
+    <string name="missed">Missed</string>
     <string name="medication_reminder">Medication Reminder</string>
     <string name="medication_icon">medication icon</string>
     <string name="Mon">Mon</string>
@@ -89,6 +89,15 @@
         <item>Other</item>
     </string-array>
 
+    <string name="add_log">add log</string>
+    <string name="log">Log</string>
+    <string name="alarms">Alarms</string>
+    <string name="no_logs_available">No logs available.</string>
+    <string name="no_alarms_set">No alarms set.</string>
+    <string name="mute_alarm">Mute Alarm</string>
+    <string name="time">Time</string>
+    <string name="status">Status</string>
+    <string name="please_select_a_status">Please select a status</string>
     <string name="scanResultDescription">Scanned ingredients with names that contain your restricted ingredients show an ⚠️ icon.\n\nTap on + to add an ingredient to your restricted list.</string>
     <string name="scanMainActivityDescription">Take a photo of an ingredients list or upload an image of one from your device\n\nCrop tightly to the text for best results.</string>
     <string name="cameraControlsDescription">Tap here to start the camera preview\n\nTap again when an image is displayed to clear it</string>

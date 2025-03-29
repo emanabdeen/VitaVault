@@ -134,6 +134,15 @@
             android:name=".view.EditAlarmActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".view.AddLogActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".view.EditLogActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+
 
         <activity
             android:name=".view.DashboardActivity"

@@ -18,14 +18,18 @@ import androidx.core.app.NotificationCompat;
 import com.example.insight.R;
 import com.example.insight.utility.AlarmHelper;
 import com.example.insight.utility.AlarmSoundHelper;
+import com.example.insight.utility.MedicationLogUtils;
 import com.example.insight.view.AlarmScreenActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private static final int NOTIFICATION_ID = 1001;
@@ -35,32 +39,23 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        Log.d("AlarmReceiver", "🚨 onReceive triggered with action: " + action);
+
 
         String medicationId = intent.getStringExtra("medicationId");
         String dosage = intent.getStringExtra("dosage");
         int requestCode = intent.getIntExtra("requestCode", -1);
+        String medicationName = intent.getStringExtra("medicationName");
 
-        // If user presses "DISMISS" button
-        if ("STOP_ALARM".equals(action)) {
-            Log.d("AlarmReceiver", "🚨 DISMISS clicked in notification");
-
-            // Log "Dismissed" in Firestore
-            logMedicationDismissed(context, medicationId, dosage);
-
-            // Stop alarm sound and remove notification
-            stopAlarm(context);
-            return; // Stop further execution
-        }
-
-        if ("NOTIFICATION_DISMISSED".equals(action)) {
-            Log.d("AlarmReceiver", "🚨 SWIPED notification");
+        // If user presses "DISMISS" button or Swiped away notification
+        if ("STOP_ALARM".equals(action) || "NOTIFICATION_DISMISSED".equals(action)) {
+            Log.d("AlarmReceiver", "🚨 Alarm dismissed via " + action);
 
             // Log "Dismissed" in Firestore
-            logMedicationDismissed(context, medicationId, dosage);
-
+            logMedicationDismissed(context, medicationId, medicationName, dosage);
             // Stop alarm sound and remove notification
             stopAlarm(context);
-            return; // Stop further execution
+            return;
         }
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -79,7 +74,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
 
         // If normal alarm trigger
-        String medicationName = intent.getStringExtra("medicationName");
         boolean repeatWeekly = intent.getBooleanExtra("repeatWeekly", false);
 
 
@@ -181,23 +175,28 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     // Log Dismiss action to FireStore
-    private void logMedicationDismissed(Context context, String medicationId, String dosage) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private void logMedicationDismissed(Context context, String medicationId, String medicationName, String dosage) {
+        MedicationLogUtils.logMedicationStatus(
+                context,
+                medicationId,
+                dosage,
+                "Dismissed",
+                null,
+                false,             // Don't stop alarm again (already done)
+                new MedicationLogUtils.MedicationLogCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("AlarmReceiver", "✅ Dismiss log added");
+                    }
 
-        Map<String, Object> log = new HashMap<>();
-        log.put("medicationId", medicationId);
-        log.put("status", "Dismissed"); // Status for dismiss
-        log.put("timestamp", FieldValue.serverTimestamp());
-        log.put("dosage", dosage);
-
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String uid = mAuth.getCurrentUser().getUid();
-
-        db.collection("users").document(uid).collection("medications")
-                .document(medicationId).collection("logs").add(log)
-                .addOnSuccessListener(doc -> Log.d("AlarmReceiver", "✅ Dismiss log added"))
-                .addOnFailureListener(e -> Log.e("AlarmReceiver", "❌ Failed to log dismissal", e));
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e("AlarmReceiver", "❌ Failed to log dismissal", e);
+                    }
+                }
+        );
     }
+
 
     // Stop alarm sound and remove notification
     public static void stopAlarm(Context context) {
@@ -208,4 +207,5 @@ public class AlarmReceiver extends BroadcastReceiver {
             notificationManager.cancel(NOTIFICATION_ID);
         }
     }
+
 }

@@ -4,4 +4,9 @@
         <!-- Customize the dropdown popup background -->
         <item name="android:popupBackground">@drawable/dropdown_popup_background</item>
     </style>
+
+    <style name="MySpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:popupBackground">@android:color/white</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
 </resources>

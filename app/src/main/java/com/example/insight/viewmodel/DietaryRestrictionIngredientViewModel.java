@@ -294,7 +294,12 @@ public class DietaryRestrictionIngredientViewModel extends ViewModel {
 
     public void deleteDietaryRestrictionIngredient(String ingredientId) {
 
-        Log.e("AddCustomIngredient", ingredientId);
+        if (ingredientId == null) {
+            Log.e("DietaryRestrictionIngredientViewModel", "Ingredient ID was null, possible delay causing issues...");
+            return;
+        } else {
+            Log.d("DeleteDietaryRestriction", "ingredientID: " + ingredientId);
+        }
 
         FirebaseFirestore.getInstance()
                 .collection("users")

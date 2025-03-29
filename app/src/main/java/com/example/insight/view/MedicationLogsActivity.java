@@ -18,8 +18,8 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
     private String dosage;
 
     // Fragments
-    private MedicationLogsFragment historyFragment;
-    private MedicationSettingsFragment settingsFragment;
+    private MedicationLogsFragment logsFragment;
+    private MedicationAlarmsFragment alarmsFragment;
 
     private ActivityResultLauncher<Intent> alarmActivityLauncher;
 
@@ -31,12 +31,15 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
         allocateActivityTitle("Medications");
 
 
+
+
+        //this gets rid of unnecessary firebase calls
         alarmActivityLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
-                        if (settingsFragment != null) {
-                            settingsFragment.refreshAlarms(); // 👈 let the fragment handle the logic
+                        if (alarmsFragment != null) {
+                            alarmsFragment.refreshAlarms(); // let the fragment handle the logic
                         }
                     }
                 }
@@ -46,36 +49,70 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
         medicationId = getIntent().getStringExtra("medicationID");
         medicationName = getIntent().getStringExtra("medicationName");
         dosage = getIntent().getStringExtra("dosage");
+        boolean showAlarms = getIntent().getBooleanExtra("showAlarms", false);
 
 
         // Optionally set a text title
          binding.textViewTitle.setText(medicationName);
 
         // Create the fragments, passing the medicationId
-        historyFragment = MedicationLogsFragment.newInstance(medicationId);
-        settingsFragment = MedicationSettingsFragment.newInstance(medicationId);
+        logsFragment = MedicationLogsFragment.newInstance(medicationId);
+        alarmsFragment = MedicationAlarmsFragment.newInstance(medicationId);
 
-        // Show the History fragment by default
-        replaceFragment(historyFragment);
+        if (showAlarms) {
+            replaceFragment(alarmsFragment);
+            binding.btnAddLog.setVisibility(View.GONE);
+            binding.btnAddAlarm.setVisibility(View.VISIBLE);
+            allocateActivityTitle("Alarms");
+        } else {
+            replaceFragment(logsFragment);
+            binding.btnAddAlarm.setVisibility(View.GONE);
+            binding.btnAddLog.setVisibility(View.VISIBLE);
+            allocateActivityTitle("Logs");
+        }
 
 
         // Set button listeners to swap fragments
-        binding.btnHistory.setOnClickListener(new View.OnClickListener() {
+        binding.btnLog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                replaceFragment(historyFragment);
+
+                replaceFragment(logsFragment);
+                binding.btnAddAlarm.setVisibility(View.GONE);
+                binding.btnAddLog.setVisibility(View.VISIBLE);
+                allocateActivityTitle("Logs");
+
+                binding.image.setImageResource(R.drawable.ic_medical_record);
             }
         });
 
-        binding.btnReminderSettings.setOnClickListener(new View.OnClickListener() {
+        binding.btnAlarms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                replaceFragment(settingsFragment);
+
+                replaceFragment(alarmsFragment);
+                binding.btnAddLog.setVisibility(View.GONE);
+                binding.btnAddAlarm.setVisibility(View.VISIBLE);
+                allocateActivityTitle("Alarms");
+
+                binding.image.setImageResource(R.drawable.ic_alarm_clock);
+            }
+        });
+
+        binding.btnAddLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo add log intent to add a log
+                Intent intent = new Intent(MedicationLogsActivity.this, AddLogActivity.class);
+                intent.putExtra("medicationID", medicationId);
+                intent.putExtra("medicationName", medicationName);
+                intent.putExtra("dosage", dosage);
+                startActivity(intent);
             }
         });
 
         // Set up the Add button to open the AddAlarmActivity
-        binding.btnAdd.setOnClickListener(new View.OnClickListener() {
+        binding.btnAddAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MedicationLogsActivity.this, AddAlarmActivity.class);
@@ -94,6 +131,5 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
                 .replace(R.id.fragmentLayout, fragment)
                 .commit();
     }
-
 
 }

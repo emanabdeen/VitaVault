@@ -12,7 +12,10 @@ import com.example.insight.databinding.ItemMedicationAlarmLayoutBinding;
 import com.example.insight.model.MedicationAlarm;
 import com.example.insight.view.EditItemClickListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MedicationAlarmAdapter extends RecyclerView.Adapter<MedicationAlarmAdapter.AlarmViewHolder> {
 
@@ -40,7 +43,22 @@ public class MedicationAlarmAdapter extends RecyclerView.Adapter<MedicationAlarm
 
         // Bind alarm details from the model
         holder.binding.alarmDayTxt.setText(alarm.getDay());
-        holder.binding.alarmTimeTxt.setText(alarm.getTime());
+        // Convert time format based on user preference
+        try {
+            // Parse stored time string (e.g., "18:00")
+            SimpleDateFormat inputFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            Date date = inputFormat.parse(alarm.getTime());
+
+            boolean is24Hour = android.text.format.DateFormat.is24HourFormat(context);
+            String pattern = is24Hour ? "HH:mm" : "h:mm a";
+            SimpleDateFormat outputFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+
+            String formattedTime = (date != null) ? outputFormat.format(date) : alarm.getTime();
+            holder.binding.alarmTimeTxt.setText(formattedTime);
+        } catch (Exception e) {
+            holder.binding.alarmTimeTxt.setText(alarm.getTime()); // fallback
+            e.printStackTrace();
+        }
 
         // Use the provided EditItemClickListener for edit and delete actions.
         holder.binding.btnEdit.setOnClickListener(v -> {

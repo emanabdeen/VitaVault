@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.insight.adapter.MedicationAlarmAdapter;
-import com.example.insight.databinding.FragmentMedicationSettingsBinding;
+import com.example.insight.databinding.FragmentMedicationAlarmsBinding;
 import com.example.insight.model.MedicationAlarm;
 import com.example.insight.utility.AlarmHelper;
 import com.example.insight.viewmodel.MedicationAlarmsViewModel;
@@ -25,10 +25,10 @@ import com.example.insight.viewmodel.MedicationViewModel;
 
 import java.util.ArrayList;
 
-public class MedicationSettingsFragment extends Fragment {
+public class MedicationAlarmsFragment extends Fragment {
 
     private String medicationId;
-    private FragmentMedicationSettingsBinding binding;
+    private FragmentMedicationAlarmsBinding binding;
     private MedicationAlarmAdapter adapter;
     private MedicationAlarmsViewModel viewModel;
     private String medicationName;
@@ -36,8 +36,8 @@ public class MedicationSettingsFragment extends Fragment {
     private MedicationViewModel medicationViewModel;
     private ActivityResultLauncher<Intent> alarmActivityLauncher;
 
-    public static MedicationSettingsFragment newInstance(String medicationId) {
-        MedicationSettingsFragment fragment = new MedicationSettingsFragment();
+    public static MedicationAlarmsFragment newInstance(String medicationId) {
+        MedicationAlarmsFragment fragment = new MedicationAlarmsFragment();
         Bundle args = new Bundle();
         args.putString("medicationID", medicationId);
         fragment.setArguments(args);
@@ -56,7 +56,7 @@ public class MedicationSettingsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = FragmentMedicationSettingsBinding.inflate(inflater, container, false);
+        binding = FragmentMedicationAlarmsBinding.inflate(inflater, container, false);
         setupRecyclerView();
 
         // Initialize the ViewModel
@@ -168,7 +168,8 @@ public class MedicationSettingsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Force a fresh fetch of alarms every time the fragment comes into focus
+        // Only reloads if alarms aren't already up to date
+        // For example, user just added a new alarm
         viewModel.fetchAlarms(medicationId);
     }
 

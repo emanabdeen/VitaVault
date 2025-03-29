@@ -51,6 +51,8 @@ public class EditAlarmActivity extends DrawerBaseActivity {
         binding = ActivityEditAlarmBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        allocateActivityTitle("Edit Alarm");
+
         // Get the intent data
         medicationId = getIntent().getStringExtra("medicationId");
         alarmId = getIntent().getStringExtra("alarmId");
@@ -78,19 +80,18 @@ public class EditAlarmActivity extends DrawerBaseActivity {
         // Set up time picker
         binding.btnPickTime.setOnClickListener(v -> {
             MaterialTimePicker picker = new MaterialTimePicker.Builder()
-                    .setTimeFormat(TimeFormat.CLOCK_12H)
+                    .setTimeFormat(TimeFormat.CLOCK_24H)
                     .setHour(getHour(originalTime))
                     .setMinute(getMinute(originalTime))
                     .setTitleText("Select Alarm Time")
                     .build();
+
             picker.show(getSupportFragmentManager(), "TIME_PICKER");
+
             picker.addOnPositiveButtonClickListener(view -> {
                 int hour = picker.getHour();
                 int minute = picker.getMinute();
-                String amPm = (hour >= 12) ? "PM" : "AM";
-                int displayHour = hour % 12;
-                if (displayHour == 0) displayHour = 12;
-                selectedTime = String.format("%02d:%02d %s", displayHour, minute, amPm);
+                selectedTime = String.format("%02d:%02d", hour, minute); // 24-hour
                 binding.textSelectedTime.setText("Selected time: " + selectedTime);
             });
         });

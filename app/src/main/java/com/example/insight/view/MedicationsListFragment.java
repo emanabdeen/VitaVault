@@ -1,12 +1,17 @@
 package com.example.insight.view;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -19,7 +24,7 @@ import com.example.insight.viewmodel.MedicationViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MedicationsListFragment extends Fragment implements EditItemClickListener {
+public class MedicationsListFragment extends Fragment implements MedicationItemClickListener {
 
     private FragmentMedicationsListBinding binding;
     private MedicationViewModel viewModel;
@@ -28,6 +33,9 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
     // List shown in the adapter (possibly filtered)
     private List<Medication> currentMedications = new ArrayList<>();
     private MedicationsListAdapter medicationsListAdapter;
+    private ActivityResultLauncher<Intent> medicationDetailsLauncher;
+    private String lastSearchQuery = "";
+
 
     private boolean isLoading = false;
 
@@ -59,10 +67,15 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
         // Observe medication data; store a full copy for filtering
         viewModel.getMedicationsData().observe(getViewLifecycleOwner(), medications -> {
             allMedications = (medications != null) ? new ArrayList<>(medications) : new ArrayList<>();
-            currentMedications = new ArrayList<>(allMedications);
-            medicationsListAdapter.updateData(currentMedications);
+            if (!lastSearchQuery.isEmpty()) {
+                filterMedications(lastSearchQuery);
+            } else {
+                resetMedicationList();
+            }
             updateUIState();
+            Log.d("MedicationsListFragment", "LiveData update received. Size: " + medications.size());
         });
+
 
         // Initial fetch with loading indicator
         viewModel.getMedications(true);
@@ -81,6 +94,7 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 // If text exists, show the clear button; if not, hide it and restore full list.
+                lastSearchQuery = s.toString();
                 if (s.length() > 0) {
                     binding.textClear.setVisibility(View.VISIBLE);
                 } else {
@@ -98,6 +112,17 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
             binding.searchText.setText("");
             resetMedicationList();
         });
+
+        medicationDetailsLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // Refetch from Firestore
+                        viewModel.getMedications(true);
+                    }
+                }
+        );
+
 
     }
 
@@ -164,6 +189,7 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
             intent.putExtra("medicationID", medicationId);
             intent.putExtra("medicationName", medicationName);
             intent.putExtra("dosage",dosage);
+            intent.putExtra("showAlarms", false);
             startActivity(intent);
         }
     }
@@ -174,7 +200,10 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
             String medicationId = currentMedications.get(pos).getMedicationId();
             Intent intent = new Intent(requireContext(), MedicationDetails.class);
             intent.putExtra("medicationID", medicationId);
-            startActivity(intent);
+            medicationDetailsLauncher.launch(intent);
+
+
+
         }
     }
 
@@ -182,22 +211,33 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
     public void OnClickDelete(View v, int pos) {
         if (currentMedications != null && pos < currentMedications.size()) {
             Medication medication = currentMedications.get(pos);
-            String medId = medication.getMedicationId();
 
-
-            viewModel.prepareToRemoveMedication(medication);
-
-            // Show a confirmation dialog
             new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                     .setTitle("Delete Medication")
-                    .setMessage("Are you sure you want to delete this medication and all its alarms?")
+                    .setMessage("Caution: This will delete the medication along with all associated alarms and logs. Are you sure you want to continue?")
                     .setPositiveButton("Yes", (dialog, which) -> {
-                        // Delete the medication and its alarms.
-                        // Use the application context to avoid leaking an Activity context.
+                        viewModel.prepareToRemoveMedication(medication);
                         viewModel.deleteMedicationAndAlarms(medication, requireContext().getApplicationContext());
                     })
                     .setNegativeButton("No", null)
                     .show();
+        }
+    }
+
+    @Override
+    public void OnClickAlarm(View v, int pos) {
+        if (currentMedications != null && pos < currentMedications.size()) {
+            String medicationId = currentMedications.get(pos).getMedicationId();
+            String medicationName = currentMedications.get(pos).getName();
+            String dosage = currentMedications.get(pos).getDosage() + " " +
+                    currentMedications.get(pos).getUnit();
+
+            Intent intent = new Intent(requireContext(), MedicationLogsActivity.class);
+            intent.putExtra("medicationID", medicationId);
+            intent.putExtra("medicationName", medicationName);
+            intent.putExtra("dosage",dosage);
+            intent.putExtra("showAlarms", true);
+            startActivity(intent);
         }
     }
 

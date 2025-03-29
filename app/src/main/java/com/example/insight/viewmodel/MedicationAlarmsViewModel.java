@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.insight.model.MedicationAlarm;
+import com.example.insight.utility.AlarmStaticUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -15,6 +16,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MedicationAlarmsViewModel extends ViewModel {
@@ -65,6 +67,20 @@ public class MedicationAlarmsViewModel extends ViewModel {
                         }
                     }
                     Log.d("MedicationAlarmsVM", "Fetched alarms: " + fetchedAlarms.size());
+                    //sort the alarms
+
+                    Collections.sort(fetchedAlarms, (a1, a2) -> {
+                        int day1 = AlarmStaticUtils.getDayIndex(a1.getDay()); // Replace with actual class name if needed
+                        int day2 = AlarmStaticUtils.getDayIndex(a2.getDay());
+
+                        if (day1 != day2) {
+                            return Integer.compare(day1, day2);
+                        } else {
+                            // Sort by time assuming format is "HH:mm"
+                            return a1.getTime().compareTo(a2.getTime());
+                        }
+                    });
+
                     // Post the list of alarms to LiveData
                     alarms.postValue(fetchedAlarms);
                     alarmsFetched = true;

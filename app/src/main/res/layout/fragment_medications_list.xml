@@ -24,24 +24,34 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0">
 
-        <EditText
-            android:id="@+id/searchText"
+        <!-- Wrapped TextInputLayout replacing EditText -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/searchTextLayout"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/edit_text_background"
-            android:hint="search for medication by name"
-            android:textColorHint="@color/light_gray"
-            android:textColor="@color/black"
-            android:inputType="text"
-            android:padding="8dp"
-            android:textSize="13sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/primary"
+            app:boxCornerRadiusTopStart="8dp"
+            app:boxCornerRadiusTopEnd="8dp"
+            app:boxCornerRadiusBottomStart="8dp"
+            app:boxCornerRadiusBottomEnd="8dp"
+            app:boxBackgroundColor="@color/search"
+            app:hintEnabled="false"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textClear">
 
-        <!-- Clear button as a TextView -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchText"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="search"
+                android:padding="10dp"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Clear button -->
         <TextView
             android:id="@+id/textClear"
             android:layout_width="wrap_content"
@@ -55,19 +65,20 @@
             android:focusable="true"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/searchText" />
+            app:layout_constraintStart_toEndOf="@+id/searchTextLayout"
+            app:layout_constraintEnd_toStartOf="@+id/iconSearch" />
 
+        <!-- Search Icon -->
         <ImageButton
             android:id="@+id/iconSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_search"
+            android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.146"
-            app:layout_constraintStart_toEndOf="@+id/textClear"
             app:layout_constraintTop_toTopOf="parent"
-            android:background="@android:color/transparent"/>
+            app:layout_constraintStart_toEndOf="@+id/textClear"
+            app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -91,7 +102,6 @@
             android:text="No medications found."
             android:gravity="center"
             android:textSize="18sp"
-            android:textColor="@color/black"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

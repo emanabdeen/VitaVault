@@ -32,6 +32,7 @@
         <item name="chartAxisColor">@android:color/black</item> <!-- Black lines in light mode -->
         <item name="gridColor">@color/gridColor</item> <!-- Semi-transparent black for light theme -->
 
+
     </style>
 
     <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">

@@ -32,6 +32,15 @@
 
     <color name="background_light">#F8F9FA</color>
 
+    <color name="offBlack">#2C2C2C</color>
+
+    <color name="takenLogStatus">#5BC179</color>
+    <color name="lighter_gray">#B4B4B4</color>
+    <color name="darker_gray">#686868</color>
+
+    <color name="muteButton">#FFFFFFFF</color>
+    <color name="search">#FFFFFFFF</color>
+
 
 
 

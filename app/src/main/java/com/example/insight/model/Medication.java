@@ -1,12 +1,5 @@
 package com.example.insight.model;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Medication {
 
@@ -19,9 +12,9 @@ public class Medication {
         this.medicationId = generateId();
     }
 
-    public Medication(String name, String dosage, String unit, boolean reminderEnabled, boolean repeatWeekly) {
+    public Medication(String name, String dosage, String unit) {
         this.medicationId = generateId();
-        this.name = name;
+        setName(name);
         this.dosage = dosage;
         this.unit = unit;
     }
@@ -45,8 +38,15 @@ public class Medication {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if (name != null && !name.trim().isEmpty()) {
+            name = name.trim(); // Remove leading/trailing spaces
+            // Capitalize first letter, lowercase the rest
+            this.name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+        } else {
+            this.name = name;
+        }
     }
+
 
     public String getDosage() {
         return dosage;
