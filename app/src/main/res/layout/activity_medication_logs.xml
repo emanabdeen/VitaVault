@@ -40,7 +40,17 @@
                 android:layout_gravity="center"
                 android:textColor="@color/white"
                 android:textSize="20sp"
-                android:text="@string/medicationName" />
+                android:text="@string/medicationName"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAlignment="center"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="1sp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"/>
 
 
         </LinearLayout>

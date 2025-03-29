@@ -144,10 +144,14 @@ public class EditLogActivity extends DrawerBaseActivity {
 
             if (selectedDate.equals(today)) {
                 if (selectedHour > currentHour || (selectedHour == currentHour && selectedMinute > currentMinute)) {
-                    Toast.makeText(this, "Cannot select a future time.", Toast.LENGTH_SHORT).show();
-                    binding.editTime.setText("");
+                    String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
+                    binding.editTime.setText(formattedTime);
+                    showError(binding.errorTime, "Selected time cannot be in the future.", true);
                     return;
                 }
+            }
+            else{
+                showError(binding.errorTime, "", false);
             }
 
             String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
@@ -164,6 +168,9 @@ public class EditLogActivity extends DrawerBaseActivity {
             status = binding.radioTaken.getText().toString();
         } else if (binding.radioMissed.isChecked()) {
             status = binding.radioMissed.getText().toString();
+        }
+        else if (binding.radioDismissed.getVisibility() == View.VISIBLE && binding.radioDismissed.isChecked()) {
+            status = binding.radioDismissed.getText().toString();
         }
 
         String date = binding.editTextDate.getText().toString().trim();
@@ -188,6 +195,24 @@ public class EditLogActivity extends DrawerBaseActivity {
 
         if (status == null) {
             showError(binding.errorStatus, "Please select a status", true);
+            isValid = false;
+        }
+
+        try {
+            String dateStr = binding.editTextDate.getText().toString().trim();
+            String timeStr = binding.editTime.getText().toString().trim();
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            Date selectedDateTime = format.parse(dateStr + " " + timeStr);
+
+            Date now = new Date();
+
+            if (selectedDateTime != null && selectedDateTime.after(now)) {
+                showError(binding.errorTime, "Selected time cannot be in the future.", true);
+                isValid = false;
+            }
+        } catch (Exception e) {
+            showError(binding.errorGeneral, "Invalid date or time format", true);
             isValid = false;
         }
 

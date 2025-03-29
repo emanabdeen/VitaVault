@@ -37,11 +37,12 @@
     <!-- Medication Name -->
     <TextView
         android:id="@+id/txtMedicationName"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Medication Name"
         android:textSize="40sp"
         android:textStyle="bold"
+        android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,8 +51,8 @@
     <!-- Medication Dosage -->
     <TextView
         android:id="@+id/txtMedicationDosage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:textAlignment="center"        android:layout_height="wrap_content"
         android:text="500 mg"
         android:textSize="30sp"
         android:textStyle="italic"
