@@ -126,20 +126,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                android:paddingRight="12dp">
 
                 <RadioButton
                     android:id="@+id/radioTaken"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/taken"
-                    android:checked="true" /> <!-- Optional default selection -->
+                    android:paddingRight="12dp"/>
 
                 <RadioButton
                     android:id="@+id/radioMissed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/missed" />
+                    android:text="@string/missed"
+                    android:paddingRight="12dp"/>
+                <RadioButton
+                    android:id="@+id/radioDismissed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dismissed"
+                    android:visibility="gone"/>
             </RadioGroup>
 
             <TextView

@@ -1,5 +1,9 @@
 package com.example.insight.model;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class MedicationLog {
     private String dosage;
     private String status;
@@ -32,4 +36,28 @@ public class MedicationLog {
 
     public String getLogId(){ return logId; }
     public void setLogId(String logId) { this.logId = logId; }
+
+    public String getFormattedDate() {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+            Date date = inputFormat.parse(timestamp);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ""; // fallback
+        }
+    }
+
+    public String getFormattedTime() {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+            Date date = inputFormat.parse(timestamp);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ""; // fallback
+        }
+    }
 }

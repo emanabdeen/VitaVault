@@ -5,20 +5,14 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.insight.databinding.ActivityAddAlarmBinding;
 import com.example.insight.databinding.ActivityAddLogBinding;
 import com.example.insight.utility.DatePickerValidator;
 import com.example.insight.utility.MedicationLogUtils;
 import com.google.android.material.datepicker.CalendarConstraints;
-
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
 
@@ -29,11 +23,15 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class AddLogActivity extends DrawerBaseActivity {
+public class EditLogActivity extends DrawerBaseActivity {
 
     private ActivityAddLogBinding binding;
     String medicationId;
     String dosage;
+    private String logId;
+    private String status;
+    private String date;
+    private String time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,34 +42,37 @@ public class AddLogActivity extends DrawerBaseActivity {
         Intent intent = getIntent();
         medicationId = intent.getStringExtra("medicationID");
         dosage = intent.getStringExtra("dosage");
+        logId = intent.getStringExtra("logID");
+        status = intent.getStringExtra("status");
+        date = intent.getStringExtra("date");
+        time = intent.getStringExtra("time");
+
+// Fill the fields
+        binding.editTextDate.setText(date);
+        binding.editTime.setText(time);
+        binding.radioDismissed.setVisibility(View.VISIBLE);
 
 
-        String now = String.format(Locale.getDefault(), "%02d:%02d",
-                Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
-                Calendar.getInstance().get(Calendar.MINUTE));
 
-        binding.editTime.setText(now);
-        // Set default date to today
-        Calendar today = Calendar.getInstance();
-        int year = today.get(Calendar.YEAR);
-        int month = today.get(Calendar.MONTH) + 1; // MONTH is 0-based
-        int day = today.get(Calendar.DAY_OF_MONTH);
+        if ("Taken".equalsIgnoreCase(status)) {
+            binding.radioTaken.setChecked(true);
+        } else if ("Missed".equalsIgnoreCase(status)) {
+            binding.radioMissed.setChecked(true);
+        }else{
+            binding.radioDismissed.setChecked(true);
+        }
 
-        String formattedToday = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month, day);
-        binding.editTextDate.setText(formattedToday);
 
         // Set up pickers
         binding.editTextDate.setOnClickListener(v -> showMaterialDatePicker());
         binding.editTime.setOnClickListener(v -> showMaterialTimePicker());
-
-        binding.radioTaken.setChecked(true);
 
         // Save button click
         binding.btnSave.setOnClickListener(v -> saveLog());
     }
 
     private void showMaterialDatePicker() {
-        Calendar calendar = Calendar.getInstance(); // ✅ Local time zone
+        Calendar calendar = Calendar.getInstance(); // Local time zone
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -190,52 +191,39 @@ public class AddLogActivity extends DrawerBaseActivity {
             isValid = false;
         }
 
-
         if (!isValid) return;
 
-        Log.d("VitalLog", "Date: " + date + " | Time: " + time + " | Status: " + status);
-
         try {
-            String dateStr = binding.editTextDate.getText().toString().trim();
-            String timeStr = binding.editTime.getText().toString().trim();
-
-            if (TextUtils.isEmpty(dateStr) || TextUtils.isEmpty(timeStr)) {
-                throw new Exception("Empty date or time input");
-            }
-
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-            Date timestamp = format.parse(dateStr + " " + timeStr);
+            Date timestamp = format.parse(date + " " + time);
 
-
-            MedicationLogUtils.logMedicationStatus(
+            MedicationLogUtils.updateMedicationLog(
                     this,
                     medicationId,
-                    dosage,
+                    logId,  // <- Make sure this is passed from intent!
                     status,
                     timestamp,
-                    false,
                     new MedicationLogUtils.MedicationLogCallback() {
                         @Override
                         public void onSuccess() {
-                            Toast.makeText(AddLogActivity.this, "✅ Log saved successfully", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(EditLogActivity.this, "✅ Log updated successfully", Toast.LENGTH_SHORT).show();
                             finish();
                         }
 
                         @Override
                         public void onFailure(Exception e) {
-                            showError(binding.errorGeneral, "Failed to save log", true);
-                            Log.e("AddLogActivity", "❌ Failed to log", e);
+                            showError(binding.errorGeneral, "❌ Failed to update log", true);
+                            Log.e("EditLogActivity", "❌ Update failed", e);
                         }
                     }
             );
+
         } catch (Exception e) {
             showError(binding.errorGeneral, "Invalid date or time format", true);
+            e.printStackTrace();
         }
-
-
-        //Toast.makeText(this, "Log saved successfully!", Toast.LENGTH_SHORT).show();
-        //finish();
     }
+
 
     private void showError(TextView view, String message, boolean show) {
         if (show) {
@@ -246,4 +234,3 @@ public class AddLogActivity extends DrawerBaseActivity {
         }
     }
 }
-

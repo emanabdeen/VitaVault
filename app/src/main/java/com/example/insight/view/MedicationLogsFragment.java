@@ -1,5 +1,6 @@
 package com.example.insight.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,7 +81,14 @@ public class MedicationLogsFragment extends Fragment {
             public void OnClickEdit(View v, int pos) {
                 MedicationLog log = adapter.getLogAt(pos);
                 if (log != null) {
-                    // TODO: Launch edit dialog/screen if needed
+                    Intent intent = new Intent(requireContext(), EditLogActivity.class);
+                    intent.putExtra("medicationID", medicationId); // you already have this
+                    intent.putExtra("dosage", log.getDosage());    // if needed
+                    intent.putExtra("logID", log.getLogId());      // pass the unique log ID
+                    intent.putExtra("date", log.getFormattedDate());
+                    intent.putExtra("time", log.getFormattedTime());
+                    intent.putExtra("status", log.getStatus());    // "Taken" or "Missed"
+                    requireContext().startActivity(intent);
                     Log.d("logAdapter", "Edit clicked for" + log.getDosage());
                 }
             }

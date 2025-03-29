@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.example.insight.receiver.AlarmReceiver;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -74,5 +75,39 @@ public class MedicationLogUtils {
                     callback.onFailure(e);
                 });
     }
+
+    public static void updateMedicationLog(
+            Context context,
+            String medicationId,
+            String logId,
+            String newStatus,
+            Date newTimestamp,
+            MedicationLogCallback callback
+    ) {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference logRef = db.collection("users")
+                .document(userId)
+                .collection("medications")
+                .document(medicationId)
+                .collection("logs")
+                .document(logId);
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", newStatus);
+        updates.put("timestamp", newTimestamp);
+
+        logRef.update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("MedicationLogUtils", "✅ Log updated: " + logId);
+                    if (callback != null) callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("MedicationLogUtils", "❌ Failed to update log", e);
+                    if (callback != null) callback.onFailure(e);
+                });
+    }
+
 
 }
