@@ -2,4 +2,5 @@
 <resources>
     <color name="muteButton">#FF000000</color>
     <color name="offBlack">#B6B6B6</color>
+    <color name="search">#424242 </color>
 </resources>
