@@ -16,7 +16,10 @@ import com.example.insight.R;
 import com.example.insight.model.MedicationLog;
 import com.example.insight.view.EditItemClickListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MedicationLogAdapter extends RecyclerView.Adapter<MedicationLogAdapter.MedicationLogViewHolder> {
 
@@ -44,7 +47,23 @@ public class MedicationLogAdapter extends RecyclerView.Adapter<MedicationLogAdap
         MedicationLog log = logList.get(position);
         holder.dosage.setText("Dosage: " + log.getDosage());
         holder.status.setText("Status: " + log.getStatus());
-        holder.timestamp.setText("Time: " + log.getTimestamp());
+
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+            Date date = inputFormat.parse(log.getTimestamp()); // Your string timestamp
+
+            boolean is24Hour = android.text.format.DateFormat.is24HourFormat(context);
+            String pattern = is24Hour ? "EEE, MMM d • HH:mm" : "EEE, MMM d • h:mm a";
+            SimpleDateFormat outputFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+
+            String formattedTime = (date != null) ? outputFormat.format(date) : "Unknown";
+            holder.timestamp.setText("Time: " + formattedTime);
+
+            holder.timestamp.setText(formattedTime);
+        } catch (Exception e) {
+            holder.timestamp.setText(log.getTimestamp()); // Fallback
+            e.printStackTrace(); // Optional: log error
+        }
 
         // Set text color based on status
         String status = log.getStatus();
