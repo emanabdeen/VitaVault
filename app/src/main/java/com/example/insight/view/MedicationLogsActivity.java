@@ -29,7 +29,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
         ActivityMedicationLogsBinding binding = ActivityMedicationLogsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        allocateActivityTitle("Logs");
+
 
 
         //this gets rid of unnecessary firebase calls
@@ -48,6 +48,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
         medicationId = getIntent().getStringExtra("medicationID");
         medicationName = getIntent().getStringExtra("medicationName");
         dosage = getIntent().getStringExtra("dosage");
+        boolean showAlarms = getIntent().getBooleanExtra("showAlarms", false);
 
 
         // Optionally set a text title
@@ -57,8 +58,17 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
         logsFragment = MedicationLogsFragment.newInstance(medicationId);
         alarmsFragment = MedicationAlarmsFragment.newInstance(medicationId);
 
-        // Show the History fragment by default
-        replaceFragment(logsFragment);
+        if (showAlarms) {
+            replaceFragment(alarmsFragment);
+            binding.btnAddLog.setVisibility(View.GONE);
+            binding.btnAddAlarm.setVisibility(View.VISIBLE);
+            allocateActivityTitle("Alarms");
+        } else {
+            replaceFragment(logsFragment);
+            binding.btnAddAlarm.setVisibility(View.GONE);
+            binding.btnAddLog.setVisibility(View.VISIBLE);
+            allocateActivityTitle("Logs");
+        }
 
 
         // Set button listeners to swap fragments

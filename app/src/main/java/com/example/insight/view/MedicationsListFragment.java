@@ -24,7 +24,7 @@ import com.example.insight.viewmodel.MedicationViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MedicationsListFragment extends Fragment implements EditItemClickListener {
+public class MedicationsListFragment extends Fragment implements MedicationItemClickListener {
 
     private FragmentMedicationsListBinding binding;
     private MedicationViewModel viewModel;
@@ -189,6 +189,7 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
             intent.putExtra("medicationID", medicationId);
             intent.putExtra("medicationName", medicationName);
             intent.putExtra("dosage",dosage);
+            intent.putExtra("showAlarms", false);
             startActivity(intent);
         }
     }
@@ -220,6 +221,23 @@ public class MedicationsListFragment extends Fragment implements EditItemClickLi
                     })
                     .setNegativeButton("No", null)
                     .show();
+        }
+    }
+
+    @Override
+    public void OnClickAlarm(View v, int pos) {
+        if (currentMedications != null && pos < currentMedications.size()) {
+            String medicationId = currentMedications.get(pos).getMedicationId();
+            String medicationName = currentMedications.get(pos).getName();
+            String dosage = currentMedications.get(pos).getDosage() + " " +
+                    currentMedications.get(pos).getUnit();
+
+            Intent intent = new Intent(requireContext(), MedicationLogsActivity.class);
+            intent.putExtra("medicationID", medicationId);
+            intent.putExtra("medicationName", medicationName);
+            intent.putExtra("dosage",dosage);
+            intent.putExtra("showAlarms", true);
+            startActivity(intent);
         }
     }
 

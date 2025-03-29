@@ -62,7 +62,7 @@
                     android:id="@+id/editTextDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_background"
+                    android:background="@drawable/dynamic_background"
                     android:focusable="false"
                     android:inputType="date"
                     android:textColor="@color/black"
@@ -84,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Time"
+                android:text="@string/time"
                 android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -96,7 +96,7 @@
                     android:id="@+id/editTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_background"
+                    android:background="@drawable/dynamic_background"
                     android:focusable="false"
                     android:inputType="time"
                     android:paddingVertical="8dp"
@@ -118,7 +118,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Status"
+                android:text="@string/status"
                 android:textStyle="bold" />
 
             <RadioGroup
@@ -132,21 +132,21 @@
                     android:id="@+id/radioTaken"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Taken"
+                    android:text="@string/taken"
                     android:checked="true" /> <!-- Optional default selection -->
 
                 <RadioButton
                     android:id="@+id/radioMissed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Missed" />
+                    android:text="@string/missed" />
             </RadioGroup>
 
             <TextView
                 android:id="@+id/errorStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Please select a status"
+                android:text="@string/please_select_a_status"
                 android:textColor="@color/error"
                 android:textSize="15sp"
                 android:textStyle="italic"

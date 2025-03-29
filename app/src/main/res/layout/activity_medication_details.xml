@@ -60,10 +60,9 @@
                 android:id="@+id/editTextMedicationName"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:textColor="@color/black"
                 android:layout_marginBottom="8dp"
                 android:labelFor="@+id/txtMedicationName"/>
 
@@ -90,10 +89,9 @@
                 android:id="@+id/editTextDosage"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:padding="12dp"
                 android:textSize="16sp"
-                android:textColor="@color/black"
                 android:layout_marginBottom="8dp"
                 android:inputType="numberDecimal"
                 android:labelFor="@id/txtLabelDosage"/>
@@ -121,10 +119,11 @@
                 android:id="@+id/spinnerUnit"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/edit_text_background"
-                android:textColor="@color/black"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/dynamic_background"
+                android:spinnerMode="dropdown"
+                style="@style/MySpinnerStyle"
+                />
 
 
 
