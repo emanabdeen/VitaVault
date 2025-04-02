@@ -7,4 +7,7 @@
         <attr name="chartAxisColor" format="color" /> <!-- Line color for axes -->
         <attr name="gridColor" format="color" /> <!-- Line color for axes -->
     </declare-styleable>
+
+    <attr name="lightBlueColor" format="color|reference" />
+    <attr name="addButton" format="color|reference" />
 </resources>

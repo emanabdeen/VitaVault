@@ -3,13 +3,13 @@
     <style name="Base.Theme.Insight" parent="Theme.Material3.DayNight.NoActionBar">
 
         <!-- Primary brand color -  light theme here. -->
-        <item name="colorPrimary">@color/primary_light</item>
-        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary</item>
         <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color -  light theme here.-->
-        <item name="colorSecondary">@color/accent</item>
-        <item name="colorSecondaryVariant">@color/accent</item>
+        <item name="colorSecondary">@color/Test</item>
+        <item name="colorSecondaryVariant">@color/graphLine2</item>
         <item name="colorOnSecondary">@color/white</item>
         <item name="floatingActionButtonStyle">@style/FloatingActionButtonStyle</item>
 
@@ -32,12 +32,15 @@
         <item name="chartAxisColor">@android:color/black</item> <!-- Black lines in light mode -->
         <item name="gridColor">@color/gridColor</item> <!-- Semi-transparent black for light theme -->
 
+        <item name="lightBlueColor">@color/primary</item>
+        <item name="addButton">@color/primary</item>
 
     </style>
 
     <style name="FloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="backgroundTint">@color/accent</item>
     </style>
+
 
     <style name="Theme.Insight" parent="Base.Theme.Insight" />
 

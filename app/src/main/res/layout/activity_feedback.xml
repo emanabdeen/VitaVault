@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/vitavault_page_background3"
+    android:background="@drawable/page_background"
     android:orientation="vertical"
     tools:context=".view.FeedbackActivity">
 
@@ -52,8 +52,8 @@
             <!-- Very Unhappy -->
             <ImageView
                 android:id="@+id/faceVeryUnhappy"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:padding="5dp"
                 android:src="@drawable/ic_face_bad"
                 android:layout_marginEnd="5dp"
@@ -64,8 +64,8 @@
             <!-- Unhappy -->
             <ImageView
                 android:id="@+id/faceUnhappy"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:padding="5dp"
                 android:src="@drawable/ic_face_poor"
                 android:layout_marginEnd="5dp"
@@ -76,8 +76,8 @@
             <!-- Neutral -->
             <ImageView
                 android:id="@+id/faceNeutral"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:padding="5dp"
                 android:src="@drawable/ic_face_medium"
                 android:layout_marginEnd="5dp"
@@ -88,8 +88,8 @@
             <!-- Happy -->
             <ImageView
                 android:id="@+id/faceHappy"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:padding="5dp"
                 android:src="@drawable/ic_face_good"
                 android:layout_marginEnd="5dp"
@@ -100,8 +100,8 @@
             <!-- Very Happy -->
             <ImageView
                 android:id="@+id/faceVeryHappy"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
                 android:padding="5dp"
                 android:src="@drawable/ic_face_excellent"
                 android:contentDescription="Very Happy"
@@ -130,7 +130,8 @@
                 android:hint="Share your thoughts"
                 android:textColorHint="@color/light_gray"
                 android:inputType="textMultiLine"
-                android:textSize="12sp" />
+                android:textSize="12sp" 
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button

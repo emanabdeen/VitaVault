@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/vitavault_page_background3"
+    android:background="@drawable/page_background"
     android:orientation="vertical"
     tools:context=".view.DietaryRestrictionsAddCustomActivity">
     <LinearLayout
@@ -60,7 +60,7 @@
                 android:id="@+id/editIngredient"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:focusedByDefault="true"
                 android:inputType="text"
                 android:padding="8dp" />

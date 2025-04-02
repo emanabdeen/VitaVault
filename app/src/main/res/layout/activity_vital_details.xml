@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/vitavault_page_background3"
+    android:background="@drawable/page_background"
     android:orientation="vertical"
     tools:context=".view.VitalDetails">
     <LinearLayout
@@ -62,7 +62,7 @@
                     android:id="@+id/editTextDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_background"
+                    android:background="@drawable/dynamic_background"
                     android:focusable="false"
                     android:inputType="date"
                     android:paddingVertical="10dp"/>
@@ -103,7 +103,7 @@
                     android:id="@+id/editTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_background"
+                    android:background="@drawable/dynamic_background"
                     android:focusable="false"
                     android:inputType="time"
                     android:paddingVertical="8dp"/>
@@ -142,7 +142,7 @@
                 android:id="@+id/editTextMeasure1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:focusedByDefault="true"
                 android:inputType="numberDecimal"
                 android:padding="8dp"
@@ -172,7 +172,7 @@
                 android:id="@+id/editTextMeasure2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:inputType="number"
                 android:padding="8dp"
                 android:textColor="@color/black"/>

@@ -8,6 +8,7 @@
 
 
     <color name="primary">#165E85</color>
+    <color name="light_blue">#3F90BF</color>
     <color name="primary_dark">#0B3142</color>
     <color name="primary_light">#104561</color>
     <color name="accent">#D17B0F</color>
@@ -22,13 +23,10 @@
     <color name="graphLine_light">#458464</color> 2C5641
     <color name="gridColor">#54000000</color> <!-- Semi-transparent black for light theme -->
     <color name="gridColor_dark">#62FFFFFF</color> <!-- Semi-transparent white for dark theme -->
-
-    <color name="Test">#B79C27B0</color> <!-- Semi-transparent black for light theme -->
+    <color name="Test">#B79C27B0</color>
 
     <color name="primary_ocr">#E0CACA</color>
     <color name="secondary_ocr"></color>
-
-    <color name="shadow_color_light">#80C12121</color>
 
     <color name="background_light">#F8F9FA</color>
 
@@ -40,6 +38,8 @@
 
     <color name="muteButton">#FFFFFFFF</color>
     <color name="search">#FFFFFFFF</color>
+
+
 
 
 

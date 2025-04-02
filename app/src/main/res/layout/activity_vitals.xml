@@ -4,25 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
+    android:maxWidth="430dp"
+    android:layout_gravity="center"
     android:layout_height="match_parent"
-    android:background="@drawable/vitavault_page_background3"
+    android:background="@drawable/page_background"
     tools:context=".view.VitalsActivity">
-
-
-    <!---icon and title-->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical"
-            android:layout_marginBottom="28dp">
+            android:layout_marginBottom="22dp"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/image"
@@ -45,12 +50,12 @@
             android:id="@+id/btnAdd"
             android:layout_width="100dp"
             android:layout_height="40dp"
-            android:background="@drawable/button_custom2"
+            android:background="@drawable/add_button_custom"
             android:drawableStart="@drawable/baseline_add_primary"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
             android:text="Add"
-            android:textColor="@color/primary"
+            android:textColor="?attr/addButton"
             android:textSize="18sp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -80,6 +85,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/fragmentLayout"
             android:layout_width="match_parent"
@@ -90,8 +96,7 @@
     </LinearLayout>
 
 
-
-    <Button
+    <!--<Button
         android:id="@+id/btnGetvitalsInRange"
         android:layout_width="167dp"
         android:layout_height="44dp"
@@ -102,7 +107,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976"
-        android:visibility="gone"/>
+        android:visibility="gone"/>-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
