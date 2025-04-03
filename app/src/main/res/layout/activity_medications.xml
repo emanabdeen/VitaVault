@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/vitavault_page_background3"
+    android:background="@drawable/page_background"
     android:padding="16dp"
     tools:context=".view.MedicationsActivity">
 
@@ -39,12 +39,12 @@
             android:id="@+id/btnAddMedication"
             android:layout_width="100dp"
             android:layout_height="40dp"
-            android:background="@drawable/button_custom2"
+            android:background="@drawable/add_button_custom"
             android:drawableStart="@drawable/baseline_add_primary"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
             android:text="Add"
-            android:textColor="@color/primary"
+            android:textColor="?attr/addButton"
             android:textSize="18sp" />
 
         <!-- Fragment for displaying medication list -->

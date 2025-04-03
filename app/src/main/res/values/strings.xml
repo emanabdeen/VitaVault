@@ -102,4 +102,5 @@
     <string name="scanMainActivityDescription">Take a photo of an ingredients list or upload an image of one from your device\n\nCrop tightly to the text for best results.</string>
     <string name="cameraControlsDescription">Tap here to start the camera preview\n\nTap again when an image is displayed to clear it</string>
 
+    <string name="forgot_password"><u>Forgot Password</u></string>
 </resources>

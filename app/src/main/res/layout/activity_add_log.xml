@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/vitavault_page_background3"
+    android:background="@drawable/page_background"
     android:orientation="vertical"
     tools:context=".view.AddLogActivity">
 
@@ -98,7 +98,7 @@
                     android:background="@drawable/dynamic_background"
                     android:focusable="false"
                     android:inputType="time"
-                    android:paddingVertical="8dp" />
+                    android:paddingVertical="8dp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -123,7 +123,7 @@
                 android:id="@+id/radioGroupStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
                 android:paddingRight="12dp">
 

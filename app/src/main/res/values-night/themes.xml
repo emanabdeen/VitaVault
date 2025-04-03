@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Insight" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color -  dark theme here. -->
-        <item name="colorPrimary">@color/primary_light</item>
-        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/light_blue</item>
         <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color -  dark theme here.-->
@@ -29,6 +29,9 @@
         <item name="chartTextColor">@android:color/white</item> <!-- White text in dark mode -->
         <item name="chartAxisColor">@android:color/white</item> <!-- White lines in dark mode -->
         <item name="gridColor">@color/gridColor_dark</item> <!-- Semi-transparent white for dark theme -->
+
+        <item name="lightBlueColor">@color/light_blue</item>
+        <item name="addButton">@color/accent_light</item>
 
     </style>
 

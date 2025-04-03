@@ -6,31 +6,35 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/vitavault_page_background3"
+    android:background="@drawable/page_background"
     tools:context=".view.MedicationLogsActivity">
 
     <!-- Header: Icon and Title -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical"
-            android:layout_marginBottom="28dp">
+            android:layout_marginBottom="22dp"
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/image"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_medical_record"
                 android:background="@drawable/glow_white"
-                android:padding="10dp" />
+                android:padding="10dp"
+                android:src="@drawable/ic_medical_record" />
 
 
             <TextView
@@ -38,9 +42,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:text="@string/medicationName"
                 android:textColor="@color/white"
                 android:textSize="20sp"
-                android:text="@string/medicationName"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:ellipsize="end"
@@ -58,42 +62,43 @@
         <!-- Add Button: Positioned below the header -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnAddAlarm"
-            android:layout_width="200dp"
+            android:layout_width="160dp"
             android:layout_height="40dp"
-            android:background="@drawable/button_custom2"
+            android:background="@drawable/add_button_custom"
             android:drawableStart="@drawable/baseline_add_primary"
             android:paddingStart="15dp"
             android:paddingEnd="5dp"
             android:text="@string/addAlarm"
+            android:textColor="?attr/addButton"
             android:textSize="18sp"
-            android:textColor="@color/primary"
-            app:layout_constraintTop_toBottomOf="@id/image"
-            app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_bias="0.1"
-            android:visibility="gone"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            app:layout_constraintVertical_bias="0.1" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnAddLog"
-            android:layout_width="200dp"
+            android:layout_width="160dp"
             android:layout_height="40dp"
-            android:background="@drawable/button_custom2"
+            android:background="@drawable/add_button_custom"
             android:drawableStart="@drawable/baseline_add_primary"
             android:paddingStart="15dp"
             android:paddingEnd="5dp"
             android:text="@string/add_log"
+            android:textColor="?attr/addButton"
             android:textSize="18sp"
-            android:textColor="@color/primary"
-            app:layout_constraintTop_toBottomOf="@id/image"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintVertical_bias="0.1"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            app:layout_constraintVertical_bias="0.1" />
 
         <!-- Button Row: Two Buttons for History and Reminder Settings -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/fragmentTabs"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="50dp"
+            android:layout_marginTop="5dp">
 
             <Button
                 android:id="@+id/btnLog"
@@ -101,9 +106,9 @@
                 android:layout_height="50dp"
                 android:text="@string/log"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnAlarms"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btnAlarms" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                 android:id="@+id/btnAlarms"
@@ -111,9 +116,9 @@
                 android:layout_height="50dp"
                 android:text="@string/alarms"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btnLog"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Fragment Container -->

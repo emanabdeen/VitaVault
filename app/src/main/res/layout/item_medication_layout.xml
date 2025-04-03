@@ -68,8 +68,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:background="@null"
-                    app:srcCompat="@drawable/ic_alarm"
-                    app:tint="@color/primary"/>
+                    app:srcCompat="@drawable/ic_alarm"/>
 
                 <ImageButton
                     android:id="@+id/btnEdit"

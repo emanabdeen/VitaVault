@@ -1,0 +1,12 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Transparent background -->
+    <item android:drawable="@android:color/transparent"/>
+
+    <!-- Bottom line only -->
+    <item android:gravity="bottom" android:top="2dp">
+        <shape android:shape="rectangle">
+            <size android:height="2dp"/>
+            <solid android:color="@color/light_gray"/>
+        </shape>
+    </item>
+</layer-list>

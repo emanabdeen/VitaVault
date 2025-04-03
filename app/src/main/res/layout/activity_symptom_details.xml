@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/vitavault_page_background3"
+    android:background="@drawable/page_background"
     android:orientation="vertical"
     tools:context=".view.SymptomDetails">
 
@@ -35,7 +35,8 @@
     <android.widget.ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp">
 
         <!-- Vertical LinearLayout with margin between CardViews -->
         <LinearLayout
@@ -52,6 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -64,10 +66,10 @@
                     android:id="@+id/editTextDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/edit_text_background"
                     android:focusable="false"
                     android:inputType="date"
-                    android:paddingVertical="10dp"/>
+                    android:paddingVertical="10dp"
+                    android:background="@drawable/dynamic_background"/>
             </com.google.android.material.textfield.TextInputLayout>
             <TextView
                 android:id="@+id/errorDate"
@@ -77,7 +79,7 @@
                 android:textColor="@color/error"
                 android:textSize="15sp"
                 android:textStyle="italic"
-                android:visibility="invisible" />
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,7 +99,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Start Time"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textSize="16sp"/>
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/startTimeLayout"
                         android:layout_width="150dp"
@@ -107,10 +110,10 @@
                             android:id="@+id/editTimeStart"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/edit_text_background"
                             android:focusable="false"
                             android:inputType="time"
-                            android:paddingVertical="8dp"/>
+                            android:paddingVertical="8dp"
+                            android:background="@drawable/dynamic_background"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!--<EditText
@@ -130,7 +133,7 @@
                         android:textColor="@color/error"
                         android:textSize="15sp"
                         android:textStyle="italic"
-                        android:visibility="invisible" />
+                        android:visibility="gone" />
 
 
                 </LinearLayout>
@@ -148,7 +151,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="End Time"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:textSize="16sp"/>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/endTimeLayout"
@@ -159,10 +163,10 @@
                             android:id="@+id/editTimeEnd"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/edit_text_background"
                             android:focusable="false"
                             android:inputType="time"
-                            android:paddingVertical="8dp"/>
+                            android:paddingVertical="8dp"
+                            android:background="@drawable/dynamic_background"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!--<EditText
@@ -182,7 +186,7 @@
                         android:textColor="@color/error"
                         android:textSize="15sp"
                         android:textStyle="italic"
-                        android:visibility="invisible" />
+                        android:visibility="gone" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -190,9 +194,10 @@
                 android:id="@+id/lblLevel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="8dp"
                 android:text="Level"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textSize="16sp"/>
 
                 <LinearLayout
                     android:id="@+id/symptomLevelsLayout"
@@ -265,7 +270,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:text="Notes"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textSize="16sp"/>
 
                 <EditText
                     android:id="@+id/txtDescription"
@@ -280,7 +286,7 @@
                     android:textSize="16sp"
                     android:hint="add your notes"
                     android:textColorHint="@color/light_gray"
-                    android:background="@drawable/edit_text_background"
+                    android:background="@drawable/dynamic_background"
                     android:textColor="@color/black"/>
 
             <TextView

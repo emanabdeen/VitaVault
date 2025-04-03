@@ -21,6 +21,8 @@ import com.example.insight.databinding.FragmentSymptomsListBinding;
 import com.example.insight.model.Symptom;
 import com.example.insight.utility.DateValidator;
 import com.example.insight.viewmodel.SymptomViewModel;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -208,20 +210,31 @@ public class SymptomsListFragment extends Fragment implements ItemClickListener{
     private void showDatePicker(TextInputEditText dateInput) {
         // Get current date
         Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        // Create and show DatePickerDialog
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                getContext(),
-                (view, selectedYear, selectedMonth, selectedDay) -> {
-                    // Format the selected date and set it to the input field
-                    String selectedDate = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-                    dateInput.setText(selectedDate);
-                },
-                year, month, day
-        );
-        datePickerDialog.show();
+        // Create constraints for date selection (optional)
+        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+
+        // Create MaterialDatePicker
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select Date")
+                .setSelection(calendar.getTimeInMillis()) // Set current date as default
+                .setCalendarConstraints(constraintsBuilder.build())
+                .build();
+
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            // Convert milliseconds to Calendar
+            Calendar selectedCalendar = Calendar.getInstance();
+            selectedCalendar.setTimeInMillis(selection);
+
+            // Format the selected date (YYYY-MM-DD)
+            int year = selectedCalendar.get(Calendar.YEAR);
+            int month = selectedCalendar.get(Calendar.MONTH) + 1; // +1 because months are 0-based
+            int day = selectedCalendar.get(Calendar.DAY_OF_MONTH);
+
+            String selectedDate = String.format("%04d-%02d-%02d", year, month, day);
+            dateInput.setText(selectedDate);
+        });
+
+        datePicker.show(getParentFragmentManager(), "DATE_PICKER");
     }
 }
