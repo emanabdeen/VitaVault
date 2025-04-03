@@ -64,6 +64,13 @@ public class OCRResultsActivity extends DrawerBaseActivity {
 
         ingredientScanViewModel = new ViewModelProvider(this).get(IngredientScanViewModel.class);
 
+        //gemini response
+        ingredientScanViewModel.getGeminiRawResponse().observe(this, geminiResponse -> {
+            if (geminiResponse != null && !geminiResponse.isEmpty()) {
+                Log.d("GEMINI_RESPONSE: ", geminiResponse);
+            }
+        });
+
         ingredientScanViewModel.getMatchedIngredientsData().observe(this, new Observer<List<OcrIngredient>>() {
             @Override
             public void onChanged(List<OcrIngredient> matchedIngredients) {
@@ -87,6 +94,9 @@ public class OCRResultsActivity extends DrawerBaseActivity {
                     Log.d(TAG, "Ingredients scanned successfully");
                     // Update the adapter with the new data
                     ocrIngredientsListFragment.updateIngredientsList(ingredientScanViewModel.getMatchedIngredientsData().getValue());
+
+                    //Check gemini
+                    ingredientScanViewModel.analyzeWithGemini();
                 }
             });
         }

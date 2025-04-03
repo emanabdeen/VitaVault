@@ -2,16 +2,17 @@ package com.example.insight.viewmodel;
 
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.insight.BuildConfig;
 import com.example.insight.model.DietaryRestrictionIngredient;
 import com.example.insight.model.OcrIngredient;
 import com.example.insight.model.Symptom;
 import com.example.insight.utility.CommonRestrictedIngredients;
+import com.example.insight.utility.GeminiHelper;
 import com.example.insight.utility.IngredientUtils;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -199,4 +200,37 @@ public class IngredientScanViewModel extends ViewModel {
         });
         return future;
     }
+
+
+
+    //TESTING WITH GEMINI
+    private final MutableLiveData<String> geminiRawResponse = new MutableLiveData<>();
+    public LiveData<String> getGeminiRawResponse() {
+        return geminiRawResponse;
+    }
+
+    public void analyzeWithGemini() {
+        List<String> ingredientNames = new ArrayList<>();
+        for (OcrIngredient ocr : matchedIngredientsList) {
+            ingredientNames.add(ocr.getIngredientName());
+        }
+
+        List<String> userRestrictions = new ArrayList<>();
+        for (DietaryRestrictionIngredient restriction : dietaryRestrictionIngredientsList) {
+            userRestrictions.add(restriction.getIngredientName().toLowerCase()); // or getCategory() if that's what you want
+        }
+
+        GeminiHelper.analyzeIngredients(ingredientNames, userRestrictions, BuildConfig.GEMINI_API_KEY)
+                .whenComplete((result, error) -> {
+                    if (error != null) {
+                        Log.e(TAG, "Gemini analysis failed: " + error.getMessage());
+                        geminiRawResponse.postValue("Gemini analysis failed: " + error.getMessage());
+                    } else {
+                        Log.d(TAG, "Gemini analysis result:\n" + result);
+                        geminiRawResponse.postValue(result); // optionally parse later
+                    }
+                });
+    }
+
+
 }
