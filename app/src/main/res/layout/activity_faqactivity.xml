@@ -59,7 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
-                    android:text="1. What is this app about?"
+                    android:text="@string/Q1"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -68,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp"
                     android:paddingTop="5dp"
-                    android:text="This app helps you manage your tasks and stay organized."
+                    android:text="@string/A1"
                     android:textSize="11sp" />
 
                 <!-- FAQ 2 -->
@@ -76,7 +76,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
-                    android:text="2. Is the app free to use?"
+                    android:text="@string/Q2"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -85,15 +85,15 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp"
                     android:paddingTop="5dp"
-                    android:text="Yes, the app is completely free to use with no hidden charges."
-                    android:textSize="13sp" />
+                    android:text="@string/A2"
+                    android:textSize="11sp" />
 
                 <!-- FAQ 3 -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
-                    android:text="3. How do I reset my password?"
+                    android:text="@string/Q3"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -102,14 +102,15 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp"
                     android:paddingTop="5dp"
-                    android:text="You can reset your password by clicking on 'Forgot Password' on the login screen and following the instructions."
-                    android:textSize="13sp" />
-                <!-- FAQ 1 -->
+                    android:text="@string/A3"
+                    android:textSize="11sp" />
+
+                <!-- FAQ 4 -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
-                    android:text="1. What is this app about?"
+                    android:text="@string/Q4"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -118,14 +119,15 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp"
                     android:paddingTop="5dp"
-                    android:text="This app helps you manage your tasks and stay organized."
-                    android:textSize="13sp" />
-                <!-- FAQ 1 -->
+                    android:text="@string/A4"
+                    android:textSize="11sp" />
+
+                <!-- FAQ 5 -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
-                    android:text="1. What is this app about?"
+                    android:text="@string/Q5"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -134,14 +136,14 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp"
                     android:paddingTop="5dp"
-                    android:text="This app helps you manage your tasks and stay organized."
-                    android:textSize="13sp" />
-                <!-- FAQ 1 -->
+                    android:text="@string/A5"
+                    android:textSize="11sp" />
+                <!-- FAQ 6 -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="8dp"
-                    android:text="1. What is this app about?"
+                    android:text="@string/Q6"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -149,38 +151,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp"
-                    android:text="This app helps you manage your tasks and stay organized."
-                    android:textSize="13sp" />
-                <!-- FAQ 1 -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="8dp"
-                    android:text="1. What is this app about?"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="16dp"
-                    android:text="This app helps you manage your tasks and stay organized."
-                    android:textSize="13sp" />
-                <!-- FAQ 1 -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="8dp"
-                    android:text="1. What is this app about?"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="16dp"
-                    android:text="This app helps you manage your tasks and stay organized."
-                    android:textSize="13sp" />
+                    android:paddingTop="5dp"
+                    android:text="@string/A6"
+                    android:textSize="11sp" />
 
                 <!-- Add more FAQs as needed -->
 

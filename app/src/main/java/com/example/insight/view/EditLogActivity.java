@@ -38,6 +38,7 @@ public class EditLogActivity extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityAddLogBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        binding.textViewTitle.setText("Edit Log"); // change the page title
 
         Intent intent = getIntent();
         medicationId = intent.getStringExtra("medicationID");
@@ -47,7 +48,7 @@ public class EditLogActivity extends DrawerBaseActivity {
         date = intent.getStringExtra("date");
         time = intent.getStringExtra("time");
 
-// Fill the fields
+        // Fill the fields
         binding.editTextDate.setText(date);
         binding.editTime.setText(time);
         binding.radioDismissed.setVisibility(View.VISIBLE);

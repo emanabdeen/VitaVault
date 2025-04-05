@@ -35,7 +35,7 @@ public class DietaryRestrictionsEditCustomActivity extends DrawerBaseActivity {
         binding = ActivityDietaryRestrictionsAddCustomBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         allocateActivityTitle("Dietary Restrictions");
-        binding.textViewTitle.setText("Update Custom Dietary Restriction");
+        binding.textViewTitle.setText("Edit Custom Ingredient");
 
         viewModel = new ViewModelProvider(this).get(DietaryRestrictionIngredientViewModel.class);
 
@@ -46,6 +46,10 @@ public class DietaryRestrictionsEditCustomActivity extends DrawerBaseActivity {
             finish();
             startActivity(new Intent(com.example.insight.view.DietaryRestrictionsEditCustomActivity.this, Login.class));
         }
+
+        binding.btnAddToList.setVisibility(View.GONE);
+        binding.btnSaveCustomEdit.setVisibility(View.VISIBLE);
+        binding.divider.setVisibility(View.GONE);
 
         //Fetch ingredient list
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -60,7 +64,7 @@ public class DietaryRestrictionsEditCustomActivity extends DrawerBaseActivity {
         binding.editIngredient.setText(ingredient.getIngredientName());
 
         // Add new custom ingredient
-        binding.btnSave.setOnClickListener(new View.OnClickListener() {
+        binding.btnSaveCustomEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showError(binding.errorIngredient, "", false);

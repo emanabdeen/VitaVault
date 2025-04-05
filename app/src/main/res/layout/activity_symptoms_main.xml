@@ -8,7 +8,7 @@
     android:background="@drawable/page_background"
     tools:context=".view.SymptomsMainActivity">
 
-    <TextView
+    <!--<TextView
         android:id="@+id/textView"
         android:layout_width="280dp"
         android:layout_height="wrap_content"
@@ -22,7 +22,29 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.053" />
+        app:layout_constraintVertical_bias="0.053" />-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:layout_marginBottom="22dp">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:padding="10dp"
+            android:layout_gravity="center"
+            android:background="@drawable/glow_white"
+            android:src="@drawable/icon_symptoms"/>
+    </LinearLayout>
 
     <!-- Wrap your LinearLayout with a ScrollView -->
     <android.widget.ScrollView

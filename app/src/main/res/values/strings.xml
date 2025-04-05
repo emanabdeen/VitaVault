@@ -102,5 +102,26 @@
     <string name="scanMainActivityDescription">Take a photo of an ingredients list or upload an image of one from your device\n\nCrop tightly to the text for best results.</string>
     <string name="cameraControlsDescription">Tap here to start the camera preview\n\nTap again when an image is displayed to clear it</string>
 
-    <string name="forgot_password"><u>Forgot Password</u></string>
+    <string name="forgot_password"><u>Forgot Password </u></string>
+
+    <string name="Q1">1. Can VitaVault advise me on any conditions or treatment?</string>
+    <string name="A1">No, VitaVault is a tool for tracking and recording your health information. It does not provide medical advice, diagnoses, or treatment recommendations. Always consult with a qualified healthcare professional for any health concerns or before making any decisions related to your health or treatment.</string>
+
+    <string name="Q2">2. Does VitaVault integrate with wearable devices?</string>
+    <string name="A2">Currently, VitaVault does not directly integrate with wearable devices.</string>
+
+    <string name="Q3">3. What is OCR and how can this feature help me?</string>
+    <string name="A3">OCR stands for Optical Character Recognition. This feature allows you to extract ingredient information from product images, typically ingredient lists. VitaVault can then compare these ingredients with your dietary restrictions to help you identify potential allergens or ingredients to avoid.</string>
+
+    <string name="Q4">4. Is my symptom data secure and private?</string>
+    <string name="A4">Absolutely! We use Firebase, a secure and reliable platform, to store your data. All your information is encrypted, and only you have access to your symptom records. Your privacy is our top priority.</string>
+
+    <string name="Q5">5. Can I use the same account on multiple devices?</string>
+    <string name="A5">Yes, you can! Simply log in to your account on any device using your email and password. Your data will sync automatically, so you can access your symptom records from anywhere.</string>
+
+    <string name="Q6">6. Can I track symptoms for someone else, like a family member?</string>
+    <string name="A6">Currently, the app is designed for individual use. If you want to track symptoms for someone else, they will need to create their own account. However, we are exploring family accounts for future updates!</string>
+
+
+
 </resources>
