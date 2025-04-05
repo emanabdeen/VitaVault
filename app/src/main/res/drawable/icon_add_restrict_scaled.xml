@@ -1,0 +1,8 @@
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<item
+    android:width="25sp"
+    android:height="25sp"
+    android:drawable="@drawable/icon_add_restrict"
+    android:gravity="center" />
+</layer-list>

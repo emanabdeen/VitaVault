@@ -170,10 +170,10 @@ public class OCRResultsActivity extends DrawerBaseActivity {
                         binding.aiResultCard.setOnClickListener(v -> {
                             if (binding.aiResultDescription.getVisibility() == View.GONE) {
                                 binding.aiResultDescription.setVisibility(View.VISIBLE);
-                                binding.aiResultTitle.setText("⚠️ AI Detected Potential Conflicts (Tap to collapse)");
+                                binding.aiResultTitle.setText("AI Detected Potential Conflicts (Tap to collapse)");
                             } else {
                                 binding.aiResultDescription.setVisibility(View.GONE);
-                                binding.aiResultTitle.setText("⚠️ AI Detected Potential Conflicts (Tap to expand)");
+                                binding.aiResultTitle.setText("AI Detected Potential Conflicts (Tap to expand)");
                             }
                         });
 

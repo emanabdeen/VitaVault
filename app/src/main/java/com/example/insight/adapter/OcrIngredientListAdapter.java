@@ -58,7 +58,12 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
         String ingredientName = item.getIngredientName().trim().toLowerCase();
 
         holder.getIngredientName().setText(item.getIngredientName());
-        holder.getIngredientMatchedStatus().setText(item.isDietaryRestrictionFlagged() ? "⚠️" : "");
+        //holder.getIngredientMatchedStatus().setText(item.isDietaryRestrictionFlagged() ? "⚠️" : "");
+        if (item.isDietaryRestrictionFlagged()){
+            holder.getRestrictedIcon().setImageResource(R.drawable.icon_restrected);
+            holder.getRestrictedIcon().setVisibility(View.VISIBLE);
+        }
+
         if(item.getIngredientMatchedCategory()!=null){
             holder.getIngredientMatchedCategory().setText(" ("+item.getIngredientMatchedCategory()+")");
         }
@@ -69,8 +74,15 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
 
         // Show ⚠️ if either static or AI flagged
         if (staticFlagged || aiFlagged) {
-            holder.getIngredientMatchedStatus().setText("⚠️");
-            holder.getIngredientMatchedStatus().setVisibility(View.VISIBLE);
+            if(staticFlagged){
+                holder.getRestrictedIcon().setImageResource(R.drawable.icon_restrected);
+                holder.getRestrictedIcon().setVisibility(View.VISIBLE);
+            } else if (aiFlagged) {
+                holder.getRestrictedIcon().setImageResource(R.drawable.icon_ai_restricted);
+                holder.getRestrictedIcon().setVisibility(View.VISIBLE);
+            }
+            //holder.getIngredientMatchedStatus().setText("⚠️");
+            //holder.getIngredientMatchedStatus().setVisibility(View.VISIBLE);
 
             String label;
             if (aiFlagged && geminiFlagReasons.containsKey(ingredientName)) {
@@ -84,8 +96,9 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
             holder.getIngredientMatchedCategory().setText(label);
             holder.getIngredientMatchedCategory().setVisibility(View.VISIBLE);
         } else {
-            holder.getIngredientMatchedStatus().setText("");
-            holder.getIngredientMatchedStatus().setVisibility(View.GONE);
+            //holder.getIngredientMatchedStatus().setText("");
+            //holder.getIngredientMatchedStatus().setVisibility(View.GONE);
+            holder.getRestrictedIcon().setVisibility(View.GONE);
             holder.getIngredientMatchedCategory().setText("");
             holder.getIngredientMatchedCategory().setVisibility(View.GONE);
         }

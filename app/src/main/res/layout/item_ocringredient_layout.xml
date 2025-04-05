@@ -61,7 +61,18 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <TextView
+            <ImageButton
+                android:id="@+id/imgStatus"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:background="@android:color/transparent"
+                android:outlineAmbientShadowColor="#2C0606"
+                android:paddingEnd="2dp"
+                android:scaleType="centerInside"
+                app:srcCompat="@drawable/icon_power" />
+
+            <!--<TextView
                 android:id="@+id/matchedStatus"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
@@ -72,22 +83,10 @@
                 android:textAlignment="center"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:layout_marginHorizontal="5dp"/>
-
-            <!--<Space
-                android:layout_width="20dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />-->
+                android:layout_marginHorizontal="5dp" />-->
 
 
-            <!--<Space
-                android:layout_width="20dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />-->
+
 
             <ImageButton
                 android:id="@+id/btnAdd"
