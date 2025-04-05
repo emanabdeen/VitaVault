@@ -44,16 +44,18 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
         OcrIngredient item = ocrIngredientsList.get(position);
         holder.getIngredientName().setText(item.getIngredientName());
         holder.getIngredientMatchedStatus().setText(item.isDietaryRestrictionFlagged() ? "⚠️" : "");
-        holder.getIngredientMatchedCategory().setText(item.getIngredientMatchedCategory());
+        if(item.getIngredientMatchedCategory()!=null){
+            holder.getIngredientMatchedCategory().setText(" ("+item.getIngredientMatchedCategory()+")");
+        }
+
         ImageButton button = holder.itemView.findViewById(R.id.btnAdd);
         if (item.isAddedAsCustom()) {
             button.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
             button.setBackgroundResource(0);
-            button.setImageResource(R.drawable.check_mark);
+            button.setImageResource(R.drawable.icon_check);
         } else {
             button.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
-            button.setBackgroundResource(R.color.accent);
-            button.setImageResource(R.drawable.ic_add);
+            button.setImageResource(R.drawable.icon_add_restrict);
         }
         if (item.isDietaryRestrictionFlagged() || item.isSameNameAsCommonRestrictedIngredient()) {
             holder.itemView.findViewById(R.id.btnAdd).setVisibility(View.INVISIBLE);
