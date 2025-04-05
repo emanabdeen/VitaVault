@@ -60,12 +60,15 @@
     <LinearLayout
         android:id="@+id/ocrResultListView"
         android:layout_width="match_parent"
-        android:layout_height="580dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:gravity="start"
         android:orientation="horizontal"
         android:visibility="gone"
         android:paddingStart="5dp"
         android:paddingTop="5dp" >
+
+
 
         <TextView
             android:id="@+id/emptyMessage"
@@ -80,7 +83,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ocrIngredientRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:clipToPadding="false"
             android:layout_marginBottom="40dp"
             android:scrollbars="vertical" />

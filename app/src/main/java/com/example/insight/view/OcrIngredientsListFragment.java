@@ -23,6 +23,7 @@ import com.example.insight.viewmodel.IngredientScanViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class OcrIngredientsListFragment extends Fragment implements ItemClickListener {
     private static final String TAG = "OcrIngredientsListFragment";
@@ -55,17 +56,17 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
         binding.ocrIngredientRecyclerView.setAdapter(ocrIngredientListAdapter);
 
         // Observe LiveData for scanned ingredients List
-        ingredientScanViewModel.getMatchedIngredientsData().observe(getViewLifecycleOwner(), matchedIngredients -> {
-            Log.d(TAG, "matched ingredients retrieved" + matchedIngredients);
-            if (matchedIngredients != null && !matchedIngredients.isEmpty()) {
-                allIngredientsList = matchedIngredients;
-                currentIngredientsList = new ArrayList<>(allIngredientsList);
-                ocrIngredientListAdapter.updateData(currentIngredientsList);
-                binding.ocrResultListView.setVisibility(View.VISIBLE);
-                binding.emptyMessage.setVisibility(View.GONE);
-                binding.progressBar.setVisibility(View.GONE);
-            }
-        });
+//        ingredientScanViewModel.getMatchedIngredientsData().observe(getViewLifecycleOwner(), matchedIngredients -> {
+//            Log.d(TAG, "matched ingredients retrieved" + matchedIngredients);
+//            if (matchedIngredients != null && !matchedIngredients.isEmpty()) {
+//                allIngredientsList = matchedIngredients;
+//                currentIngredientsList = new ArrayList<>(allIngredientsList);
+//                ocrIngredientListAdapter.updateData(currentIngredientsList);
+////                binding.ocrResultListView.setVisibility(View.VISIBLE);
+//                binding.emptyMessage.setVisibility(View.GONE);
+////                binding.progressBar.setVisibility(View.GONE);
+//            }
+//        });
 
         binding.iconSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,10 +141,11 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
     public void updateIngredientsList(List<OcrIngredient> ingredients) {
         if (ingredients != null) {
             allIngredientsList = ingredients;
-            ocrIngredientListAdapter.updateData(ingredients);
-            ocrIngredientListAdapter.notifyDataSetChanged(); // Ensure UI refresh
-        }
-        else {
+            currentIngredientsList = new ArrayList<>(ingredients); // add this
+            ocrIngredientListAdapter.updateData(currentIngredientsList);
+            ocrIngredientListAdapter.notifyDataSetChanged(); // refresh UI
+            updateUIState(); //force UI update here
+        } else {
             Log.d(TAG, "updateIngredientsList: ingredients list is null");
         }
     }
@@ -181,17 +183,30 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
         if (isLoading) {
             binding.progressBar.setVisibility(View.VISIBLE);
             binding.ocrIngredientRecyclerView.setVisibility(View.GONE);
+            binding.ocrResultListView.setVisibility(View.GONE);
             binding.emptyMessage.setVisibility(View.GONE);
         } else {
             binding.progressBar.setVisibility(View.GONE);
+
             if (currentIngredientsList != null && !currentIngredientsList.isEmpty()) {
+                binding.ocrResultListView.setVisibility(View.VISIBLE);
                 binding.ocrIngredientRecyclerView.setVisibility(View.VISIBLE);
                 binding.emptyMessage.setVisibility(View.GONE);
             } else {
                 binding.ocrIngredientRecyclerView.setVisibility(View.GONE);
+                binding.ocrResultListView.setVisibility(View.GONE); // optional
                 binding.emptyMessage.setVisibility(View.VISIBLE);
                 binding.emptyMessage.setText("No ingredients found.");
             }
         }
     }
+
+
+    public void setGeminiFlaggedIngredients(Set<String> flaggedIngredients) {
+        if (ocrIngredientListAdapter != null && flaggedIngredients != null) {
+            ocrIngredientListAdapter.setGeminiFlaggedIngredients(flaggedIngredients);
+            ocrIngredientListAdapter.notifyDataSetChanged(); // Refresh UI
+        }
+    }
+
 }

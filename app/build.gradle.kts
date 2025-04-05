@@ -1,7 +1,17 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
 }
+
+//reading gemini api from local file
+val localProps = Properties();
+val localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localProps.load(localPropsFile.inputStream())
+}
+val geminiApiKey = localProps.getProperty("GEMINI_API_KEY") ?: ""
 
 android {
     namespace = "com.example.insight"
@@ -12,6 +22,7 @@ android {
         unitTests.isIncludeAndroidResources = true
     }
 
+
     defaultConfig {
         applicationId = "com.example.insight"
         minSdk = 31
@@ -20,6 +31,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
     buildTypes {
@@ -35,6 +48,7 @@ android {
 
     buildFeatures{
         viewBinding = true
+        buildConfig = true
     }
 
     compileOptions {
