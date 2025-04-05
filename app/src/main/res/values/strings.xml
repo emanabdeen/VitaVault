@@ -104,8 +104,8 @@
 
     <string name="forgot_password"><u>Forgot Password </u></string>
 
-    <string name="Q1">1. Can VitaVault advise me on any conditions or treatment?</string>
-    <string name="A1">No, VitaVault is a tool for tracking and recording your health information. It does not provide medical advice, diagnoses, or treatment recommendations. Always consult with a qualified healthcare professional for any health concerns or before making any decisions related to your health or treatment.</string>
+    <string name="Q1">1. Can VitaVault provide advice on medical conditions or treatments?</string>
+    <string name="A1">No, VitaVault is designed solely to help you track and manage your health information. It does not offer medical advice, diagnoses, or treatment recommendations. For any health-related concerns or decisions, please consult a qualified healthcare professional.</string>
 
     <string name="Q2">2. Does VitaVault integrate with wearable devices?</string>
     <string name="A2">Currently, VitaVault does not directly integrate with wearable devices.</string>
