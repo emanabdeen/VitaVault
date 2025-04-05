@@ -99,7 +99,7 @@
     <string name="status">Status</string>
     <string name="please_select_a_status">Please select a status</string>
     <string name="scanResultDescription">Scanned ingredients with names that contain your restricted ingredients show an ⚠️ icon.\n\nTap on + to add an ingredient to your restricted list.</string>
-    <string name="scanMainActivityDescription">Take a photo of an ingredients list or upload an image of one from your device\n\nCrop tightly to the text for best results.</string>
+    <string name="scanMainActivityDescription">📸 Option 1: Snap a clear photo of ingredients.\n📤 Option 2: Upload an image from your device.\n✂️ Then, tight crop on text for best results.</string>
     <string name="cameraControlsDescription">Tap here to start the camera preview\n\nTap again when an image is displayed to clear it</string>
 
     <string name="forgot_password"><u>Forgot Password </u></string>

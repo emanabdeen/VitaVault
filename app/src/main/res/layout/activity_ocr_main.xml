@@ -60,8 +60,8 @@
                     android:gravity="center"
                     android:text="@string/scanMainActivityDescription"
                     android:textAlignment="center"
-                    android:textSize="14sp"
-                    android:textStyle="italic"
+                    android:textSize="12sp"
+                    android:lineSpacingExtra="5dp"
                     android:layout_marginBottom="10dp"/>
 
                 <ImageView
@@ -90,7 +90,7 @@
                     android:outlineProvider="background"
                     android:text="@string/cameraControlsDescription"
                     android:textIsSelectable="false"
-                    android:textSize="20sp"
+                    android:textSize="17sp"
                     android:gravity="center"
                     android:paddingHorizontal="10dp"
                     android:background="@drawable/card_border"/>
@@ -112,7 +112,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:orientation="vertical"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
