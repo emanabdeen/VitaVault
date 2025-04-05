@@ -167,7 +167,7 @@ public class OCRResultsActivity extends DrawerBaseActivity {
                         binding.aiResultCard.setVisibility(View.VISIBLE);
                         binding.aiResultDescription.setVisibility(View.GONE);
 
-                        binding.aiResultTitle.setOnClickListener(v -> {
+                        binding.aiResultCard.setOnClickListener(v -> {
                             if (binding.aiResultDescription.getVisibility() == View.GONE) {
                                 binding.aiResultDescription.setVisibility(View.VISIBLE);
                                 binding.aiResultTitle.setText("⚠️ AI Detected Potential Conflicts (Tap to collapse)");
