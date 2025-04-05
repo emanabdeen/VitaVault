@@ -65,7 +65,6 @@
                         android:layout_height="wrap_content"
                         android:text="Example: 'Soy milk' may conflict with your 'no dairy' preference."
                         android:paddingTop="8dp"
-                        android:textColor="@color/black"
                         android:textSize="14sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
