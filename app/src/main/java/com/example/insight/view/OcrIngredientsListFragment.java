@@ -23,6 +23,7 @@ import com.example.insight.viewmodel.IngredientScanViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class OcrIngredientsListFragment extends Fragment implements ItemClickListener {
@@ -55,18 +56,6 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
         binding.ocrIngredientRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.ocrIngredientRecyclerView.setAdapter(ocrIngredientListAdapter);
 
-        // Observe LiveData for scanned ingredients List
-//        ingredientScanViewModel.getMatchedIngredientsData().observe(getViewLifecycleOwner(), matchedIngredients -> {
-//            Log.d(TAG, "matched ingredients retrieved" + matchedIngredients);
-//            if (matchedIngredients != null && !matchedIngredients.isEmpty()) {
-//                allIngredientsList = matchedIngredients;
-//                currentIngredientsList = new ArrayList<>(allIngredientsList);
-//                ocrIngredientListAdapter.updateData(currentIngredientsList);
-////                binding.ocrResultListView.setVisibility(View.VISIBLE);
-//                binding.emptyMessage.setVisibility(View.GONE);
-////                binding.progressBar.setVisibility(View.GONE);
-//            }
-//        });
 
         binding.iconSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,5 +197,12 @@ public class OcrIngredientsListFragment extends Fragment implements ItemClickLis
             ocrIngredientListAdapter.notifyDataSetChanged(); // Refresh UI
         }
     }
+
+    public void setGeminiFlagReasons(Map<String, String> flagReasons) {
+        if (ocrIngredientListAdapter != null) {
+            ocrIngredientListAdapter.setGeminiFlagReasons(flagReasons);
+        }
+    }
+
 
 }

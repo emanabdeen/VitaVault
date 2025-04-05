@@ -1,6 +1,7 @@
 package com.example.insight.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -12,6 +13,7 @@ public class OcrIngredient implements Serializable, Comparable<OcrIngredient> {
     private String matchedCategory;
     private Boolean addedAsCustom = false;
     private Boolean sameNameAsCommonRestrictedIngredient = false;
+    private List<String> geminiReasons;
 
 
     // For constructing a new OcrIngredient object for each ingredient parsed from OCR text
@@ -87,5 +89,12 @@ public class OcrIngredient implements Serializable, Comparable<OcrIngredient> {
 
     public void setSameNameAsCommonRestrictedIngredient(Boolean sameNameAsCommonRestrictedIngredient) {
         this.sameNameAsCommonRestrictedIngredient = sameNameAsCommonRestrictedIngredient;
+    }
+
+    public void setGeminiReasons(List<String> reasons) {
+        this.geminiReasons = reasons;
+    }
+    public List<String> getGeminiReasons() {
+        return geminiReasons;
     }
 }
