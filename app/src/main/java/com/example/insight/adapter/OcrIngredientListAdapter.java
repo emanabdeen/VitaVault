@@ -14,13 +14,18 @@ import com.example.insight.model.OcrIngredient;
 import com.example.insight.view.ItemClickListener;
 import com.example.insight.view.OcrIngredientViewHolder;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredientViewHolder>{
 
     private Context context;
     private List<OcrIngredient> ocrIngredientsList;
     private ItemClickListener clickListener;
+
+    // 👇 NEW: Gemini-flagged ingredients
+    private Set<String> geminiFlaggedIngredients = new HashSet<>();
 
     public OcrIngredientListAdapter(Context context, List<OcrIngredient> ocrIngredientsList) {
         this.context = context;
@@ -30,6 +35,10 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
 
     public void setClickListener(ItemClickListener listener) {
         this.clickListener = listener;
+    }
+    public void setGeminiFlaggedIngredients(Set<String> flaggedIngredients) {
+        this.geminiFlaggedIngredients = flaggedIngredients != null ? flaggedIngredients : new HashSet<>();
+        notifyDataSetChanged(); // Refresh the list
     }
 
     @NonNull
@@ -42,9 +51,29 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
     @Override
     public void onBindViewHolder(@NonNull OcrIngredientViewHolder holder, int position) {
         OcrIngredient item = ocrIngredientsList.get(position);
+        String ingredientName = item.getIngredientName().trim().toLowerCase();
+
         holder.getIngredientName().setText(item.getIngredientName());
-        holder.getIngredientMatchedStatus().setText(item.isDietaryRestrictionFlagged() ? "⚠️" : "");
-        holder.getIngredientMatchedCategory().setText(item.getIngredientMatchedCategory());
+
+        boolean staticFlagged = item.isDietaryRestrictionFlagged() || item.isSameNameAsCommonRestrictedIngredient();
+        boolean aiFlagged = geminiFlaggedIngredients.contains(ingredientName);
+
+        // 👇 Show ⚠️ if either static or AI flagged
+        if (staticFlagged || aiFlagged) {
+            holder.getIngredientMatchedStatus().setText("⚠️");
+            holder.getIngredientMatchedStatus().setVisibility(View.VISIBLE);
+
+            String label = staticFlagged ? item.getIngredientMatchedCategory() : "AI Match";
+            holder.getIngredientMatchedCategory().setText(label);
+            holder.getIngredientMatchedCategory().setVisibility(View.VISIBLE);
+        } else {
+            holder.getIngredientMatchedStatus().setText("");
+            holder.getIngredientMatchedStatus().setVisibility(View.GONE);
+            holder.getIngredientMatchedCategory().setText("");
+            holder.getIngredientMatchedCategory().setVisibility(View.GONE);
+        }
+
+        // Handle Add button visibility
         ImageButton button = holder.itemView.findViewById(R.id.btnAdd);
         if (item.isAddedAsCustom()) {
             button.setScaleType(ImageButton.ScaleType.CENTER_INSIDE);
@@ -55,7 +84,9 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
             button.setBackgroundResource(R.color.accent);
             button.setImageResource(R.drawable.ic_add);
         }
-        if (item.isDietaryRestrictionFlagged() || item.isSameNameAsCommonRestrictedIngredient()) {
+
+        // Hide the button if the item is flagged (either by static or AI logic)
+        if (staticFlagged || aiFlagged) {
             holder.itemView.findViewById(R.id.btnAdd).setVisibility(View.INVISIBLE);
         } else {
             holder.itemView.findViewById(R.id.btnAdd).setVisibility(View.VISIBLE);

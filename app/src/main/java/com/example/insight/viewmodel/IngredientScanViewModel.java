@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -22,7 +23,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -117,7 +120,7 @@ public class IngredientScanViewModel extends ViewModel {
                 matchedIngredientsList = IngredientUtils.getMatchedIngredients(ocrIngredientsList, dietaryRestrictionIngredientsList);
                 matchedIngredientsList.forEach(ingredient -> Log.d(TAG, "Matched ingredient: " + ingredient.toString()));
                 matchedIngredientsData.postValue(matchedIngredientsList);
-                isLoading.postValue(false);
+                //isLoading.postValue(false);
                 future.complete(true);
             }
         });
@@ -231,6 +234,40 @@ public class IngredientScanViewModel extends ViewModel {
                     }
                 });
     }
+
+    private final MutableLiveData<Set<String>> geminiFlaggedIngredients = new MutableLiveData<>(new HashSet<>());
+
+    public void setGeminiFlaggedIngredients(Set<String> flagged) {
+        geminiFlaggedIngredients.postValue(flagged);
+    }
+
+    public LiveData<Set<String>> getGeminiFlaggedIngredients() {
+        return geminiFlaggedIngredients;
+    }
+
+    private final MediatorLiveData<Boolean> dataReady = new MediatorLiveData<>();
+
+    public LiveData<Boolean> isDataReady() {
+        return dataReady;
+    }
+
+    public void initReadyObservers(LiveData<List<OcrIngredient>> matchedIngredients, LiveData<String> geminiRawResponse) {
+        dataReady.addSource(matchedIngredients, ingredients -> checkReadyState());
+        dataReady.addSource(geminiRawResponse, response -> checkReadyState());
+    }
+
+    private void checkReadyState() {
+        if (matchedIngredientsData.getValue() != null && !matchedIngredientsData.getValue().isEmpty()
+                && geminiRawResponse.getValue() != null && !geminiRawResponse.getValue().isEmpty()) {
+            dataReady.setValue(true);
+        }
+    }
+
+    public void setIsLoading(boolean loading) {
+        isLoading.setValue(loading);
+    }
+
+
 
 
 }

@@ -40,7 +40,7 @@ public class GeminiHelper {
 //]
 //""", String.join(", ", ingredientNames));
 
-        // ✅ Build the prompt dynamically from ingredients and user restrictions
+        // Build the prompt dynamically from ingredients and user restrictions
         StringBuilder promptBuilder = new StringBuilder();
         promptBuilder.append("Here is a list of food ingredients:\n");
         promptBuilder.append(String.join(", ", ingredientNames));
