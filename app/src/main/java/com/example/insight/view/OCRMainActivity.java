@@ -29,6 +29,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -69,7 +70,7 @@ public class OCRMainActivity extends DrawerBaseActivity {
 
     private ActivityOcrMainBinding binding;
     private Button parseIngredientsButton;
-    private ImageButton cameraButton;
+    private AppCompatButton cameraButton;
     private TextView baseInstructionsText, errorText;
     private ImageView cameraResultImageView;
     private EditText ocrResultText;
@@ -413,16 +414,16 @@ public class OCRMainActivity extends DrawerBaseActivity {
             runOnUiThread(() -> {
                 imageUri = null;
                 previewView.setVisibility(View.VISIBLE);
-                baseInstructionsText.setVisibility(View.INVISIBLE);
-                cameraResultImageView.setVisibility(View.INVISIBLE);
+                baseInstructionsText.setVisibility(View.GONE);
+                cameraResultImageView.setVisibility(View.GONE);
             });
         }
         // Hide previewView and show imageView
         private void showImageView() {
             runOnUiThread(() -> {
                 cameraResultImageView.setVisibility(View.VISIBLE);
-                baseInstructionsText.setVisibility(View.INVISIBLE);
-                previewView.setVisibility(View.INVISIBLE);
+                baseInstructionsText.setVisibility(View.GONE);
+                previewView.setVisibility(View.GONE);
             });
         }
         private void resetErrorText() {
