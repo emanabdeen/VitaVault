@@ -54,7 +54,7 @@ public class SymptomsListAdapter extends RecyclerView.Adapter<SymptomsViewHolder
             endTimeStr= "...";
         }
 
-        String dateTimeStr = DateValidator.LocalDateToString(item.getRecordDate()) +" ("+ TimeValidator.LocalTimeToString(item.getStartTime())+" - "+ endTimeStr+")"; // 10-10-2025 (13:30)
+        String dateTimeStr = DateValidator.LocalDateToString(item.getRecordDate()) +" ("+ TimeValidator.LocalTimeToString(item.getStartTime())+" - "+ endTimeStr+") "; // 10-10-2025 (13:30)
         String levelValueStr = item.getSymptomLevel();
         String descriptionStr = item.getSymptomDescription();
 

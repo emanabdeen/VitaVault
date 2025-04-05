@@ -207,7 +207,7 @@ public class SymptomReportActivity extends DrawerBaseActivity {
             // Format the selected date (YYYY-MM-DD)
             int year = selectedCalendar.get(Calendar.YEAR);
             int month = selectedCalendar.get(Calendar.MONTH) + 1; // +1 because months are 0-based
-            int day = selectedCalendar.get(Calendar.DAY_OF_MONTH);
+            int day = selectedCalendar.get(Calendar.DAY_OF_MONTH)+1;
 
             String selectedDate = String.format("%04d-%02d-%02d", year, month, day);
             dateInput.setText(selectedDate);
