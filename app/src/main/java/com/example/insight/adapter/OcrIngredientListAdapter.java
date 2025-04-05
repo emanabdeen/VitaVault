@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.insight.R;
 import com.example.insight.model.OcrIngredient;
+import com.example.insight.utility.StringHandler;
 import com.example.insight.view.ItemClickListener;
 import com.example.insight.view.OcrIngredientViewHolder;
 
@@ -69,7 +70,7 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
         }
 
 
-        boolean staticFlagged = item.isDietaryRestrictionFlagged() || item.isSameNameAsCommonRestrictedIngredient();
+        boolean staticFlagged = item.isDietaryRestrictionFlagged();
         boolean aiFlagged = geminiFlaggedIngredients.contains(ingredientName);
 
         // Show ⚠️ if either static or AI flagged
@@ -101,6 +102,11 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
             holder.getRestrictedIcon().setVisibility(View.GONE);
             holder.getIngredientMatchedCategory().setText("");
             holder.getIngredientMatchedCategory().setVisibility(View.GONE);
+        }
+        if (item.isSameNameAsCommonRestrictedIngredient() && !staticFlagged) {
+            holder.getRestrictedIcon().setVisibility(View.GONE);
+            holder.getIngredientMatchedCategory().setText(StringHandler.capitalizeFirstLetter(item.getIngredientName()));
+            holder.getIngredientMatchedCategory().setVisibility(View.VISIBLE);
         }
 
         // Handle Add button visibility
