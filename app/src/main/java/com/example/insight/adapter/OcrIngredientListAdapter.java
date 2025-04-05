@@ -14,8 +14,10 @@ import com.example.insight.model.OcrIngredient;
 import com.example.insight.view.ItemClickListener;
 import com.example.insight.view.OcrIngredientViewHolder;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredientViewHolder>{
@@ -24,8 +26,10 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
     private List<OcrIngredient> ocrIngredientsList;
     private ItemClickListener clickListener;
 
-    // 👇 NEW: Gemini-flagged ingredients
+    // Gemini-flagged ingredients
     private Set<String> geminiFlaggedIngredients = new HashSet<>();
+    private Map<String, String> geminiFlagReasons = new HashMap<>();
+
 
     public OcrIngredientListAdapter(Context context, List<OcrIngredient> ocrIngredientsList) {
         this.context = context;
@@ -58,12 +62,20 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
         boolean staticFlagged = item.isDietaryRestrictionFlagged() || item.isSameNameAsCommonRestrictedIngredient();
         boolean aiFlagged = geminiFlaggedIngredients.contains(ingredientName);
 
-        // 👇 Show ⚠️ if either static or AI flagged
+        // Show ⚠️ if either static or AI flagged
         if (staticFlagged || aiFlagged) {
             holder.getIngredientMatchedStatus().setText("⚠️");
             holder.getIngredientMatchedStatus().setVisibility(View.VISIBLE);
 
-            String label = staticFlagged ? item.getIngredientMatchedCategory() : "AI Match";
+            String label;
+            if (aiFlagged && geminiFlagReasons.containsKey(ingredientName)) {
+                label = geminiFlagReasons.get(ingredientName);
+            } else if (staticFlagged) {
+                label = item.getIngredientMatchedCategory();
+            } else {
+                label = ""; // fallback, shouldn't usually happen
+            }
+            label = label.substring(0,1).toUpperCase() + label.substring(1).toLowerCase();
             holder.getIngredientMatchedCategory().setText(label);
             holder.getIngredientMatchedCategory().setVisibility(View.VISIBLE);
         } else {
@@ -103,6 +115,11 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
     public void updateData(List<OcrIngredient> newOcrIngredients) {
         this.ocrIngredientsList.clear();
         this.ocrIngredientsList.addAll(newOcrIngredients);
+        notifyDataSetChanged();
+    }
+
+    public void setGeminiFlagReasons(Map<String, String> flagReasons) {
+        this.geminiFlagReasons = flagReasons != null ? flagReasons : new HashMap<>();
         notifyDataSetChanged();
     }
 }

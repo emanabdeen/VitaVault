@@ -96,30 +96,36 @@ public class OCRResultsActivity extends DrawerBaseActivity {
 
                         Set<String> flaggedSet = new HashSet<>();
                         Map<String, List<String>> groupedResults = new HashMap<>();
+                        Map<String, String> reasonMap = new HashMap<>();
                         JSONArray jsonArray = new JSONArray(cleanedJson);
 
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject item = jsonArray.getJSONObject(i);
                             String ingredient = item.getString("ingredient").trim().toLowerCase();
-                            String reason = item.getString("reason").trim();
+                            String restriction = item.getString("restriction").trim();
 
                             flaggedSet.add(ingredient);
-                            groupedResults.computeIfAbsent(ingredient, k -> new ArrayList<>()).add(reason);
+                            groupedResults.computeIfAbsent(ingredient, k -> new ArrayList<>()).add(restriction);
+                            if (!reasonMap.containsKey(ingredient)) {
+                                reasonMap.put(ingredient, restriction); // just the first reason, or format multiple if you want
+                            }
+
                         }
 
                         ocrIngredientsListFragment.setGeminiFlaggedIngredients(flaggedSet);
+                        ocrIngredientsListFragment.setGeminiFlagReasons(reasonMap);
 
                         // Reorder list
-                        List<OcrIngredient> all = ingredientScanViewModel.getMatchedIngredientsData().getValue();
-                        if (all != null) {
+                        List<OcrIngredient> allMatchedIngredients = ingredientScanViewModel.getMatchedIngredientsData().getValue();
+                        if (allMatchedIngredients != null) {
                             Set<String> geminiFlagged = flaggedSet; // already lowercased
 
                             // Split into flagged + safe while preserving original order
                             List<OcrIngredient> flaggedFirst = new ArrayList<>();
                             List<OcrIngredient> safe = new ArrayList<>();
 
-                            for (int i = all.size() - 1; i >= 0; i--) {
-                                OcrIngredient ingredient = all.get(i);
+                            for (int i = allMatchedIngredients.size() - 1; i >= 0; i--) {
+                                OcrIngredient ingredient = allMatchedIngredients.get(i);
                                 String name = ingredient.getIngredientName().toLowerCase();
                                 boolean isFlagged = geminiFlagged.contains(name)
                                         || ingredient.isDietaryRestrictionFlagged()
