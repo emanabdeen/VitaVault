@@ -37,6 +37,7 @@ import com.example.insight.R;
 import com.example.insight.databinding.ActivitySymptomReportBinding;
 import com.example.insight.model.Symptom;
 import com.example.insight.model.UserAccount;
+import com.example.insight.utility.DatePickerValidator;
 import com.example.insight.utility.StringHandler;
 import com.example.insight.utility.SymptomsCategories;
 import com.example.insight.utility.TimeValidator;
@@ -53,6 +54,7 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class SymptomReportActivity extends DrawerBaseActivity {
 
@@ -186,34 +188,39 @@ public class SymptomReportActivity extends DrawerBaseActivity {
     }
 
     private void showDatePicker(TextInputEditText dateInput) {
-        // Get current date
         Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        long todayMillis = calendar.getTimeInMillis();
 
-        // Create constraints for date selection (optional)
-        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
-
-        // Create MaterialDatePicker
-        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select Date")
-                .setSelection(calendar.getTimeInMillis()) // Set current date as default
-                .setCalendarConstraints(constraintsBuilder.build())
+        CalendarConstraints constraints = new CalendarConstraints.Builder()
+                .setEnd(todayMillis)
+                .setValidator(new DatePickerValidator())
                 .build();
 
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select Date")
+                .setSelection(todayMillis)
+                .setCalendarConstraints(constraints)
+                .build();
+
+        datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+
         datePicker.addOnPositiveButtonClickListener(selection -> {
-            // Convert milliseconds to Calendar
-            Calendar selectedCalendar = Calendar.getInstance();
-            selectedCalendar.setTimeInMillis(selection);
+            // Convert the selection (UTC millis) into UTC calendar to extract the correct date
+            Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            utcCalendar.setTimeInMillis(selection);
 
-            // Format the selected date (YYYY-MM-DD)
-            int year = selectedCalendar.get(Calendar.YEAR);
-            int month = selectedCalendar.get(Calendar.MONTH) + 1; // +1 because months are 0-based
-            int day = selectedCalendar.get(Calendar.DAY_OF_MONTH)+1;
+            int year = utcCalendar.get(Calendar.YEAR);
+            int month = utcCalendar.get(Calendar.MONTH) + 1; // MONTH is 0-based
+            int day = utcCalendar.get(Calendar.DAY_OF_MONTH);
 
-            String selectedDate = String.format("%04d-%02d-%02d", year, month, day);
+            String selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month, day);
             dateInput.setText(selectedDate);
         });
 
-        datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
     }
 
     private void searchSymptomsByDateRange(String symptomType) {

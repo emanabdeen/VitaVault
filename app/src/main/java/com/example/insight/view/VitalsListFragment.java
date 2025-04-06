@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.insight.adapter.VitalsListAdapter;
 import com.example.insight.databinding.FragmentVitalsListBinding;
 import com.example.insight.model.Vital;
+import com.example.insight.utility.DatePickerValidator;
 import com.example.insight.utility.DateValidator;
 import com.example.insight.viewmodel.VitalViewModel;
 import com.google.android.material.datepicker.CalendarConstraints;
@@ -31,6 +32,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class VitalsListFragment extends Fragment implements ItemClickListener {
     private FragmentVitalsListBinding binding;
@@ -212,33 +215,38 @@ public class VitalsListFragment extends Fragment implements ItemClickListener {
     }
 
     private void showDatePicker(TextInputEditText dateInput) {
-        // Get current date
         Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        long todayMillis = calendar.getTimeInMillis();
 
-        // Create constraints for date selection (optional)
-        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
-
-        // Create MaterialDatePicker
-        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select Date")
-                .setSelection(calendar.getTimeInMillis()) // Set current date as default
-                .setCalendarConstraints(constraintsBuilder.build())
+        CalendarConstraints constraints = new CalendarConstraints.Builder()
+                .setEnd(todayMillis)
+                .setValidator(new DatePickerValidator())
                 .build();
 
-        datePicker.addOnPositiveButtonClickListener(selection -> {
-            // Convert milliseconds to Calendar
-            Calendar selectedCalendar = Calendar.getInstance();
-            selectedCalendar.setTimeInMillis(selection);
-
-            // Format the selected date (YYYY-MM-DD)
-            int year = selectedCalendar.get(Calendar.YEAR);
-            int month = selectedCalendar.get(Calendar.MONTH) + 1; // +1 because months are 0-based
-            int day = selectedCalendar.get(Calendar.DAY_OF_MONTH)+1;
-
-            String selectedDate = String.format("%04d-%02d-%02d", year, month, day);
-            dateInput.setText(selectedDate);
-        });
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select Date")
+                .setSelection(todayMillis)
+                .setCalendarConstraints(constraints)
+                .build();
 
         datePicker.show(getParentFragmentManager(), "DATE_PICKER");
+
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            // Convert the selection (UTC millis) into UTC calendar to extract the correct date
+            Calendar utcCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            utcCalendar.setTimeInMillis(selection);
+
+            int year = utcCalendar.get(Calendar.YEAR);
+            int month = utcCalendar.get(Calendar.MONTH) + 1; // MONTH is 0-based
+            int day = utcCalendar.get(Calendar.DAY_OF_MONTH);
+
+            // Format as yyyy-MM-dd (what your app expects)
+            String selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month, day);
+            dateInput.setText(selectedDate);
+        });
     }
 }
