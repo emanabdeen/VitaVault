@@ -59,7 +59,7 @@
                 android:id="@+id/editTextEmail"
                 android:layout_width="182dp"
                 android:layout_height="48dp"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:ems="10"
                 android:inputType="textPassword"
                 android:padding="8dp" />
@@ -83,7 +83,7 @@
                 android:id="@+id/editTextOldPw"
                 android:layout_width="182dp"
                 android:layout_height="48dp"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:ems="10"
                 android:inputType="textEmailAddress"
                 android:padding="8dp" />
@@ -107,7 +107,7 @@
                 android:id="@+id/editTextNewPw"
                 android:layout_width="182dp"
                 android:layout_height="44dp"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:ems="10"
                 android:inputType="textPassword"
                 android:padding="8dp"/>
@@ -131,7 +131,7 @@
                 android:id="@+id/editTextConfirmPw"
                 android:layout_width="182dp"
                 android:layout_height="45dp"
-                android:background="@drawable/edit_text_background"
+                android:background="@drawable/dynamic_background"
                 android:ems="10"
                 android:inputType="textPassword"
                 android:padding="8dp" />

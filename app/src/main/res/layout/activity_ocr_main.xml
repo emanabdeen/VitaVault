@@ -164,10 +164,9 @@
                     android:layout_height="wrap_content"
                     android:minHeight="140dp"
                     android:layout_gravity="center"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/light_gray"
                     android:scrollbars="vertical"
-                    android:background="@drawable/edit_text_background"
+                    android:textColorHint="@color/light_gray"
+                    android:background="@drawable/dynamic_background"
                     android:hint="Enter ingredients here or select an \nimage to extract text from it..."
                     android:textAlignment="center"
                     android:layout_marginBottom="20dp" />

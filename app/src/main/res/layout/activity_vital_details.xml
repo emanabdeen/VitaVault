@@ -68,15 +68,6 @@
                     android:paddingVertical="10dp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!--<EditText
-                android:id="@+id/editTextDate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background"
-                android:inputType="date"
-                android:padding="8dp"
-                android:textColor="@color/black"/>-->
-
             <TextView
                 android:id="@+id/errorDate"
                 android:layout_width="wrap_content"
@@ -109,15 +100,6 @@
                     android:paddingVertical="8dp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!--<EditText
-                android:id="@+id/editTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text_background"
-                android:inputType="time"
-                android:padding="8dp"
-                android:textColor="@color/black"/>-->
-
             <TextView
                 android:id="@+id/errorTime"
                 android:layout_width="wrap_content"
@@ -145,8 +127,7 @@
                 android:background="@drawable/dynamic_background"
                 android:focusedByDefault="true"
                 android:inputType="numberDecimal"
-                android:padding="8dp"
-                android:textColor="@color/black"/>
+                android:padding="8dp"/>
 
             <TextView
                 android:id="@+id/errorMeasure1"
@@ -174,8 +155,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/dynamic_background"
                 android:inputType="number"
-                android:padding="8dp"
-                android:textColor="@color/black"/>
+                android:padding="8dp"/>
 
             <TextView
                 android:id="@+id/errorMeasure2"

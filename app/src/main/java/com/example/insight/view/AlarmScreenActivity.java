@@ -1,6 +1,7 @@
 package com.example.insight.view;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ public class AlarmScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         binding = ActivityAlarmScreenBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot()); // Set the view from binding
 

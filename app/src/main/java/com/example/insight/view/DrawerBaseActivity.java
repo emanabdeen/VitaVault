@@ -1,6 +1,7 @@
 package com.example.insight.view;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,9 +26,20 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class DrawerBaseActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private boolean allowRotation = false;
     DrawerLayout drawerLayout;
     Toolbar toolbar;
     private boolean showBackIcon = true; // Default to showing the back icon
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Add this line to lock orientation
+        if (!allowRotation) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
 
     @Override
     public void setContentView(View view) {

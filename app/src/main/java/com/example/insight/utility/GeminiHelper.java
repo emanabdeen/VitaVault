@@ -13,7 +13,7 @@ import okhttp3.*;
 public class GeminiHelper {
     private static final String TAG = "GeminiHelper";
 
-    // ✅ Your correct endpoint based on Google AI Studio
+    // Your correct endpoint based on Google AI Studio
     private static final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
     public static CompletableFuture<String> analyzeIngredients(List<String> ingredientNames, List<String> userRestrictions, String apiKey) {
@@ -68,7 +68,7 @@ Do not add any text after the returned json array.
         Log.d(TAG, "Sending prompt to Gemini:\n" + prompt);
 
         try {
-            // ✅ Build Gemini API request JSON
+            // Build Gemini API request JSON
             JSONObject textPart = new JSONObject().put("text", prompt);
             JSONArray parts = new JSONArray().put(textPart);
             JSONObject content = new JSONObject().put("parts", parts);
