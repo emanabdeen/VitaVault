@@ -98,11 +98,15 @@ public class VitalGraphFragment extends Fragment {
             if (vitalRecordsList != null && !vitalRecordsList.isEmpty()) { // Null check
                 ChartHelper.createLineChart(view, vitalRecordsList, requireContext(), measureName1, measureName2);
                 binding.graphLayoutParent.setVisibility(View.VISIBLE);
+                binding.lineChart.setVisibility(View.VISIBLE);
+                binding.graphPlaceholder.setVisibility(View.GONE);
                 binding.unitAxisLable.setText(unit);
                 //binding.dayAxisLable.setText("Day");
 
             }else{
-                binding.graphLayoutParent.setVisibility(View.INVISIBLE);
+                binding.graphLayoutParent.setVisibility(View.VISIBLE);
+                binding.lineChart.setVisibility(View.GONE);
+                binding.graphPlaceholder.setVisibility(View.VISIBLE);
             }
         });
 

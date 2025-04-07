@@ -35,22 +35,22 @@
 
                 <ImageButton
                     android:id="@+id/btnBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:background="@android:color/transparent"
                     app:srcCompat="@drawable/ic_arrow_back" />
 
                 <TextView
                     android:id="@+id/txtMonth"
-                    android:layout_width="80dp"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
                     android:gravity="center"/>
 
                 <ImageButton
                     android:id="@+id/btnForward"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:background="@android:color/transparent"
                     app:srcCompat="@drawable/ic_arrow_forward" />
 
@@ -81,14 +81,19 @@
                     android:layout_marginHorizontal="10dp"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:paddingHorizontal="12dp"
-                    >
+                    android:paddingHorizontal="12dp">
 
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/lineChart"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:visibility="gone"/>
+                    <ImageView
+                        android:id="@+id/graph_placeholder"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
 
+                        android:src="@drawable/grapg_place_holder"/>
                 </LinearLayout>
 
                 <TextView
@@ -115,7 +120,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintVertical_bias="0.48"
         android:text="Loading..."/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
