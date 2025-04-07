@@ -91,6 +91,7 @@
                 android:id="@+id/btnAddToList"
                 android:layout_width="150dp"
                 android:layout_height="50dp"
+                android:layout_gravity="center"
                 android:layout_marginVertical="10dp"
                 android:text="Add to list" />
 

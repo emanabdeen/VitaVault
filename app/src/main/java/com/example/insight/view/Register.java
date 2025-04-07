@@ -5,10 +5,13 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
+import com.example.insight.R;
 import com.example.insight.databinding.ActivityRegisterBinding;
 import com.example.insight.utility.LoginRegisterHelper;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,6 +32,7 @@ public class Register extends AppCompatActivity {
     ActivityRegisterBinding binding;
     FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,14 +42,11 @@ public class Register extends AppCompatActivity {
         setContentView(binding.getRoot());
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        toolbar = binding.getRoot().findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ImageButton backButton = toolbar.findViewById(R.id.back_button);
+        backButton.setOnClickListener(v -> finish());
 
-        //Back button
-        binding.btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         //Register button
         binding.btnRegister.setOnClickListener(new View.OnClickListener() {

@@ -73,7 +73,12 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
         boolean staticFlagged = item.isDietaryRestrictionFlagged();
         boolean aiFlagged = geminiFlaggedIngredients.contains(ingredientName);
 
-        // Show ⚠️ if either static or AI flagged
+        // Show ⚠️ if either static or AI flagged and not a common restricted ingredient
+        if (item.isSameNameAsCommonRestrictedIngredient() && !staticFlagged) {
+            holder.getRestrictedIcon().setVisibility(View.GONE);
+            holder.getIngredientMatchedCategory().setText(StringHandler.capitalizeFirstLetter(item.getIngredientName()));
+            holder.getIngredientMatchedCategory().setVisibility(View.VISIBLE);
+        }
         if (staticFlagged || aiFlagged) {
             if(staticFlagged){
                 holder.getRestrictedIcon().setImageResource(R.drawable.icon_restrected);
@@ -102,11 +107,6 @@ public class OcrIngredientListAdapter extends RecyclerView.Adapter<OcrIngredient
             holder.getRestrictedIcon().setVisibility(View.GONE);
             holder.getIngredientMatchedCategory().setText("");
             holder.getIngredientMatchedCategory().setVisibility(View.GONE);
-        }
-        if (item.isSameNameAsCommonRestrictedIngredient() && !staticFlagged) {
-            holder.getRestrictedIcon().setVisibility(View.GONE);
-            holder.getIngredientMatchedCategory().setText(StringHandler.capitalizeFirstLetter(item.getIngredientName()));
-            holder.getIngredientMatchedCategory().setVisibility(View.VISIBLE);
         }
 
         // Handle Add button visibility

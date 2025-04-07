@@ -15,7 +15,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="25dp" />
+            android:layout_height="10dp" />
 
         <!--<TextView
             android:id="@+id/textView"
@@ -56,9 +56,21 @@
             android:textColor="@color/white"
             android:textSize="13sp"
             android:layout_marginHorizontal="10dp"
-            android:layout_marginBottom="25dp"
+            android:layout_marginBottom="5dp"
             android:baselineAligned="true"
             android:drawableStart="@drawable/icon_add_restrict_scaled"/>
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/scanResultDescription3"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginBottom="25dp"
+            android:baselineAligned="true" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/aiResultCard"

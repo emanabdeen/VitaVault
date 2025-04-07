@@ -102,6 +102,8 @@
     -->
     <string name="scanResultDescription"> Restricted ingredients are flagged automatically.</string>
     <string name="scanResultDescription2"> Tap this icon to add items to your restricted list</string>
+    <string name="scanResultDescription3"> Do NOT rely on these results for severe allergies or intolerances!</string>
+
 
     <string name="scanMainActivityDescription">📸 Option 1: Snap a clear photo of ingredients.\n📤 Option 2: Upload an image from your device.\n✂️ Then, tight crop on text for best results.</string>
     <string name="cameraControlsDescription">Tap here to start the camera preview\n\nTap again when an image is displayed to clear it</string>
