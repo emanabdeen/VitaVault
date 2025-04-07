@@ -174,7 +174,7 @@
                         android:layout_width="70dp"
                         android:layout_height="70dp"
                         android:layout_gravity="center"
-                        app:srcCompat="@drawable/icon_ocr" />
+                        app:srcCompat="@drawable/ic_ocr_carton" />
 
                     <TextView
                         android:layout_width="wrap_content"
