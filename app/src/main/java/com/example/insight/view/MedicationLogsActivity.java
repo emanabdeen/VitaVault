@@ -64,6 +64,7 @@ public class MedicationLogsActivity extends DrawerBaseActivity {
             binding.btnAddLog.setVisibility(View.GONE);
             binding.btnAddAlarm.setVisibility(View.VISIBLE);
             allocateActivityTitle("Alarms");
+            binding.image.setImageResource(R.drawable.ic_alarm_clock);
         } else {
             replaceFragment(logsFragment);
             binding.btnAddAlarm.setVisibility(View.GONE);
