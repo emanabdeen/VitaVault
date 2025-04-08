@@ -51,7 +51,7 @@ public class EditAlarmActivity extends DrawerBaseActivity {
         binding = ActivityEditAlarmBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        allocateActivityTitle("Edit Alarm");
+        allocateActivityTitle("Alarm Details");
 
         // Get the intent data
         medicationId = getIntent().getStringExtra("medicationId");

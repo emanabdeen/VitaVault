@@ -23,7 +23,7 @@
             android:layout_gravity="center"
             android:background="@drawable/glow_white"
             android:padding="10dp"
-            android:src="@drawable/icon_ocr"/>
+            android:src="@drawable/ic_ocr_carton"/>
 
         <TextView
             android:id="@+id/textViewTitle"

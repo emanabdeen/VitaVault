@@ -32,7 +32,7 @@ public class MedicationDetails extends DrawerBaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMedicationDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        allocateActivityTitle("Medication Details");
+
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(MedicationViewModel.class);
@@ -51,6 +51,7 @@ public class MedicationDetails extends DrawerBaseActivity {
         binding.textViewTitle.setText(intent.getStringExtra("title"));
 
         if (!TextUtils.isEmpty(intent.getStringExtra("medicationID"))) {
+            allocateActivityTitle("Medication Details");
             pageFunction = "editMedication";
             medicationId = intent.getStringExtra("medicationID");
 
@@ -72,6 +73,7 @@ public class MedicationDetails extends DrawerBaseActivity {
 
 
         } else {
+            allocateActivityTitle("Add Medication");
             pageFunction = "createMedication";
         }
 

@@ -52,7 +52,7 @@ public class AddAlarmActivity extends DrawerBaseActivity {
         binding = ActivityAddAlarmBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        allocateActivityTitle("Add Alarm");
+        //allocateActivityTitle("Add Alarm");
 
         // Retrieve medicationID (and optionally medicationName, dosage) from Intent
         medicationId = getIntent().getStringExtra("medicationID");
