@@ -38,7 +38,7 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+
             android:gravity="center"
             android:text="@string/scanResultDescription"
             android:textAlignment="center"
@@ -68,8 +68,9 @@
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="13sp"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginHorizontal="3dp"
             android:layout_marginBottom="25dp"
+            android:layout_marginTop="5dp"
             android:baselineAligned="true" />
 
             <androidx.cardview.widget.CardView
